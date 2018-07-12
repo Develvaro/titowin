@@ -1,42 +1,40 @@
 import React, { Component } from 'react';
-import Card from './components/card';
+
 import {connect} from 'react-redux';
-
 import './App.css';
-import { fetchEvents } from './actions';
-
-
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem } from 'reactstrap';
-
-  
+import Bar from './components/bar';
+import Home from './components/home'; 
+import Login from './components/login';
+import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import { loginSuccess } from './actions';
+import firebase from 'firebase';
 
 class App extends Component {
+
+componentDidMount(){
+  firebase.auth().onAuthStateChanged(user => {
+    console.log(user);
+    if(user){
+      this.props.loginSuccess(user);
+    }
+  })
+}
+
   render() {
     return (
-      <div className="App">
-        <Card titulo="Unicaja-Estudiantes" categoria="Baloncesto" fecha = "Fecha" lugar ="Santiago Bernabeu" pujaActual="50" id ="1" urlPhoto="https://i.stack.imgur.com/jcBNn.jpg" />
-      </div>
+      <Router>
+        <div className="App">
+          <Bar />
+          <Route exact path="/" component={Home} />
+          <Route exact path="/login" component={Login} />
+        </div>
+      </Router>
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  events : state.events
-});
-
 const mapDispatchToProps = (dispatch) => ({
-  fetchEvents: (pais, ciudad) => dispatch(fetchEvents(pais, ciudad))
+  loginSuccess: (user) => dispatch(loginSuccess(user))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(null, mapDispatchToProps)(App);
