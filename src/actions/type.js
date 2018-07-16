@@ -9,3 +9,7 @@ export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 export const LOGOUT = 'LOGOUT';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 export const LOGOUT_FAILURE = 'LOGOUT_FAILURE';
+
+export const FETCH_PROFILE = 'FETCH_PROFILE';
+export const SET_PROFILE = 'SET_PROFILE';
+export const UNSET_PROFILE = 'UNSET_PROFILE';
