@@ -13,7 +13,10 @@ import {
   UNSET_PROFILE,
   FETCH_COUNTRIES,
   FETCH_COUNTRIES_SUCCESS,
-  FETCH_COUNTRIES_FAILURE
+  FETCH_COUNTRIES_FAILURE,
+  FETCH_CITIES,
+  FETCH_CITIES_SUCCESS,
+  FETCH_CITIES_FAILURE
 } from "./type";
 
 export const fetchEvents = (pais, ciudad, categoria, nombre) => ({
@@ -41,6 +44,15 @@ export const fetchCountriesFailure = error => ({
   payload: { error }
 });
 
+export const fetchCities = (country) => ({ type: FETCH_CITIES });
+export const fetchCitiesSuccess = cities => ({ type: FETCH_CITIES_SUCCESS,
+  payload: { cities }
+});
+export const fetchCitiesFailure = error => ({
+  type: FETCH_CITIES_FAILURE,
+  payload: {error}
+})
+
 export const login = () => ({ type: LOGIN });
 export const loginSuccess = data => ({
   type: LOGIN_SUCCESS,
@@ -60,14 +72,14 @@ export const logoutFailure = err => ({
   payload: { err }
 });
 
-export const fetchProfile = data => ({
+export const fetchProfile = user => ({
   type: FETCH_PROFILE,
-  payload: { data }
+  payload: { user }
 });
 
-export const setProfile = data => ({
+export const setProfile = user => ({
   type: SET_PROFILE,
-  payload: { data }
+  payload: { user }
 });
 
 export const unSetProfile = () => ({ type: UNSET_PROFILE });

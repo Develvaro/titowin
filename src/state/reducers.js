@@ -6,7 +6,8 @@ import {
   LOGOUT_SUCCESS,
   SET_PROFILE,
   UNSET_PROFILE,
-  FETCH_COUNTRIES_SUCCESS
+  FETCH_COUNTRIES_SUCCESS,
+  FETCH_CITIES_SUCCESS,
 } from "../actions/type";
 
 const events = (state = null, action) => {
@@ -32,7 +33,7 @@ const user = (state = null, action) => {
 const profile = (state = null, action) => {
   switch (action.type) {
     case SET_PROFILE:
-      return action.payload.data;
+      return action.payload.user;
     case UNSET_PROFILE:
       return null;
     default:
@@ -44,6 +45,15 @@ export const countries = (state = null, action) => {
   switch (action.type) {
     case FETCH_COUNTRIES_SUCCESS:
       return action.payload.countries;
+    default:
+      return state;
+  }
+};
+
+export const cities = (state = null, action) => {
+  switch (action.type) {
+    case FETCH_CITIES_SUCCESS:
+      return action.payload.cities;
     default:
       return state;
   }

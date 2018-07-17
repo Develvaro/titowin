@@ -6,6 +6,7 @@ import Bar from './components/bar';
 import Home from './components/home'; 
 import Login from './components/login';
 import Register from './components/register';
+import Profile from './components/profile';
 import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
 import { loginSuccess } from './actions';
 import firebase from 'firebase';
@@ -14,7 +15,6 @@ class App extends Component {
 
 componentDidMount(){
   firebase.auth().onAuthStateChanged(user => {
-    console.log(user);
     if(user){
       this.props.loginSuccess(user);
     }
@@ -29,6 +29,7 @@ componentDidMount(){
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
+          <Route exact path="/profile" component={Profile} />
           {/* <Route exact path="/profile" component={Profile} />
           <Route exact path="/admin" component={Admin} />
           <Route path="/admin/addEvent" component={AddEvent} />

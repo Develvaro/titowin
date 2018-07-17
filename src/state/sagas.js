@@ -4,18 +4,22 @@ import {
   LOGIN,
   LOGOUT,
   FETCH_PROFILE,
-  FETCH_COUNTRIES
+  FETCH_COUNTRIES,
+  FETCH_CITIES
 } from "../actions/type";
 import {
   fetchEventsFailure,
   fetchEventsSuccess,
   loginSuccess,
+  fetchProfile,
   loginFailure,
   logoutFailure,
   logoutSuccess,
   setProfile,
   fetchCountriesFailure,
-  fetchCountriesSuccess
+  fetchCountriesSuccess,
+  fetchCitiesSuccess,
+  unSetProfile
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
@@ -40,10 +44,15 @@ function* fetchEventProcess(action) {
     const { docs } = yield call([colRef, "get"]);
     const result = docs.map(doc => {
       const data = doc.data();
-      if (data.nombre.includes(nombre)) {
+      if(nombre){
+        if (data.nombre.includes(nombre)) {
+          return { ...data, id: doc.id };
+        }
+        return null;
+      }
+      else{
         return { ...data, id: doc.id };
       }
-      return null;
     });
     yield put(fetchEventsSuccess(result));
   } catch (err) {
@@ -62,21 +71,23 @@ function* loginProcess() {
     const result = yield call([firebaseAuth, "signInWithPopup"], provider);
 
     yield put(loginSuccess(result.user));
-    yield put(fetchProfileProcess(result.user));
+    yield put(fetchProfile(result.user));
   } catch (e) {
+    console.log(e);
     yield put(loginFailure(e));
   }
 }
 
-function* fetchProfileProcess(user) {
+function* fetchProfileProcess(action) {
   try {
-    const userRef = databaseRef.collection("Usuarios").doc(user.uid);
+    console.log(action.payload.user.uid);
+    const userRef = databaseRef.collection("Usuario").doc(action.payload.user.uid);
     const doc = yield call([userRef, "get"]);
 
-    if (!doc.exists()) {
+    if (!doc.exists) {
       const data = {
-        id: user.uid,
-        email: user.email,
+        id: action.payload.user.uid,
+        email: action.payload.user.email,
         tipo: "empresa",
         validado: false
       };
@@ -84,6 +95,7 @@ function* fetchProfileProcess(user) {
       userRef.set(data);
       yield put(setProfile(data));
     } else {
+      console.log("User exists");
       yield put(setProfile(doc.data()));
     }
   } catch (err) {
@@ -95,11 +107,24 @@ function* fetchCountriesProcess() {
   try {
     const countryRef = databaseRef.collection("Pais");
     const { docs } = yield call([countryRef, "get"]);
-    const countries = docs.map(doc => doc.data());
+    const countries = docs.map(doc => doc.data() );
+    console.log(docs);
+
     yield put(fetchCountriesSuccess(countries));
   } catch (e) {
     console.log(e);
     yield put(fetchCountriesFailure(e));
+  }
+}
+
+function* fetchCitiesProccess(country){
+  try {
+    const cityRef = databaseRef.collection("Ciudad").where("pais", "==", country.name);
+    const { docs } = yield call([cityRef, "get"]);
+    const cities = docs.map(doc => doc.data());
+    yield put(fetchCitiesSuccess(cities));
+  } catch (error) {
+    yield put(fetchCountriesFailure(error));    
   }
 }
 
@@ -116,6 +141,7 @@ function* logoutProcess() {
     const firebaseAuth = firebase.auth();
     yield call([firebaseAuth, "signOut"]);
     yield put(logoutSuccess());
+    yield put(unSetProfile());
   } catch (e) {
     yield put(logoutFailure(e));
   }
@@ -129,13 +155,18 @@ function* watchFetchCountries() {
   yield takeEvery(FETCH_COUNTRIES, fetchCountriesProcess);
 }
 
+function* watchFetchCities() {
+  yield takeEvery(FETCH_CITIES, fetchCitiesProccess);
+}
+
 function* rootSaga() {
   yield all([
     fork(watchFetchEvents),
     fork(watchLogin),
     fork(watchLogout),
     fork(watchProfile),
-    fork(watchFetchCountries)
+    fork(watchFetchCountries),
+    fork(watchFetchCities),
   ]);
 }
 
