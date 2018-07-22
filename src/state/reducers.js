@@ -8,6 +8,9 @@ import {
   UNSET_PROFILE,
   FETCH_COUNTRIES_SUCCESS,
   FETCH_CITIES_SUCCESS,
+  FECTCH_EVENT_DETAIL_SUCCESS,
+  FETCH_EVENT_PLACE_SUCCESS,
+  FETCH_EVENT_BID_SUCCESS,
 } from "../actions/type";
 
 const events = (state = null, action) => {
@@ -59,10 +62,38 @@ export const cities = (state = null, action) => {
   }
 };
 
+export const eventDetail = (state = null, action) => {
+  switch (action.type){
+    case FECTCH_EVENT_DETAIL_SUCCESS:
+      return action.payload.eventDetail;
+    default:
+      return state;
+  }
+}
+
+export const place = (state = null, action) => {
+  switch(action.type){
+    case FETCH_EVENT_PLACE_SUCCESS:
+      return action.payload.place;
+    default:
+      return state;
+  }
+}
+
+export const eventBids = (state = null, action) => {
+  switch(action.type){
+    case FETCH_EVENT_BID_SUCCESS:
+      return action.payload.bids;
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   formReducer,
   events,
   user,
   profile,
-  countries
+  countries,
+  eventDetail,
 });

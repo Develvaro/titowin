@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import CardList from "./cardList";
+import CardList from "../components/cardList";
 import { connect } from "react-redux";
 
 class Home extends Component {

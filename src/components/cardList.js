@@ -6,7 +6,8 @@ import { connect } from "react-redux";
 import { formValueSelector } from "redux-form";
 import { fetchEvents, fetchCountries, fetchCities } from "../actions";
 
-import Select from "./select";
+import Select from "./form/select";
+import TextInput from "./form/textinput";
 
 import Card from "./card";
 
@@ -42,6 +43,12 @@ class CardList extends Component {
             value: country.nombre,
           }))}
         />
+
+        <Field
+          component={TextInput}
+          name="eventName"
+          id="eventName"
+          />
         {/* {this.props.selectedCountry ? <Field
           component={Select}
           name="city"
@@ -55,12 +62,14 @@ class CardList extends Component {
         component={Select}
         name="city"
         id="city"
-        options={{name: "Hola" , value: "Hola"}}
         /> 
         } */}
 
-        <div>{events.map(event => <Card {...event} key={event.id} />)}</div>
-      </div>
+        <div>{ this.props.filterName ? events.map(event => event.titulo.includes(this.props.filterName) ? <Card {...event} key={event.id} /> : null)
+         : events.map(event=> <Card {...event} key={event.id} />) } 
+
+        </div>
+        </div>
     );
   }
 }
@@ -72,7 +81,8 @@ const mapStateToProps = state => ({
   countries: state.countries,
   selectedCountry: filterSelector(state, "country"),
   cities: state.cities,
-  selectedCity: filterSelector(state, "city")
+  selectedCity: filterSelector(state, "city"),
+  filterName: filterSelector(state, "eventName"),
 });
 
 const mapDispatchToProps = dispatch => ({

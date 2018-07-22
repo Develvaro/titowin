@@ -5,7 +5,9 @@ import {
   LOGOUT,
   FETCH_PROFILE,
   FETCH_COUNTRIES,
-  FETCH_CITIES
+  FETCH_CITIES,
+  FECTCH_EVENT_DETAIL,
+  FETCH_EVENT_BID
 } from "../actions/type";
 import {
   fetchEventsFailure,
@@ -19,14 +21,27 @@ import {
   fetchCountriesFailure,
   fetchCountriesSuccess,
   fetchCitiesSuccess,
-  unSetProfile
+  unSetProfile,
+  fetchEventDetailFailure
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
 
+function* fetchEventDetailProcess(action) {
+  try{
+    const {eventID} = action.payload;
+    const eventRef = databaseRef.collection("Evento").doc(eventID);
+    
+    const doc = yield call([eventRef, "get"]);
+    return {...doc.data, id:doc.id};
+  }catch(e){
+    yield put(fetchEventDetailFailure(e));
+  }
+}
+
 function* fetchEventProcess(action) {
   try {
-    const { pais, ciudad, categoria, nombre } = action.payload;
+    const { pais, ciudad, nombre } = action.payload;
     let colRef = databaseRef.collection("Evento");
 
     if (pais) {
@@ -37,11 +52,10 @@ function* fetchEventProcess(action) {
       colRef = colRef.where("ciudad", "==", ciudad);
     }
 
-    if (categoria) {
-      colRef = colRef.where("categoria", "==", categoria);
-    }
+
 
     const { docs } = yield call([colRef, "get"]);
+    //docs.map(doc => console.log(doc));
     const result = docs.map(doc => {
       const data = doc.data();
       if(nombre){
@@ -64,6 +78,10 @@ function* watchFetchEvents() {
   yield takeEvery(FETCH_EVENTS, fetchEventProcess);
 }
 
+function* fetchEventBidProcess(){
+  console.log("Hola");
+}
+
 function* loginProcess() {
   try {
     const firebaseAuth = firebase.auth();
@@ -73,14 +91,14 @@ function* loginProcess() {
     yield put(loginSuccess(result.user));
     yield put(fetchProfile(result.user));
   } catch (e) {
-    console.log(e);
+    //console.log(e);
     yield put(loginFailure(e));
   }
 }
 
 function* fetchProfileProcess(action) {
   try {
-    console.log(action.payload.user.uid);
+    //console.log(action.payload.user.uid);
     const userRef = databaseRef.collection("Usuario").doc(action.payload.user.uid);
     const doc = yield call([userRef, "get"]);
 
@@ -96,6 +114,20 @@ function* fetchProfileProcess(action) {
       yield put(setProfile(data));
     } else {
       console.log("User exists");
+      console.log(`/Lugar/ ${doc.data().manage.id}`);
+      const eventRef = databaseRef.collection("Lugar").doc(doc.data().manage.id);
+      eventRef.get().then(function(data){
+        if(data.exists){
+          console.log(data.data());
+        }
+        else{
+          console.log("No hay documento");
+        }
+      })
+      .catch(function(e){
+        console.log(e);
+      });
+      console.log()
       yield put(setProfile(doc.data()));
     }
   } catch (err) {
@@ -108,16 +140,16 @@ function* fetchCountriesProcess() {
     const countryRef = databaseRef.collection("Pais");
     const { docs } = yield call([countryRef, "get"]);
     const countries = docs.map(doc => doc.data() );
-    console.log(docs);
+    //console.log(docs);
 
     yield put(fetchCountriesSuccess(countries));
   } catch (e) {
-    console.log(e);
+    //console.log(e);
     yield put(fetchCountriesFailure(e));
   }
 }
 
-function* fetchCitiesProccess(country){
+function* fetchCitiesProcess(country){
   try {
     const cityRef = databaseRef.collection("Ciudad").where("pais", "==", country.name);
     const { docs } = yield call([cityRef, "get"]);
@@ -156,7 +188,15 @@ function* watchFetchCountries() {
 }
 
 function* watchFetchCities() {
-  yield takeEvery(FETCH_CITIES, fetchCitiesProccess);
+  yield takeEvery(FETCH_CITIES, fetchCitiesProcess);
+}
+
+function* watchEventDetail() {
+  yield takeEvery(FECTCH_EVENT_DETAIL, fetchEventDetailProcess);
+}
+
+function* watchEventBids(){
+  yield takeEvery(FETCH_EVENT_BID, fetchEventBidProcess);
 }
 
 function* rootSaga() {
@@ -167,7 +207,11 @@ function* rootSaga() {
     fork(watchProfile),
     fork(watchFetchCountries),
     fork(watchFetchCities),
+    fork(watchEventDetail),
+    fork(watchEventBids),
   ]);
 }
 
 export default rootSaga;
+
+
