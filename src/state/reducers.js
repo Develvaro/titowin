@@ -95,5 +95,6 @@ export default combineReducers({
   user,
   profile,
   countries,
-  eventDetail
+  eventDetail,
+  cities
 });

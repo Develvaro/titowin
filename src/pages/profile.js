@@ -1,21 +1,26 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux'
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
 class Profile extends Component {
-
-    render(){
-        const { profile } = this.props;
-        console.log(profile);
-        return(
-            <div>
-                <p></p>
-            </div>
-        );
-    }
+  componentDidMount() {
+    // console.log(this.props.user);
+  }
+  render() {
+    const { profile } = this.props;
+    console.log(this.props.user);
+    return (
+      <div>
+        <p />
+      </div>
+    );
+  }
 }
 const mapStateToProps = state => ({
-    user: state.user,
-    profile: state.profile,
+  user: state.user,
+  profile: state.profile
 });
 
-export default connect(mapStateToProps, null) (Profile);
+export default connect(
+  mapStateToProps,
+  null
+)(Profile);

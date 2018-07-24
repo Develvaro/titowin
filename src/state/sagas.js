@@ -1,4 +1,5 @@
 import { fork, takeEvery, put, call, all } from "redux-saga/effects";
+import { initialize } from "redux-form";
 import {
   FETCH_EVENTS,
   LOGIN,
@@ -7,7 +8,8 @@ import {
   FETCH_COUNTRIES,
   FETCH_CITIES,
   FECTCH_EVENT_DETAIL,
-  FETCH_EVENT_BID
+  FETCH_EVENT_BID,
+  INITIAL_FETCH
 } from "../actions/type";
 import {
   fetchEventsFailure,
@@ -22,19 +24,24 @@ import {
   fetchCountriesSuccess,
   fetchCitiesSuccess,
   unSetProfile,
-  fetchEventDetailFailure
+  fetchEventDetailFailure,
+  fetchCitiesFailure,
+  fetchCities,
+  initialFetchFailure,
+  fetchEvents
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
+import { getCountryByLocale } from "../utils/countries";
 
 function* fetchEventDetailProcess(action) {
-  try{
-    const {eventID} = action.payload;
+  try {
+    const { eventID } = action.payload;
     const eventRef = databaseRef.collection("Evento").doc(eventID);
-    
+
     const doc = yield call([eventRef, "get"]);
-    return {...doc.data, id:doc.id};
-  }catch(e){
+    return { ...doc.data, id: doc.id };
+  } catch (e) {
     yield put(fetchEventDetailFailure(e));
   }
 }
@@ -52,19 +59,16 @@ function* fetchEventProcess(action) {
       colRef = colRef.where("ciudad", "==", ciudad);
     }
 
-
-
     const { docs } = yield call([colRef, "get"]);
     //docs.map(doc => console.log(doc));
     const result = docs.map(doc => {
       const data = doc.data();
-      if(nombre){
+      if (nombre) {
         if (data.nombre.includes(nombre)) {
           return { ...data, id: doc.id };
         }
         return null;
-      }
-      else{
+      } else {
         return { ...data, id: doc.id };
       }
     });
@@ -78,7 +82,7 @@ function* watchFetchEvents() {
   yield takeEvery(FETCH_EVENTS, fetchEventProcess);
 }
 
-function* fetchEventBidProcess(){
+function* fetchEventBidProcess() {
   console.log("Hola");
 }
 
@@ -99,7 +103,9 @@ function* loginProcess() {
 function* fetchProfileProcess(action) {
   try {
     //console.log(action.payload.user.uid);
-    const userRef = databaseRef.collection("Usuario").doc(action.payload.user.uid);
+    const userRef = databaseRef
+      .collection("Usuario")
+      .doc(action.payload.user.uid);
     const doc = yield call([userRef, "get"]);
 
     if (!doc.exists) {
@@ -115,19 +121,22 @@ function* fetchProfileProcess(action) {
     } else {
       console.log("User exists");
       console.log(`/Lugar/ ${doc.data().manage.id}`);
-      const eventRef = databaseRef.collection("Lugar").doc(doc.data().manage.id);
-      eventRef.get().then(function(data){
-        if(data.exists){
-          console.log(data.data());
-        }
-        else{
-          console.log("No hay documento");
-        }
-      })
-      .catch(function(e){
-        console.log(e);
-      });
-      console.log()
+      const eventRef = databaseRef
+        .collection("Lugar")
+        .doc(doc.data().manage.id);
+      eventRef
+        .get()
+        .then(function(data) {
+          if (data.exists) {
+            console.log(data.data());
+          } else {
+            console.log("No hay documento");
+          }
+        })
+        .catch(function(e) {
+          console.log(e);
+        });
+      console.log();
       yield put(setProfile(doc.data()));
     }
   } catch (err) {
@@ -139,24 +148,30 @@ function* fetchCountriesProcess() {
   try {
     const countryRef = databaseRef.collection("Pais");
     const { docs } = yield call([countryRef, "get"]);
-    const countries = docs.map(doc => doc.data() );
+    const countries = docs.map(doc => doc.data());
     //console.log(docs);
 
     yield put(fetchCountriesSuccess(countries));
+
+    yield put(fetchCities());
+    console.log(navigator.language);
   } catch (e) {
     //console.log(e);
     yield put(fetchCountriesFailure(e));
   }
 }
 
-function* fetchCitiesProcess(country){
+function* fetchCitiesProcess(action) {
   try {
-    const cityRef = databaseRef.collection("Ciudad").where("pais", "==", country.name);
+    // const { payload: { country }} = action;
+    const cityRef = databaseRef
+      .collection("Ciudad")
+      .where("pais", "==", action.payload.country);
     const { docs } = yield call([cityRef, "get"]);
     const cities = docs.map(doc => doc.data());
     yield put(fetchCitiesSuccess(cities));
   } catch (error) {
-    yield put(fetchCountriesFailure(error));    
+    yield put(fetchCitiesFailure(error));
   }
 }
 
@@ -179,6 +194,35 @@ function* logoutProcess() {
   }
 }
 
+function* initialFetchProcess() {
+  try {
+    const countryRef = databaseRef.collection("Pais");
+    const { docs } = yield call([countryRef, "get"]);
+    const countries = docs.map(doc => doc.data());
+
+    const { language } = navigator;
+    yield put(fetchCountriesSuccess(countries));
+    const browserCountry = yield call(getCountryByLocale, language);
+
+    const selectedCountry = countries.find(
+      countryObj => countryObj.nombre === browserCountry
+    );
+
+    const { nombre: pais, capital } = selectedCountry;
+
+    const cityRef = databaseRef.collection("Ciudad").where("pais", "==", pais);
+    const { docs: result } = yield call([cityRef, "get"]);
+    const cities = result.map(doc => doc.data());
+    yield put(fetchCitiesSuccess(cities));
+
+    yield put(initialize("filter", { city: capital }));
+
+    yield put(fetchEvents(pais, capital));
+  } catch (e) {
+    yield put(initialFetchFailure(e));
+  }
+}
+
 function* watchLogout() {
   yield takeEvery(LOGOUT, logoutProcess);
 }
@@ -195,8 +239,12 @@ function* watchEventDetail() {
   yield takeEvery(FECTCH_EVENT_DETAIL, fetchEventDetailProcess);
 }
 
-function* watchEventBids(){
+function* watchEventBids() {
   yield takeEvery(FETCH_EVENT_BID, fetchEventBidProcess);
+}
+
+function* watchInitialFetch() {
+  yield takeEvery(INITIAL_FETCH, initialFetchProcess);
 }
 
 function* rootSaga() {
@@ -209,9 +257,8 @@ function* rootSaga() {
     fork(watchFetchCities),
     fork(watchEventDetail),
     fork(watchEventBids),
+    fork(watchInitialFetch)
   ]);
 }
 
 export default rootSaga;
-
-

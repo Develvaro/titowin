@@ -4,7 +4,13 @@ import { reduxForm, Field } from "redux-form";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import { formValueSelector } from "redux-form";
-import { fetchEvents, fetchCountries, fetchCities } from "../actions";
+import {
+  fetchEvents,
+  fetchCountries,
+  fetchCities,
+  initialFetch
+} from "../actions";
+import { Button } from "reactstrap";
 
 import Select from "./form/select";
 import TextInput from "./form/textinput";
@@ -13,9 +19,8 @@ import Card from "./card";
 
 class CardList extends Component {
   componentDidMount() {
-    const { fetchEvents, fetchCountries, fetchCities } = this.props;
-    fetchCountries();
-    fetchEvents();
+    const { initialFetch } = this.props;
+    initialFetch();
   }
 
   componentDidUpdate(prevProps) {
@@ -27,49 +32,72 @@ class CardList extends Component {
   }
 
   render() {
-    const { events, countries, cities } = this.props;
+    const {
+      events,
+      countries,
+      cities,
+      selectedCity,
+      selectedCountry
+    } = this.props;
     if (!events) {
       return <p>Cargando</p>;
     }
+
     return (
       <div>
-        
         <Field
           component={Select}
           name="country"
           id="country"
           options={countries.map(country => ({
             name: country.nombre,
-            value: country.nombre,
+            value: country.nombre
           }))}
+          onChangeFn={country => this.props.fetchCities(country)}
         />
 
         <Field
-          component={TextInput}
-          name="eventName"
-          id="eventName"
-          />
-        {/* {this.props.selectedCountry ? <Field
           component={Select}
           name="city"
           id="city"
-          options={this.props.cities.map(city => ({
-            name: city.nombre,
-            value: city.nombre,
-          }))
-          }
-        /> : <Field
-        component={Select}
-        name="city"
-        id="city"
-        /> 
-        } */}
+          options={[
+            {
+              name: "----",
+              value: ""
+            },
+            ...(cities
+              ? cities.map(city => ({
+                  name: city.nombre,
+                  value: city.nombre
+                }))
+              : {})
+          ]}
+        />
 
-        <div>{ this.props.filterName ? events.map(event => event.titulo.includes(this.props.filterName) ? <Card {...event} key={event.id} /> : null)
-         : events.map(event=> <Card {...event} key={event.id} />) } 
+        <Button
+          color="danger"
+          onClick={() => this.props.fetchEvents(selectedCountry, selectedCity)}
+        >
+          Buscar
+        </Button>
 
+        {/* <Field
+          component={TextInput}
+          name="eventName"
+          id="eventName"
+          /> */}
+
+        <div>
+          {this.props.filterName
+            ? events.map(
+                event =>
+                  event.titulo.includes(this.props.filterName) ? (
+                    <Card {...event} key={event.id} />
+                  ) : null
+              )
+            : events.map(event => <Card {...event} key={event.id} />)}
         </div>
-        </div>
+      </div>
     );
   }
 }
@@ -82,16 +110,20 @@ const mapStateToProps = state => ({
   selectedCountry: filterSelector(state, "country"),
   cities: state.cities,
   selectedCity: filterSelector(state, "city"),
-  filterName: filterSelector(state, "eventName"),
+  filterName: filterSelector(state, "eventName")
 });
 
 const mapDispatchToProps = dispatch => ({
   fetchEvents: (country, city) => dispatch(fetchEvents(country, city)),
   fetchCountries: () => dispatch(fetchCountries()),
-  fetchCities: (country) => dispatch(fetchCities(country))
- });
+  fetchCities: country => dispatch(fetchCities(country)),
+  initialFetch: () => dispatch(initialFetch())
+});
 
-export default reduxForm({ form: "filter" })(
+export default reduxForm({
+  form: "filter",
+  enableReinitialize: true
+})(
   connect(
     mapStateToProps,
     mapDispatchToProps

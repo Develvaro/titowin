@@ -26,6 +26,7 @@ import {
   FETCH_USER_BIDS_SUCCESS,
   FETCH_USER_BIDS_FAILURE,
   FETCH_EVENT_BID,
+  INITIAL_FETCH
 } from "./type";
 
 export const fetchEvents = (pais, ciudad) => ({
@@ -53,18 +54,22 @@ export const fetchCountriesFailure = error => ({
   payload: { error }
 });
 
-export const fetchCities = (country) => ({ type: FETCH_CITIES });
+export const fetchCities = country => ({
+  type: FETCH_CITIES,
+  payload: { country }
+});
 
-export const fetchCitiesSuccess = cities => ({ type: FETCH_CITIES_SUCCESS,
+export const fetchCitiesSuccess = cities => ({
+  type: FETCH_CITIES_SUCCESS,
   payload: { cities }
 });
 
 export const fetchCitiesFailure = error => ({
   type: FETCH_CITIES_FAILURE,
-  payload: {error}
-})
+  payload: { error }
+});
 
-export const login = () => ({ type: LOGIN })
+export const login = () => ({ type: LOGIN });
 
 export const loginSuccess = data => ({
   type: LOGIN_SUCCESS,
@@ -109,35 +114,44 @@ export const fetchEventDetailSuccess = eventDetail => ({
 
 export const fetchEventDetailFailure = err => ({
   type: FECTCH_EVENT_DETAIL_FAILURE,
-  payload: {err}
+  payload: { err }
 });
 
 export const fetchEventPlace = eventID => ({
   type: FETCH_EVENT_PLACE,
   payload: { eventID }
-})
+});
 
 export const fetchEventPlaceSuccess = place => ({
   type: FETCH_EVENT_PLACE_SUCCESS,
-  payload: { place }
-})
+  payload: { place }
+});
 
 export const fetchEventFailure = err => ({
   type: FETCH_EVENT_PLACE_FAILURE,
-  payload: {err}
-})
+  payload: { err }
+});
 
 export const fetchEventBid = (eventID, participaciones) => ({
   type: FETCH_EVENT_BID,
-  payload: {eventID, participaciones}
-})
+  payload: { eventID, participaciones }
+});
 
 export const fetchEventBidSuccess = bids => ({
   type: FETCH_USER_BIDS_SUCCESS,
-  payload: {bids}
-})
+  payload: { bids }
+});
 
 export const fetchEventBidFailure = err => ({
   type: FETCH_USER_BIDS_FAILURE,
-  payload: {err}
-})
+  payload: { err }
+});
+
+export const initialFetch = () => ({
+  type: INITIAL_FETCH
+});
+
+export const initialFetchFailure = error => ({
+  type: INITIAL_FETCH,
+  payload: { error }
+});
