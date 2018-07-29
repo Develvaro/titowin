@@ -10,7 +10,7 @@ import Profile from "./pages/profile";
 import AddEvent from "./components/addEvent";
 import EventDetail from "./pages/eventDetail";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { loginSuccess } from "./actions";
+import { loginSuccess, fetchProfile } from "./actions";
 import firebase from "firebase";
 
 class App extends Component {
@@ -18,6 +18,7 @@ class App extends Component {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.props.loginSuccess(user);
+        this.props.fetchProfile(user);
       }
     });
   }
@@ -51,7 +52,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  loginSuccess: user => dispatch(loginSuccess(user))
+  loginSuccess: user => dispatch(loginSuccess(user)),
+  fetchProfile: user => dispatch(fetchProfile(user))
 });
 
 export default connect(

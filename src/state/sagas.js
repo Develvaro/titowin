@@ -62,7 +62,6 @@ function* fetchEventProcess(action) {
     }
 
     const { docs } = yield call([colRef, "get"]);
-    //docs.map(doc => console.log(doc));
     const result = docs.map(doc => {
       const data = doc.data();
       if (nombre) {
@@ -85,7 +84,6 @@ function* watchFetchEvents() {
 }
 
 function* fetchEventBidProcess() {
-  console.log("Hola");
 }
 
 function* loginProcess() {
@@ -97,14 +95,13 @@ function* loginProcess() {
     yield put(loginSuccess(result.user));
     yield put(fetchProfile(result.user));
   } catch (e) {
-    //console.log(e);
     yield put(loginFailure(e));
   }
 }
 
 function* fetchProfileProcess(action) {
   try {
-    //console.log(action.payload.user.uid);
+    console.log(action.payload);
     const userRef = databaseRef
       .collection("Usuario")
       .doc(action.payload.user.uid);
@@ -121,24 +118,23 @@ function* fetchProfileProcess(action) {
       userRef.set(data);
       yield put(setProfile(data));
     } else {
-      console.log("User exists");
-      console.log(`/Lugar/ ${doc.data().manage.id}`);
-      const eventRef = databaseRef
-        .collection("Lugar")
-        .doc(doc.data().manage.id);
-      eventRef
-        .get()
-        .then(function(data) {
-          if (data.exists) {
-            console.log(data.data());
-          } else {
-            console.log("No hay documento");
-          }
-        })
-        .catch(function(e) {
-          console.log(e);
-        });
-      console.log();
+      //User exists
+      // const eventRef = databaseRef
+      //   .collection("Lugar")
+      //   .doc(doc.data().manage.id);
+      // eventRef
+      //   .get()
+      //   .then(function(data) {
+      //     if (data.exists) {
+      //       (data.data());
+      //     } else {
+        //No hay documento
+      //     }
+      //   })
+      //   .catch(function(e) {
+      //     console.log(e);
+      //   });
+      //console.log();
       yield put(setProfile(doc.data()));
     }
   } catch (err) {
@@ -156,7 +152,6 @@ function* fetchCountriesProcess() {
     yield put(fetchCountriesSuccess(countries));
 
     yield put(fetchCities());
-    console.log(navigator.language);
   } catch (e) {
     //console.log(e);
     yield put(fetchCountriesFailure(e));

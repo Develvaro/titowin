@@ -11,10 +11,10 @@ import {
 class EventDetail extends Component {
     componentDidMount(){
       const idEvent = this.props.match.params.id;
+
       const { fetchEventBid, fetchEventDetail, fetchEventPlace, fetchProfile } = this.props;
       fetchEventDetail(idEvent);
       fetchEventBid(idEvent);
-      fetchProfile(this.props.user);
       fetchEventPlace(idEvent);
 
       console.log(this.props.eventDetail);
@@ -22,7 +22,7 @@ class EventDetail extends Component {
     render() {
     return (
       <div>
-
+        ${this.props.profile.id}
       </div>
     );
   }

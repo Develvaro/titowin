@@ -25,7 +25,7 @@ class CardList extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.selectedCountry !== prevProps.selectedCountry) {
-      console.log(this.props.selectedCountry);
+      //console.log(this.props.selectedCountry);
       this.props.fetchEvents(this.props.selectedCountry);
       this.props.fetchCities(this.props.selectedCountry);
     }
