@@ -81,17 +81,38 @@ class CardList extends Component {
           Buscar
         </Button>
 
-        {/* <Field
+         <br/> 
+         
+         <strong> Filtros </strong>
+        <Field
           component={TextInput}
           name="eventName"
           id="eventName"
-          /> */}
+          /> 
 
+
+        <Field
+          component={Select}
+          name="category"
+          id="category"
+          options={[
+            {
+              name: "----",
+              value: ""
+            },
+            ...(cities
+              ? cities.map(city => ({
+                  name: city.nombre,
+                  value: city.nombre
+                }))
+              : {})
+          ]}
+        />
         <div>
           {this.props.filterName
             ? events.map(
                 event =>
-                  event.titulo.includes(this.props.filterName) ? (
+                  event.titulo.toLowerCase().includes(this.props.filterName.toLowerCase()) ? (
                     <Card {...event} key={event.id} />
                   ) : null
               )

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom'
 import styled from 'styled-components';
 import moment from 'moment';
 
@@ -21,6 +21,7 @@ const Imagen = styled.div`
 const Card = ( {titulo, categoria, fecha, lugar, pujaActual, id, urlPhoto} ) => {
 
     return(
+        <Link to={`/event/${id}`}>
         <Container>
             <Imagen url={urlPhoto} />
             <span> <strong>Evento: </strong> {titulo} </span>
@@ -28,6 +29,7 @@ const Card = ( {titulo, categoria, fecha, lugar, pujaActual, id, urlPhoto} ) => 
             <span> <strong>Fecha: </strong> {moment(fecha).format('MMMM Do YYYY, h:mm:ss a')} </span>
             <span> <strong>Lugar: </strong> {lugar} </span>
         </Container>
+        </Link>
     );
 }
 

@@ -28,7 +28,8 @@ import {
   fetchCitiesFailure,
   fetchCities,
   initialFetchFailure,
-  fetchEvents
+  fetchEvents,
+  fetchEventDetailSuccess
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
@@ -36,11 +37,12 @@ import { getCountryByLocale } from "../utils/countries";
 
 function* fetchEventDetailProcess(action) {
   try {
+
     const { eventID } = action.payload;
     const eventRef = databaseRef.collection("Evento").doc(eventID);
-
     const doc = yield call([eventRef, "get"]);
-    return { ...doc.data, id: doc.id };
+    console.log(doc);
+    yield put(fetchEventDetailSuccess({...doc.data(), id: doc.id}))
   } catch (e) {
     yield put(fetchEventDetailFailure(e));
   }

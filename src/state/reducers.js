@@ -44,7 +44,7 @@ const profile = (state = null, action) => {
   }
 };
 
-export const countries = (state = null, action) => {
+const countries = (state = null, action) => {
   switch (action.type) {
     case FETCH_COUNTRIES_SUCCESS:
       return action.payload.countries;
@@ -53,7 +53,7 @@ export const countries = (state = null, action) => {
   }
 };
 
-export const cities = (state = null, action) => {
+const cities = (state = null, action) => {
   switch (action.type) {
     case FETCH_CITIES_SUCCESS:
       return action.payload.cities;
@@ -62,7 +62,7 @@ export const cities = (state = null, action) => {
   }
 };
 
-export const eventDetail = (state = null, action) => {
+const eventDetail = (state = null, action) => {
   switch (action.type) {
     case FECTCH_EVENT_DETAIL_SUCCESS:
       return action.payload.eventDetail;
@@ -71,7 +71,7 @@ export const eventDetail = (state = null, action) => {
   }
 };
 
-export const place = (state = null, action) => {
+const place = (state = null, action) => {
   switch (action.type) {
     case FETCH_EVENT_PLACE_SUCCESS:
       return action.payload.place;
@@ -80,7 +80,7 @@ export const place = (state = null, action) => {
   }
 };
 
-export const eventBids = (state = null, action) => {
+const eventBids = (state = null, action) => {
   switch (action.type) {
     case FETCH_EVENT_BID_SUCCESS:
       return action.payload.bids;

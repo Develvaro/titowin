@@ -1,5 +1,7 @@
 const countries = {
-  "es-ES": "España"
+  "es-ES": "España",
+  "en-GB": "ReinoUnido",
+  "fr-FR": "Francia",
 };
 
 export const getCountryByLocale = locale =>
