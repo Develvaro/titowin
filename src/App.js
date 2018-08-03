@@ -7,6 +7,9 @@ import Home from "./pages/home";
 import Login from "./components/login";
 import Register from "./components/register";
 import Profile from "./pages/profile";
+import MyBids from "./pages/myBids";
+import SponsorDetail from "./pages/sponsorDetail";
+import MySponsors from "./pages/mySponsors";
 import AddEvent from "./components/addEvent";
 import EventDetail from "./pages/eventDetail";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
@@ -32,7 +35,10 @@ class App extends Component {
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/profile" component={this.props.user && Profile} />
-          <Route path="/admin/addEvent" component={AddEvent} />
+          <Route exact path="/profile/bids" component={this.props.user && MyBids} />
+          <Route exact path="/profile/sponsors" component={this.props.user && MySponsors} />
+          <Route path="/profile/sponsors/:id" component={this.props.user && SponsorDetail} />
+          <Route path="/manage/addEvent" component={AddEvent} />
           <Route path="/event/:id" component={EventDetail} />
 
           {/* <Route exact path="/profile" component={Profile} />

@@ -9,8 +9,13 @@ import {
   FETCH_COUNTRIES_SUCCESS,
   FETCH_CITIES_SUCCESS,
   FECTCH_EVENT_DETAIL_SUCCESS,
-  FETCH_EVENT_PLACE_SUCCESS,
-  FETCH_EVENT_BID_SUCCESS
+  FETCH_PLACE_SUCCESS,
+  FETCH_EVENT_BID_SUCCESS,
+  FETCH_USER_EVENT_BIDS,
+  FETCH_USER_EVENT_BIDS_SUCCESS,
+  FETCH_USER_SPONSORS_SUCCESS,
+  FETCH_SPONSOR_DETAIL_SUCCESS,
+  FETCH_CITY_PLACES_SUCCESS
 } from "../actions/type";
 
 const events = (state = null, action) => {
@@ -71,9 +76,18 @@ const eventDetail = (state = null, action) => {
   }
 };
 
+const cityPlaces = (state = null, action) => {
+  switch (action.type){
+    case FETCH_CITY_PLACES_SUCCESS:
+      return action.payload.places;
+    default:
+      return state;
+  }
+}
+
 const place = (state = null, action) => {
   switch (action.type) {
-    case FETCH_EVENT_PLACE_SUCCESS:
+    case FETCH_PLACE_SUCCESS:
       return action.payload.place;
     default:
       return state;
@@ -89,6 +103,33 @@ const eventBids = (state = null, action) => {
   }
 };
 
+const userEventBids = (state = null, action) => {
+  switch(action.type) {
+    case FETCH_USER_EVENT_BIDS_SUCCESS:
+      return action.payload.userEventBids;
+    default:
+      return state;
+  }
+}
+
+const userSponsors = (state = null, action) => {
+  switch(action.type) {
+    case FETCH_USER_SPONSORS_SUCCESS:
+      return action.payload.sponsors;
+    default:
+      return state;
+  }
+}
+
+const sponsorDetail = (state = null, action) => {
+  switch(action.type) {
+    case FETCH_SPONSOR_DETAIL_SUCCESS:
+      return action.payload.sponsorDetail;
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   form: formReducer,
   events,
@@ -96,5 +137,11 @@ export default combineReducers({
   profile,
   countries,
   eventDetail,
-  cities
+  cities,
+  eventBids,
+  place,
+  userEventBids,
+  userSponsors,
+  sponsorDetail,
+  cityPlaces,
 });

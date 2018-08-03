@@ -20,13 +20,30 @@ import {
   FECTCH_EVENT_DETAIL,
   FECTCH_EVENT_DETAIL_SUCCESS,
   FECTCH_EVENT_DETAIL_FAILURE,
-  FETCH_EVENT_PLACE,
-  FETCH_EVENT_PLACE_SUCCESS,
-  FETCH_EVENT_PLACE_FAILURE,
-  FETCH_USER_BIDS_SUCCESS,
-  FETCH_USER_BIDS_FAILURE,
+  FETCH_PLACE,
+  FETCH_PLACE_SUCCESS,
+  FETCH_PLACE_FAILURE,
+  FETCH_USER_EVENT_BIDS_SUCCESS,
+  FETCH_USER_EVENT_BIDS_FAILURE,
   FETCH_EVENT_BID,
-  INITIAL_FETCH
+  INITIAL_FETCH,
+  POST_EVENT,
+  POST_EVENT_SUCCESS,
+  POST_EVENT_FAILURE,
+  FETCH_EVENT_BID_SUCCESS,
+  FETCH_EVENT_BID_FAILURE,
+  FETCH_USER_EVENT_BIDS,
+  POST_SPONSOR,
+  POST_SPONSOR_FAILURE,
+  FETCH_SPONSOR_DETAIL,
+  FETCH_SPONSOR_DETAIL_FAILURE,
+  FETCH_SPONSOR_DETAIL_SUCCESS,
+  FETCH_USER_SPONSORS,
+  FETCH_USER_SPONSORS_FAILURE,
+  FETCH_USER_SPONSORS_SUCCESS,
+  FETCH_CITY_PLACES,
+  FETCH_CITY_PLACES_FAILURE,
+  FETCH_CITY_PLACES_SUCCESS,
 } from "./type";
 
 export const fetchEvents = (pais, ciudad) => ({
@@ -117,33 +134,48 @@ export const fetchEventDetailFailure = err => ({
   payload: { err }
 });
 
-export const fetchEventPlace = eventID => ({
-  type: FETCH_EVENT_PLACE,
-  payload: { eventID }
+export const fetchPlace = placeID => ({
+  type: FETCH_PLACE,
+  payload: { placeID }
 });
 
-export const fetchEventPlaceSuccess = place => ({
-  type: FETCH_EVENT_PLACE_SUCCESS,
+export const fetchPlaceSuccess = place => ({
+  type: FETCH_PLACE_SUCCESS,
   payload: { place }
 });
 
-export const fetchEventFailure = err => ({
-  type: FETCH_EVENT_PLACE_FAILURE,
+export const fetchPlaceFailure = err => ({
+  type: FETCH_PLACE_FAILURE,
   payload: { err }
 });
 
-export const fetchEventBid = (eventID, participaciones) => ({
+export const fetchCityPlaces = cityID => ({
+  type: FETCH_CITY_PLACES,
+  payload: {cityID}
+});
+
+export const fetchCityPlacesSuccess = places => ({
+  type: FETCH_CITY_PLACES_SUCCESS,
+  payload: {places}
+});
+
+export const fetchCityPlacesFailure = err => ({
+  type: FETCH_CITY_PLACES_FAILURE,
+  payload: {err}
+});
+
+export const fetchEventBid = (eventID) => ({
   type: FETCH_EVENT_BID,
-  payload: { eventID, participaciones }
+  payload: { eventID }
 });
 
 export const fetchEventBidSuccess = bids => ({
-  type: FETCH_USER_BIDS_SUCCESS,
+  type: FETCH_EVENT_BID_SUCCESS,
   payload: { bids }
 });
 
 export const fetchEventBidFailure = err => ({
-  type: FETCH_USER_BIDS_FAILURE,
+  type: FETCH_EVENT_BID_FAILURE,
   payload: { err }
 });
 
@@ -154,4 +186,79 @@ export const initialFetch = () => ({
 export const initialFetchFailure = error => ({
   type: INITIAL_FETCH,
   payload: { error }
+});
+
+export const postEvent = form => ({
+  type: POST_EVENT,
+  payload: {form}
+});
+
+export const postEventSuccess = () => ({
+  type: POST_EVENT_SUCCESS
+});
+
+export const postEventFailure = (err) => ({
+  type: POST_EVENT_FAILURE,
+  payload: {err}
+});
+
+
+export const fetchUserEventBids = (userID) => ({
+  type: FETCH_USER_EVENT_BIDS,
+  payload: {userID}
+})
+
+export const fetchUserEventBidsSuccess = (userEventBids) => ({
+  type: FETCH_USER_EVENT_BIDS_SUCCESS,
+  payload: {userEventBids}
+})
+
+export const fetchUserEventBidsFailure = (err) => ({
+  type: FETCH_USER_EVENT_BIDS_FAILURE,
+  payload: {err }
+})
+
+export const fetchUserSponsors = (userID) => ({
+  type: FETCH_USER_SPONSORS,
+  payload: {userID}
+});
+
+export const fetchUserSponsorsSuccess = (sponsors) => ({
+  type: FETCH_USER_SPONSORS_SUCCESS,
+  payload: {sponsors}
+});
+
+export const fetchUserSponsorsFailure = (err) => ({
+  type:FETCH_USER_SPONSORS_FAILURE,
+  payload: {err}
+});
+
+export const fetchSponsorDetail = (sponsorID, userID) => ({
+  type: FETCH_SPONSOR_DETAIL,
+  payload: {sponsorID, userID}
+});
+
+export const fetchSponsorDetailSuccess = (sponsorDetail) => ({
+  type: FETCH_SPONSOR_DETAIL_SUCCESS,
+  payload: {sponsorDetail}
+});
+
+export const fetchSponsorDetailFailure = (err) => ({
+  type: FETCH_SPONSOR_DETAIL_FAILURE,
+  payload: {err}
+});
+
+export const postSponsor = () => ({
+  type: POST_SPONSOR,
+  payload: {}
+});
+
+export const postSponsorSuccess = () => ({
+  type: POST_SPONSOR,
+  payload: {}
+});
+
+export const postSponsorFailure = (err) => ({
+  type: POST_SPONSOR_FAILURE,
+  payload: {err}
 });

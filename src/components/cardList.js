@@ -8,7 +8,8 @@ import {
   fetchEvents,
   fetchCountries,
   fetchCities,
-  initialFetch
+  initialFetch,
+  fetchCityPlaces,
 } from "../actions";
 import { Button } from "reactstrap";
 
@@ -25,7 +26,6 @@ class CardList extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.selectedCountry !== prevProps.selectedCountry) {
-      //console.log(this.props.selectedCountry);
       this.props.fetchEvents(this.props.selectedCountry);
       this.props.fetchCities(this.props.selectedCountry);
     }
@@ -37,7 +37,9 @@ class CardList extends Component {
       countries,
       cities,
       selectedCity,
-      selectedCountry
+      selectedCountry,
+      cityPlaces,
+      selectedPlace,
     } = this.props;
     if (!events) {
       return <p>Cargando</p>;
@@ -62,7 +64,7 @@ class CardList extends Component {
           id="city"
           options={[
             {
-              name: "----",
+              name: "Todas",
               value: ""
             },
             ...(cities
@@ -72,11 +74,30 @@ class CardList extends Component {
                 }))
               : {})
           ]}
+          onChangeFn={city => this.props.fetchCityPlaces(city)}
+        />
+
+        <Field
+          component={Select}
+          name="place"
+          id="place"
+          options={[
+            {
+              name: "Todos",
+              value: ""
+            },
+            ...(cityPlaces
+              ? cityPlaces.map(place => ({
+                  name: place.nombre,
+                  value: place.id
+                }))
+              : {})
+          ]}
         />
 
         <Button
           color="danger"
-          onClick={() => this.props.fetchEvents(selectedCountry, selectedCity)}
+          onClick={() => this.props.fetchEvents(selectedCountry, selectedCity, selectedPlace)}
         >
           Buscar
         </Button>
@@ -97,7 +118,7 @@ class CardList extends Component {
           id="category"
           options={[
             {
-              name: "----",
+              name: "Todas",
               value: ""
             },
             ...(cities
@@ -130,7 +151,9 @@ const mapStateToProps = state => ({
   countries: state.countries,
   selectedCountry: filterSelector(state, "country"),
   cities: state.cities,
+  cityPlaces: state.cityPlaces,
   selectedCity: filterSelector(state, "city"),
+  selectedPlace: filterSelector(state, "place"),
   filterName: filterSelector(state, "eventName")
 });
 
@@ -138,7 +161,8 @@ const mapDispatchToProps = dispatch => ({
   fetchEvents: (country, city) => dispatch(fetchEvents(country, city)),
   fetchCountries: () => dispatch(fetchCountries()),
   fetchCities: country => dispatch(fetchCities(country)),
-  initialFetch: () => dispatch(initialFetch())
+  initialFetch: () => dispatch(initialFetch()),
+  fetchCityPlaces: (cityID) => dispatch(fetchCityPlaces(cityID)),
 });
 
 export default reduxForm({

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import {
   fetchEventDetail,
-  fetchEventPlace,
+  fetchPlace,
   fetchProfile,
   fetchEventBid,
 } from '../actions';
@@ -12,17 +12,35 @@ class EventDetail extends Component {
     componentDidMount(){
       const idEvent = this.props.match.params.id;
 
-      const { fetchEventBid, fetchEventDetail, fetchEventPlace, fetchProfile } = this.props;
+      const { fetchEventBid, fetchEventDetail, fetchPlace } = this.props;
       fetchEventDetail(idEvent);
       fetchEventBid(idEvent);
-      fetchEventPlace(idEvent);
-
-      console.log(this.props.eventDetail);
+      //fetchPlace(this.props.eventDetail.lugar);
     }
     render() {
     return (
       <div>
-        ${this.props.profile.id}
+        {
+          this.props.profile ?
+            <p> {this.props.profile.id} </p>
+            : <p> Cargando... </p>   
+        }
+        {
+          this.props.eventBids ?
+            <p> EventBids </p>
+            : <p> Cargando... </p>
+        }
+        {
+          this.props.eventDetail ?
+            <div>
+              <p> {this.props.eventDetail.titulo}</p>
+              <p> {this.props.eventDetail.categoria}</p>
+              <p> {this.props.eventDetail.titulo}</p>
+              <p> {this.props.eventDetail.titulo}</p>
+            </div>
+            : <p> Cargando... </p>
+        }
+        
       </div>
     );
   }
@@ -40,8 +58,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     fetchEventDetail: (idEvent) => dispatch(fetchEventDetail(idEvent)),
-    fetchEventPlace: (idEvent) => dispatch(fetchEventPlace(idEvent)),
-    fetchProfile: () => dispatch(fetchProfile()),
+    fetchPlace: (idEvent) => dispatch(fetchPlace(idEvent)),
     fetchEventBid: (idEvent) => dispatch(fetchEventBid(idEvent)), 
 });
 

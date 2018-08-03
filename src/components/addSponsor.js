@@ -23,7 +23,7 @@ import FileInput from "./form/fileinput";
 import TimePicker from "./form/timepicker";
 import NumberInput from "./form/numberinput";
 
-class AddEvent extends Component {
+class AddSponsor extends Component {
   render() {
 
     const {postEvent} = this.props;
@@ -120,7 +120,7 @@ class AddEvent extends Component {
   }
 }
 
-const filterSelector = formValueSelector("add-event");
+const filterSelector = formValueSelector("add-sponsor");
 
 const mapStateToProps = (state) => ({
   eventName: filterSelector(state, "eventName"),
@@ -142,4 +142,4 @@ const mapDispatchToProps = dispatch => ({
   postEvent: (data) => dispatch(postEvent(data)),
 });
 
-export default reduxForm({ form: "add-event" })(connect(mapStateToProps,mapDispatchToProps)(AddEvent));
+export default reduxForm({ form: "add-sponsor" })(connect(mapStateToProps,mapDispatchToProps)(AddSponsor));
