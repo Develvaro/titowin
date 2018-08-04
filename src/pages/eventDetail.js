@@ -15,9 +15,11 @@ class EventDetail extends Component {
       const { fetchEventBid, fetchEventDetail, fetchPlace } = this.props;
       fetchEventDetail(idEvent);
       fetchEventBid(idEvent);
-      //fetchPlace(this.props.eventDetail.lugar);
+      
     }
     render() {
+
+      console.log(this.props.eventDetail);
     return (
       <div>
         {
@@ -35,7 +37,7 @@ class EventDetail extends Component {
             <div>
               <p> {this.props.eventDetail.titulo}</p>
               <p> {this.props.eventDetail.categoria}</p>
-              <p> {this.props.eventDetail.titulo}</p>
+              <p> {this.props.eventDetail.place.nombre}</p>
               <p> {this.props.eventDetail.titulo}</p>
             </div>
             : <p> Cargando... </p>

@@ -1,5 +1,8 @@
-import { fork, takeEvery, put, call, all } from "redux-saga/effects";
+import { fork, takeEvery, put, call, all, select } from "redux-saga/effects";
 import { initialize } from "redux-form";
+import moment from 'moment';
+import mime from 'mime';
+import uuid from 'uuid';
 import {
   FETCH_EVENTS,
   LOGIN,
@@ -64,7 +67,13 @@ function* fetchEventDetailProcess(action) {
     const { eventID } = action.payload;
     const eventRef = databaseRef.collection("Evento").doc(eventID);
     const doc = yield call([eventRef, "get"]);
-    yield put(fetchEventDetailSuccess({...doc.data(), id: doc.id}))
+    const data = doc.data();
+    
+    const placeRef = databaseRef.collection("Lugar").doc(data.lugar);
+    const placeDoc = yield call([placeRef, "get"]);
+
+    yield put(fetchEventDetailSuccess({...data, place: placeDoc.data(), id: doc.id}));
+
   } catch (e) {
     yield put(fetchEventDetailFailure(e));
   }
@@ -88,11 +97,19 @@ function* fetchEventProcess(action) {
     }
 
     const { docs } = yield call([colRef, "get"]);
-    const result = docs.map(doc => {
-      const data = doc.data();
-      return { ...data, id: doc.id };
-    });
-    yield put(fetchEventsSuccess(result));
+
+    const places = yield all(docs.map(event => {
+      const placeRef = databaseRef.collection("Lugar").doc(event.data().lugar);
+      return call([placeRef, "get"]);
+    }));
+
+    const events = docs.map((event, index) => ({
+      ...event.data(),
+      id: event.id,
+      place: places[index].data()
+    }));
+    
+    yield put(fetchEventsSuccess(events));
   } catch (err) {
     yield put(fetchEventsFailure(err));
   }
@@ -264,8 +281,35 @@ function* initialFetchProcess() {
 
 function* postEventProcess(action){
   try{
-    console.log(action.payload);
+
+    const id = uuid();
+    const placeID = yield select(state => (state.profile.manage));
+    console.log(placeID);
+    const {form} = action.payload;
+
+    const {imgupload, eventName,eventDate, category, eventTime,  bidDate, bidTime, startBid, increment} = form;
+
+    const storageRef = firebase.storage().ref(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
+    
+    const task = yield call([storageRef, "put"],imgupload[0]);
+    const ref = task.ref;
+    const url = yield call([ref, "getDownloadURL"]);
+    
+    const result = databaseRef.collection("Evento").doc(id);
+    yield call([result, "set"],{
+      eventName,
+      img : url,
+      category,
+      //bidDate,
+      //bidTime,
+      //startBid,
+      //increment,
+      placeID,
+     });
+    console.log(moment(`${eventDate} ${eventTime}`));
+
   }catch(e){
+    console.log(e);
     yield put(postEventFailure(e));
   }
 }
@@ -277,12 +321,12 @@ function* fetchUserEventBidsProcess(action){
     let userBids = databaseRef.collection("Usuario").doc(userID).collection("Puja");
 
     const { docs } = yield call([userBids, "get"]);
-    const result = docs.map(doc => {
-      //const eventRef = databaseRef.collection("Evento").doc(doc.data().eventID);
-      //const event = yield call([eventRef, "get"]);
-      //return { ...event.data(), id: event.id};
-      return {...doc.data(), id: doc.id};
-    });
+    const result = yield all(docs.map(doc => {
+      const eventRef = databaseRef.collection("Evento").doc(doc.data().eventID);
+      const event = call([eventRef, "get"]);
+      return event;
+      //return {...doc.data(), id: doc.id};
+    }));
 
     console.log(result);
     yield put(fetchUserEventBidsSuccess(result));

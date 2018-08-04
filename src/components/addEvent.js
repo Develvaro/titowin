@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import moment from 'moment';
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { formValueSelector } from "redux-form";
@@ -26,10 +26,10 @@ import NumberInput from "./form/numberinput";
 class AddEvent extends Component {
   render() {
 
-    const {postEvent} = this.props;
+    const {postEvent, handleSubmit, invalid} = this.props;
     return (
       <div>
-        <Form>
+        <form onSubmit={handleSubmit(postEvent)}>
           <FormGroup row> 
             <Label for="name" sm={2}>
               Nombre del Evento
@@ -113,8 +113,8 @@ class AddEvent extends Component {
             <Col sm={3}><Field name="increment" id="increment" component={NumberInput} /></Col>
           </FormGroup>
           
-          <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" onClick={() => postEvent()}>Añadir</Button> </Col> </Row>
-        </Form>
+          <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" type="submit" disabled={invalid}>Añadir</Button> </Col> </Row>
+        </form>
       </div>
     );
   }
@@ -138,8 +138,20 @@ const mapStateToProps = (state) => ({
   user: state.user,
 });
 
+const required = value => (value || typeof value === 'number' ? undefined : 'Required')
+const isAfterToday = value => (moment(value).isAfter(new Date()) ? undefined : 'Date is before today') 
+
+
+const validate = ({eventName, eventDate}) => ({
+  eventName: required(eventName),
+  eventDate: isAfterToday(eventDate) || required(eventDate),
+});
+
 const mapDispatchToProps = dispatch => ({
   postEvent: (data) => dispatch(postEvent(data)),
 });
 
-export default reduxForm({ form: "add-event" })(connect(mapStateToProps,mapDispatchToProps)(AddEvent));
+export default reduxForm({ form: "add-event", 
+validate })
+
+(connect(mapStateToProps,mapDispatchToProps)(AddEvent));
