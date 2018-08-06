@@ -44,6 +44,9 @@ import {
   FETCH_CITY_PLACES,
   FETCH_CITY_PLACES_FAILURE,
   FETCH_CITY_PLACES_SUCCESS,
+  POST_BID,
+  POST_BID_SUCCESS,
+  POST_BID_FAILURE,
 } from "./type";
 
 export const fetchEvents = (pais, ciudad) => ({
@@ -260,5 +263,19 @@ export const postSponsorSuccess = () => ({
 
 export const postSponsorFailure = (err) => ({
   type: POST_SPONSOR_FAILURE,
+  payload: {err}
+});
+
+export const postBid = (form) => ({
+  type: POST_BID,
+  payload: {form}
+});
+
+export const postBidSuccess = () => ({
+  type: POST_BID_SUCCESS
+});
+
+export const postBidFailure = (err) => ({
+  type: POST_BID_FAILURE,
   payload: {err}
 });

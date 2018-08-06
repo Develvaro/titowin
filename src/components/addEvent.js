@@ -4,8 +4,15 @@ import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { formValueSelector } from "redux-form";
 import {
-  postEvent,
+  postEvent, fetchEventBid,
 } from '../actions'
+
+import {
+  required,
+  isAfterToday,
+  minValue,
+  isBeforeEvent,
+} from './form/validation';
 
 import {
   Row,
@@ -106,14 +113,19 @@ class AddEvent extends Component {
 
           <FormGroup row>
             <Label for="startBid" sm={2}>Puja Inicial</Label>
-            <Col sm={3}><Field name="startBid" id="startBid" component={NumberInput} /></Col>
-
+            <Col sm={2}><Field name="startBid" id="startBid" component={NumberInput} /></Col>
 
           <Label for="increment" sm={2} >Incremento Mínimo</Label>
-            <Col sm={3}><Field name="increment" id="increment" component={NumberInput} /></Col>
+            <Col sm={2}><Field name="increment" id="increment" component={NumberInput} /></Col>
+          </FormGroup> 
+
+          <FormGroup row>
+
+          <Label for="participaciones" sm={2} >Participaciones</Label>
+            <Col sm={2}><Field name="participaciones" id="participaciones" component={NumberInput} /></Col>
           </FormGroup>
           
-          <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" type="submit" disabled={invalid}>Añadir</Button> </Col> </Row>
+          <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" type="submit" /*disabled={invalid}*/>Añadir</Button> </Col> </Row>
         </form>
       </div>
     );
@@ -133,18 +145,24 @@ const mapStateToProps = (state) => ({
   bidTime: filterSelector(state, "bidTime"),
   startBid: filterSelector(state, "startBid"),
   increment: filterSelector(state, "increment"),
+  participaciones: filterSelector(state, "participaciones"),
 
   profile: state.profile,
   user: state.user,
 });
 
-const required = value => (value || typeof value === 'number' ? undefined : 'Required')
-const isAfterToday = value => (moment(value).isAfter(new Date()) ? undefined : 'Date is before today') 
+const minValue0 = minValue(0);
+const minValue1 = minValue(1);
 
 
-const validate = ({eventName, eventDate}) => ({
+const validate = ({eventName, eventDate, imgupload, category, bidDate, bidTime, startBid, increment, participaciones}) => ({
   eventName: required(eventName),
-  eventDate: isAfterToday(eventDate) || required(eventDate),
+  eventDate: required(eventDate) || isAfterToday(eventDate),
+  imgupload: required(imgupload),
+  startBid: minValue0(startBid) || required(startBid),
+  increment: minValue1(increment) || required(increment),
+  bidDate: required(bidDate) || isAfterToday(bidDate) || isBeforeEvent(bidDate,eventDate),
+  participaciones: required(participaciones) || minValue1(participaciones),
 });
 
 const mapDispatchToProps = dispatch => ({

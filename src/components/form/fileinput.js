@@ -1,8 +1,11 @@
 import React from "react";
-import { Input } from "reactstrap";
+import { Input, FormFeedback } from "reactstrap";
 
-const FileInput = ({ input: {onUpload, ...restInput }, value, name, id, placeholder, meta }) => (
+const FileInput = ({ input: {onUpload, ...restInput }, value, name, id, placeholder, meta :{touched, error , warning} }) => (
+  
+  <div>
   <Input
+    valid = {touched && !error} invalid = {touched && error}
     type="file"
     {...restInput}
     value={value}
@@ -10,6 +13,14 @@ const FileInput = ({ input: {onUpload, ...restInput }, value, name, id, placehol
     id={id}
     placeholder={placeholder}
   />
+
+    {touched &&
+    ((error && <FormFeedback>{error}</FormFeedback>) ||
+      (warning && <span>{warning}</span>))}
+  
+  </div>
+
+
 );
 
 export default FileInput;

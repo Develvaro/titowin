@@ -14,6 +14,7 @@ import {
   FETCH_EVENT_BID,
   INITIAL_FETCH,
   POST_EVENT,
+  POST_BID,
   FETCH_USER_EVENT_BIDS,
   FETCH_SPONSOR_DETAIL,
   FETCH_USER_SPONSORS,
@@ -56,6 +57,9 @@ import {
   fetchPlaceFailure,
   fetchCityPlacesSuccess,
   fetchCityPlacesFailure,
+  postEventSuccess,
+  postBidSuccess,
+  postBidFailure,
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
@@ -66,13 +70,26 @@ function* fetchEventDetailProcess(action) {
 
     const { eventID } = action.payload;
     const eventRef = databaseRef.collection("Evento").doc(eventID);
-    const doc = yield call([eventRef, "get"]);
-    const data = doc.data();
     
-    const placeRef = databaseRef.collection("Lugar").doc(data.lugar);
+    const eventDoc = yield call([eventRef, "get"]);
+    const eventData = eventDoc.data();
+
+    const number = eventData.participaciones;
+
+    const placeRef = databaseRef.collection("Lugar").doc(eventData.lugar);
     const placeDoc = yield call([placeRef, "get"]);
 
-    yield put(fetchEventDetailSuccess({...data, place: placeDoc.data(), id: doc.id}));
+    let bidRef = databaseRef.collection("Evento").doc(eventID).collection("Puja").orderBy("cantidad", "desc").limit(number + 1);
+    const { docs } = yield call([bidRef, "get"]);
+
+    const bids = docs.map(doc => {
+      const data = doc.data();
+      console.log(data);
+      return { ...data, id: doc.id }
+    });
+
+
+    yield put(fetchEventDetailSuccess({...eventData, place: placeDoc.data(), id: eventDoc.id, bids}));
 
   } catch (e) {
     yield put(fetchEventDetailFailure(e));
@@ -99,6 +116,9 @@ function* fetchEventProcess(action) {
     const { docs } = yield call([colRef, "get"]);
 
     const places = yield all(docs.map(event => {
+      console.log(event.data());
+      console.log(event.data());
+
       const placeRef = databaseRef.collection("Lugar").doc(event.data().lugar);
       return call([placeRef, "get"]);
     }));
@@ -111,6 +131,7 @@ function* fetchEventProcess(action) {
     
     yield put(fetchEventsSuccess(events));
   } catch (err) {
+    console.log(err);
     yield put(fetchEventsFailure(err));
   }
 }
@@ -128,7 +149,7 @@ function* fetchEventBidProcess(action) {
     const doc = yield call([eventRef, "get"]);
     const number = doc.data().participaciones;
 
-    let bidRef = databaseRef.collection("Evento").doc(eventID).collection("Puja").orderBy("cantidad", "desc").limit(number + 1);
+    let bidRef = databaseRef.collection("Evento").doc(eventID).collection("Puja").orderBy("cantidad", "desc").limit(number);
     const { docs } = yield call([bidRef, "get"]);
 
     const result = docs.map(doc => {
@@ -283,31 +304,59 @@ function* postEventProcess(action){
   try{
 
     const id = uuid();
-    const placeID = yield select(state => (state.profile.manage));
-    console.log(placeID);
-    const {form} = action.payload;
+    const user = yield select(state => (state.profile));
 
-    const {imgupload, eventName,eventDate, category, eventTime,  bidDate, bidTime, startBid, increment} = form;
+    const {form} = action.payload;
+    
+    const {
+      imgupload, eventName,eventDate, category, eventTime,
+      bidDate, bidTime, startBid, increment, participaciones,
+    } = form;
 
     const storageRef = firebase.storage().ref(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
     
     const task = yield call([storageRef, "put"],imgupload[0]);
     const ref = task.ref;
     const url = yield call([ref, "getDownloadURL"]);
-    
+
+    const placeRef = databaseRef.collection("Lugar").doc(user.manage);
+    const placeDoc = yield call([placeRef, "get"]);
+  
+
+    const cityRef = databaseRef.collection("Ciudad").doc(placeDoc.data().ciudad);
+    const cityDoc = yield call([cityRef, "get"]);
+
+    const countryRef = databaseRef.collection("Pais").doc(cityDoc.data().pais);
+    const countryDoc = yield call([countryRef, "get"]);
     const result = databaseRef.collection("Evento").doc(id);
     yield call([result, "set"],{
-      eventName,
-      img : url,
-      category,
-      //bidDate,
+      titulo: eventName,
+      urlPhoto: url,
+      categoria: category,
+      pais: countryDoc.id,
+      ciudad: cityDoc.id,
+      fecha: moment(`${eventDate} ${eventTime}`, 'YYYY-MM-DD HH:mm').toDate(),
+      estado: "abierto",
+      bidDate: moment(`${bidDate} ${bidTime}`, 'YYYY-MM-DD HH:mm').toDate(),
       //bidTime,
-      //startBid,
-      //increment,
-      placeID,
+      startBid,
+      increment,
+      participaciones,
+      lugar: user.manage,
      });
-    console.log(moment(`${eventDate} ${eventTime}`));
+     for(let i = 0; i < participaciones; i++){
+      let pujasRef = databaseRef.collection("Evento").doc(id).collection("Puja").doc();
+      yield call([pujasRef, "set"],{
+        cantidad: startBid - increment,
+        usuario: user.id,
+        email: user.email,
+       });
+     }
+     
 
+     
+    //console.log(moment(`${eventDate} ${eventTime}`));
+     yield put(postEventSuccess());
   }catch(e){
     console.log(e);
     yield put(postEventFailure(e));
@@ -379,6 +428,35 @@ function* postSponsorProcess(action){
   }
 }
 
+function* postBidProcess(action){
+  try{
+    const user = yield select(state => (state.profile));
+    const eventDetail = yield select(state => (state.eventDetail));
+    const {form} = action.payload;
+    
+    const {
+      participaciones, cantidad,
+    } = form;
+
+    
+    for(let i = 0; i<participaciones; i++)
+    { 
+      const id = uuid();
+      let pujasRef = databaseRef.collection("Evento").doc(eventDetail.id).collection("Puja").doc(id);
+      yield call([pujasRef, "set"],{
+        cantidad,
+        usuario: user.id,
+        email: user.email,
+       });
+    }
+    yield put(postBidSuccess());
+  }
+  catch(e)
+  {
+    yield put(postBidFailure(e));
+  }
+}
+
 function* watchLogout() {
   yield takeEvery(LOGOUT, logoutProcess);
 }
@@ -439,6 +517,10 @@ function* watchFetchCityPlaces(){
   yield takeEvery(FETCH_CITY_PLACES, fetchCityPlacesProcess);
 }
 
+function* watchPostBid(){
+  yield takeEvery(POST_BID,postBidProcess);
+}
+
 function* rootSaga() {
   yield all([
     fork(watchFetchEvents),
@@ -457,6 +539,7 @@ function* rootSaga() {
     fork(watchPostSponsor),
     fork(watchFetchPlace),
     fork(watchFetchCityPlaces),
+    fork(watchPostBid),
   ]);
 }
 

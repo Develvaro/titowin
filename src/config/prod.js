@@ -5,5 +5,5 @@ export const FirebaseConfig = {
     databaseURL: "https://titowin-f77a9.firebaseio.com",
     projectId: "titowin-f77a9",
     storageBucket: "titowin-f77a9.appspot.com",
-    messagingSenderId: "550076174104"
+    messagingSenderId: "550076174104",
   };

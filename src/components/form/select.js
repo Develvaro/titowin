@@ -3,12 +3,14 @@ import { Input } from "reactstrap";
 
 const Select = ({
   options,
+  meta: {touched, error, warning},
   input: { onChange, ...restInput },
   value,
   name,
   id,
   onChangeFn
 }) => (
+  <div>
   <Input
     type="select"
     {...restInput}
@@ -22,10 +24,16 @@ const Select = ({
   >
     {options
       ? options.map(option => (
-          <option value={option.value}>{option.name}</option>
+          <option key={option.value} value={option.value}>{option.name}</option>
         ))
       : null}
   </Input>
+
+      {touched &&
+    ((error && <span>{error}</span>) ||
+      (warning && <span>{warning}</span>))}
+  
+  </div>
 );
 
 export default Select;
