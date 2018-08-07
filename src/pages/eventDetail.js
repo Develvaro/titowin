@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardTitle, CardText, Row, Col } from 'reactstrap';
-import classnames from 'classnames';
 import {
   fetchEventDetail,
   fetchPlace,
@@ -9,20 +7,15 @@ import {
   fetchEventBid,
 } from '../actions';
 
+import {Row, Col} from 'reactstrap';
+
 import DetailBid from '../components/detailBid';
+import DetailTab from '../components/detailTab';
 
 
 class EventDetail extends Component {
 
-  constructor(props){
-    super(props);
 
-    this.toggle = this.toggle.bind(this);
-    this.state = {
-      activeTab : '1'
-    };
-
-  }
     componentDidMount(){
       const idEvent = this.props.match.params.id;
       const { fetchEventBid, fetchEventDetail, fetchPlace } = this.props;
@@ -31,65 +24,18 @@ class EventDetail extends Component {
       
     }
 
-    toggle(tab) {
-      if (this.state.activeTab !== tab) {
-        this.setState({
-          activeTab: tab
-        });
-      }
-    }
+
     render() {
 
       console.log(this.props.eventDetail);
     return (
       <div>
-        {this.props.eventDetail ? <DetailBid /> : "Cargando..."}
+        <Row>
+          <Col sm="8">{this.props.eventDetail ? <DetailTab /> : "Cargando..."}</Col>
+          <Col sm="4" >{this.props.eventDetail ? <DetailBid /> : "Cargando..."}</Col>
 
-        <Nav tabs>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: this.state.activeTab === '1' })}
-              onClick={() => { this.toggle('1'); }}
-            >
-              Detalles del Evento
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: this.state.activeTab === '2' })}
-              onClick={() => { this.toggle('2'); }}
-            >
-              Estado de la Subasta
-            </NavLink>
-          </NavItem>
-        </Nav>
-        <TabContent activeTab={this.state.activeTab}>
-          <TabPane tabId="1">
-            <Row>
-              <Col sm={{size:4 , offset: 2}}>
-                <h4>Tab 1 Contents</h4>
-              </Col>
-            </Row>
-          </TabPane>
-          <TabPane tabId="2">
-            <Row>
-              <Col sm="6">
-                <Card body>
-                  <CardTitle>Special Title Treatment</CardTitle>
-                  <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
-              </Col>
-              <Col sm="6">
-                <Card body>
-                  <CardTitle>Special Title Treatment</CardTitle>
-                  <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
-              </Col>
-            </Row>
-          </TabPane>
-        </TabContent>
+        </Row>
+        
         {
           this.props.profile ?
             <p> {this.props.profile.id} </p>

@@ -7,6 +7,8 @@ import {postBid} from '../actions';
 import Select from "./form/select";
 import NumberInput from "./form/numberinput";
 
+import styled from 'styled-components';
+
 import moment from 'moment';
 import {
     required,
@@ -15,6 +17,14 @@ import {
     isBeforeEvent,
     isGreaterThanLowest,
   } from './form/validation';
+  
+  
+  const Imagen = styled.div`
+    height: 160px;
+    background-image : url(${props => props.url});
+    background-size: cover;
+    background-repeat: no-repeat;
+`;
   
 class DetailBid extends Component {
 
@@ -60,7 +70,7 @@ class DetailBid extends Component {
                     <Col>  </Col>
                 </Row> 
                 <Col sm="12">
-                    <img src={eventDetail ? eventDetail.urlPhoto : ""} alt="Event Photo"/>
+                    <Imagen url={eventDetail ? eventDetail.urlPhoto : ""} alt="Event Photo"/>
                 </Col>
                 <Row>
 
