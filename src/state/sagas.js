@@ -76,6 +76,8 @@ function* fetchEventDetailProcess(action) {
 
     const number = eventData.participaciones;
 
+    console.log(number + 1);
+
     const placeRef = databaseRef.collection("Lugar").doc(eventData.lugar);
     const placeDoc = yield call([placeRef, "get"]);
 
@@ -84,7 +86,6 @@ function* fetchEventDetailProcess(action) {
 
     const bids = docs.map(doc => {
       const data = doc.data();
-      console.log(data);
       return { ...data, id: doc.id }
     });
 
@@ -92,6 +93,7 @@ function* fetchEventDetailProcess(action) {
     yield put(fetchEventDetailSuccess({...eventData, place: placeDoc.data(), id: eventDoc.id, bids}));
 
   } catch (e) {
+    console.log(e);
     yield put(fetchEventDetailFailure(e));
   }
 }
@@ -344,7 +346,7 @@ function* postEventProcess(action){
       participaciones,
       lugar: user.manage,
      });
-     for(let i = 0; i < participaciones; i++){
+     for(let i = 0; i < participaciones +1 ; i++){
       let pujasRef = databaseRef.collection("Evento").doc(id).collection("Puja").doc();
       yield call([pujasRef, "set"],{
         cantidad: startBid - increment,

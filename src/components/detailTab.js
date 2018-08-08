@@ -22,13 +22,14 @@ class DetailTab extends Component{
         const {eventDetail} = this.props;
         // Outer loop to create parent
         let header = [];
+        
         header.push(<td>Usuario</td>);
         header.push(<td>Cantidad</td>);
         header.push(<td>Puesto</td>);
         table.push(<tr>{header}</tr>);
-        for (let i = 0; i <= eventDetail.participaciones; i++) {
+        for (let i = 0; i <= eventDetail.bids; i++) {
           let children = []
-          //Inner loop to create children
+          //Inner loop to create children 
             children.push(<td>{eventDetail.bids[i].email}</td>);
             children.push(<td>{eventDetail.bids[i].cantidad}</td>);
             children.push(<td>{i + 1}</td>);
@@ -90,7 +91,7 @@ class DetailTab extends Component{
                 <Card body>
                   <CardTitle>Special Title Treatment</CardTitle>
                   <CardText>
-                    {eventDetail ? this.createTable() : "Cargando..."}
+                    {eventDetail ? <table> {this.createTable()} </table>: "Cargando..."}
 
                                             
                   </CardText>

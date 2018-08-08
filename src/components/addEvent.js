@@ -113,16 +113,16 @@ class AddEvent extends Component {
 
           <FormGroup row>
             <Label for="startBid" sm={2}>Puja Inicial</Label>
-            <Col sm={2}><Field name="startBid" id="startBid" component={NumberInput} /></Col>
+            <Col sm={2}><Field parse={value => Number(value)} name="startBid" id="startBid" component={NumberInput} /></Col>
 
           <Label for="increment" sm={2} >Incremento Mínimo</Label>
-            <Col sm={2}><Field name="increment" id="increment" component={NumberInput} /></Col>
+            <Col sm={2}><Field parse={value => Number(value)} name="increment" id="increment" component={NumberInput} /></Col>
           </FormGroup> 
 
           <FormGroup row>
 
           <Label for="participaciones" sm={2} >Participaciones</Label>
-            <Col sm={2}><Field name="participaciones" id="participaciones" component={NumberInput} /></Col>
+            <Col sm={2}><Field parse={value => Number(value)} name="participaciones" id="participaciones" component={NumberInput} /></Col>
           </FormGroup>
           
           <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" type="submit" /*disabled={invalid}*/>Añadir</Button> </Col> </Row>
