@@ -1,8 +1,9 @@
 import { fork, takeEvery, put, call, all, select } from "redux-saga/effects";
+import { delay } from "redux-saga";
 import { initialize } from "redux-form";
-import moment from 'moment';
-import mime from 'mime';
-import uuid from 'uuid';
+import moment from "moment";
+import mime from "mime";
+import uuid from "uuid";
 import {
   FETCH_EVENTS,
   LOGIN,
@@ -21,7 +22,7 @@ import {
   POST_SPONSOR,
   FETCH_PLACE,
   FETCH_CITY_PLACES,
-
+  POST_BID_SUCCESS
 } from "../actions/type";
 import {
   fetchEventsFailure,
@@ -60,6 +61,7 @@ import {
   postEventSuccess,
   postBidSuccess,
   postBidFailure,
+  clearSuccess
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
@@ -67,10 +69,9 @@ import { getCountryByLocale } from "../utils/countries";
 
 function* fetchEventDetailProcess(action) {
   try {
-
     const { eventID } = action.payload;
     const eventRef = databaseRef.collection("Evento").doc(eventID);
-    
+
     const eventDoc = yield call([eventRef, "get"]);
     const eventData = eventDoc.data();
 
@@ -81,17 +82,27 @@ function* fetchEventDetailProcess(action) {
     const placeRef = databaseRef.collection("Lugar").doc(eventData.lugar);
     const placeDoc = yield call([placeRef, "get"]);
 
-    let bidRef = databaseRef.collection("Evento").doc(eventID).collection("Puja").orderBy("cantidad", "desc").limit(number + 1);
+    let bidRef = databaseRef
+      .collection("Evento")
+      .doc(eventID)
+      .collection("Puja")
+      .orderBy("cantidad", "desc")
+      .limit(number + 1);
     const { docs } = yield call([bidRef, "get"]);
 
     const bids = docs.map(doc => {
       const data = doc.data();
-      return { ...data, id: doc.id }
+      return { ...data, id: doc.id };
     });
 
-
-    yield put(fetchEventDetailSuccess({...eventData, place: placeDoc.data(), id: eventDoc.id, bids}));
-
+    yield put(
+      fetchEventDetailSuccess({
+        ...eventData,
+        place: placeDoc.data(),
+        id: eventDoc.id,
+        bids
+      })
+    );
   } catch (e) {
     console.log(e);
     yield put(fetchEventDetailFailure(e));
@@ -111,26 +122,30 @@ function* fetchEventProcess(action) {
       colRef = colRef.where("ciudad", "==", ciudad);
     }
 
-    if(place){
-      colRef = colRef.where("lugar", "==", place)
+    if (place) {
+      colRef = colRef.where("lugar", "==", place);
     }
 
     const { docs } = yield call([colRef, "get"]);
 
-    const places = yield all(docs.map(event => {
-      console.log(event.data());
-      console.log(event.data());
+    const places = yield all(
+      docs.map(event => {
+        console.log(event.data());
+        console.log(event.data());
 
-      const placeRef = databaseRef.collection("Lugar").doc(event.data().lugar);
-      return call([placeRef, "get"]);
-    }));
+        const placeRef = databaseRef
+          .collection("Lugar")
+          .doc(event.data().lugar);
+        return call([placeRef, "get"]);
+      })
+    );
 
     const events = docs.map((event, index) => ({
       ...event.data(),
       id: event.id,
       place: places[index].data()
     }));
-    
+
     yield put(fetchEventsSuccess(events));
   } catch (err) {
     console.log(err);
@@ -143,27 +158,31 @@ function* watchFetchEvents() {
 }
 
 function* fetchEventBidProcess(action) {
-  try{
-
+  try {
     const { eventID } = action.payload;
 
     const eventRef = databaseRef.collection("Evento").doc(eventID);
     const doc = yield call([eventRef, "get"]);
     const number = doc.data().participaciones;
 
-    let bidRef = databaseRef.collection("Evento").doc(eventID).collection("Puja").orderBy("cantidad", "desc").limit(number);
+    let bidRef = databaseRef
+      .collection("Evento")
+      .doc(eventID)
+      .collection("Puja")
+      .orderBy("cantidad", "desc")
+      .limit(number);
     const { docs } = yield call([bidRef, "get"]);
 
     const result = docs.map(doc => {
       const data = doc.data();
       console.log(data);
-      return { ...data, id: doc.id }
+      return { ...data, id: doc.id };
     });
 
     console.log(result);
-    
+
     yield put(fetchEventBidSuccess(result));
-  }catch(e){
+  } catch (e) {
     yield put(fetchEventBidFailure(e));
   }
 }
@@ -199,7 +218,6 @@ function* fetchProfileProcess(action) {
       userRef.set(data);
       yield put(setProfile(data));
     } else {
-
       yield put(setProfile(doc.data()));
     }
   } catch (err) {
@@ -236,28 +254,30 @@ function* fetchCitiesProcess(action) {
   }
 }
 
-function* fetchCityPlacesProcess(action){
-  try{
-    const {cityID} = action.payload;
-    const placesRef = databaseRef.collection("Lugar").where("ciudad", "==" , cityID);
+function* fetchCityPlacesProcess(action) {
+  try {
+    const { cityID } = action.payload;
+    const placesRef = databaseRef
+      .collection("Lugar")
+      .where("ciudad", "==", cityID);
     const { docs } = yield call([placesRef, "get"]);
     const places = docs.map(doc => {
       const data = doc.data();
       return { ...data, id: doc.id };
     });
     yield put(fetchCityPlacesSuccess(places));
-  }catch(e){
+  } catch (e) {
     yield put(fetchCityPlacesFailure(e));
   }
 }
 
-function* fetchPlaceProcess(action){
-  try{
-    const {placeID} = action.payload;
+function* fetchPlaceProcess(action) {
+  try {
+    const { placeID } = action.payload;
     const placeRef = databaseRef.collection("Lugar").doc(placeID);
-    const  doc  = yield call([placeRef, "get"]);
-    yield put(fetchPlaceProcess({...doc.data(), id: doc.id}))
-  }catch(e){
+    const doc = yield call([placeRef, "get"]);
+    yield put(fetchPlaceProcess({ ...doc.data(), id: doc.id }));
+  } catch (e) {
     yield put(fetchPlaceFailure(e));
   }
 }
@@ -302,110 +322,134 @@ function* initialFetchProcess() {
   }
 }
 
-function* postEventProcess(action){
-  try{
-
+function* postEventProcess(action) {
+  try {
     const id = uuid();
-    const user = yield select(state => (state.profile));
+    const user = yield select(state => state.profile);
 
-    const {form} = action.payload;
-    
+    const { form } = action.payload;
+
     const {
-      imgupload, eventName,eventDate, category, eventTime,
-      bidDate, bidTime, startBid, increment, participaciones,
+      imgupload,
+      eventName,
+      eventDate,
+      category,
+      eventTime,
+      bidDate,
+      bidTime,
+      startBid,
+      increment,
+      participaciones
     } = form;
 
-    const storageRef = firebase.storage().ref(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
-    
-    const task = yield call([storageRef, "put"],imgupload[0]);
+    const storageRef = firebase
+      .storage()
+      .ref(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
+
+    const task = yield call([storageRef, "put"], imgupload[0]);
     const ref = task.ref;
     const url = yield call([ref, "getDownloadURL"]);
 
     const placeRef = databaseRef.collection("Lugar").doc(user.manage);
     const placeDoc = yield call([placeRef, "get"]);
-  
 
-    const cityRef = databaseRef.collection("Ciudad").doc(placeDoc.data().ciudad);
+    const cityRef = databaseRef
+      .collection("Ciudad")
+      .doc(placeDoc.data().ciudad);
     const cityDoc = yield call([cityRef, "get"]);
 
     const countryRef = databaseRef.collection("Pais").doc(cityDoc.data().pais);
     const countryDoc = yield call([countryRef, "get"]);
     const result = databaseRef.collection("Evento").doc(id);
-    yield call([result, "set"],{
+    yield call([result, "set"], {
       titulo: eventName,
       urlPhoto: url,
       categoria: category,
       pais: countryDoc.id,
       ciudad: cityDoc.id,
-      fecha: moment(`${eventDate} ${eventTime}`, 'YYYY-MM-DD HH:mm').toDate(),
+      fecha: moment(`${eventDate} ${eventTime}`, "YYYY-MM-DD HH:mm").toDate(),
       estado: "abierto",
-      bidDate: moment(`${bidDate} ${bidTime}`, 'YYYY-MM-DD HH:mm').toDate(),
+      bidDate: moment(`${bidDate} ${bidTime}`, "YYYY-MM-DD HH:mm").toDate(),
       //bidTime,
       startBid,
       increment,
       participaciones,
-      lugar: user.manage,
-     });
-     for(let i = 0; i < participaciones +1 ; i++){
-      let pujasRef = databaseRef.collection("Evento").doc(id).collection("Puja").doc();
-      yield call([pujasRef, "set"],{
+      lugar: user.manage
+    });
+    for (let i = 0; i < participaciones + 1; i++) {
+      let pujasRef = databaseRef
+        .collection("Evento")
+        .doc(id)
+        .collection("Puja")
+        .doc();
+      yield call([pujasRef, "set"], {
         cantidad: startBid - increment,
         usuario: user.id,
-        email: user.email,
-       });
-     }
-     
+        email: user.email
+      });
+    }
 
-     
     //console.log(moment(`${eventDate} ${eventTime}`));
-     yield put(postEventSuccess());
-  }catch(e){
+    yield put(postEventSuccess());
+  } catch (e) {
     console.log(e);
     yield put(postEventFailure(e));
   }
 }
 
-function* fetchUserEventBidsProcess(action){
-  try{
+function* fetchUserEventBidsProcess(action) {
+  try {
     const { userID } = action.payload;
 
-    let userBids = databaseRef.collection("Usuario").doc(userID).collection("Puja");
+    let userBids = databaseRef
+      .collection("Usuario")
+      .doc(userID)
+      .collection("Puja");
 
     const { docs } = yield call([userBids, "get"]);
-    const result = yield all(docs.map(doc => {
-      const eventRef = databaseRef.collection("Evento").doc(doc.data().eventID);
-      const event = call([eventRef, "get"]);
-      return event;
-      //return {...doc.data(), id: doc.id};
-    }));
+    const result = yield all(
+      docs.map(doc => {
+        const eventRef = databaseRef
+          .collection("Evento")
+          .doc(doc.data().eventID);
+        const event = call([eventRef, "get"]);
+        return event;
+        //return {...doc.data(), id: doc.id};
+      })
+    );
 
     console.log(result);
     yield put(fetchUserEventBidsSuccess(result));
-  }catch(e){
+  } catch (e) {
     yield put(fetchUserEventBidsFailure(e));
   }
 }
 
+function* fetchSponsorDetailProcess(action) {
+  try {
+    const { sponsorID, userID } = action.payload;
 
-function* fetchSponsorDetailProcess(action){
-  try{
-    const {sponsorID, userID} = action.payload;
-
-    const sponsorRef = databaseRef.collection("Usuario").doc(userID).collection("Publicidad").doc(sponsorID);
+    const sponsorRef = databaseRef
+      .collection("Usuario")
+      .doc(userID)
+      .collection("Publicidad")
+      .doc(sponsorID);
 
     const doc = yield call([sponsorRef, "get"]);
-    yield put(fetchSponsorDetailSuccess({...doc.data(), id: doc.id}))
-
-  }catch(e){
+    yield put(fetchSponsorDetailSuccess({ ...doc.data(), id: doc.id }));
+  } catch (e) {
     yield put(fetchSponsorDetailFailure(e));
   }
 }
 
-function* fetchUserSponsorsProcess(action){
-  try{
+function* fetchUserSponsorsProcess(action) {
+  try {
     const { userID } = action.payload;
-    
-    const sponsorsRef = databaseRef.collection("Usuario").doc(userID).collection("Publicidad");
+
+    const sponsorsRef = databaseRef
+      .collection("Usuario")
+      .doc(userID)
+      .collection("Publicidad");
 
     const { docs } = yield call([sponsorsRef, "get"]);
     const result = docs.map(doc => {
@@ -414,49 +458,49 @@ function* fetchUserSponsorsProcess(action){
     });
 
     yield put(fetchUserSponsorsSuccess(result));
-    
-  }catch(e){
+  } catch (e) {
     yield put(fetchUserSponsorsFailure(e));
   }
 }
 
-
-//TODO  
-function* postSponsorProcess(action){
-  try{
-
-  }catch(e){
+//TODO
+function* postSponsorProcess(action) {
+  try {
+  } catch (e) {
     yield put(postSponsorFailure(e));
   }
 }
 
-function* postBidProcess(action){
-  try{
-    const user = yield select(state => (state.profile));
-    const eventDetail = yield select(state => (state.eventDetail));
-    const {form} = action.payload;
-    
-    const {
-      participaciones, cantidad,
-    } = form;
+function* postBidProcess(action) {
+  try {
+    const user = yield select(state => state.profile);
+    const eventDetail = yield select(state => state.eventDetail);
+    const { form } = action.payload;
 
-    
-    for(let i = 0; i<participaciones; i++)
-    { 
+    const { participaciones, cantidad } = form;
+
+    for (let i = 0; i < participaciones; i++) {
       const id = uuid();
-      let pujasRef = databaseRef.collection("Evento").doc(eventDetail.id).collection("Puja").doc(id);
-      yield call([pujasRef, "set"],{
+      let pujasRef = databaseRef
+        .collection("Evento")
+        .doc(eventDetail.id)
+        .collection("Puja")
+        .doc(id);
+      yield call([pujasRef, "set"], {
         cantidad,
         usuario: user.id,
-        email: user.email,
-       });
+        email: user.email
+      });
     }
-    yield put(postBidSuccess());
+    yield put(postBidSuccess(participaciones, cantidad));
+  } catch (e) {
+    yield put(postBidFailure(e.message));
   }
-  catch(e)
-  {
-    yield put(postBidFailure(e));
-  }
+}
+
+function* postSuccessProcess() {
+  yield call(delay, 3000);
+  yield put(clearSuccess());
 }
 
 function* watchLogout() {
@@ -499,28 +543,32 @@ function* watchFetchUserEventBids() {
   yield takeEvery(FETCH_USER_EVENT_BIDS, fetchUserEventBidsProcess);
 }
 
-function* watchFetchSponsorDetail(){
+function* watchFetchSponsorDetail() {
   yield takeEvery(FETCH_SPONSOR_DETAIL, fetchSponsorDetailProcess);
 }
 
-function* watchFetchUserSponsors(){
-  yield takeEvery(FETCH_USER_SPONSORS, fetchUserSponsorsProcess)
+function* watchFetchUserSponsors() {
+  yield takeEvery(FETCH_USER_SPONSORS, fetchUserSponsorsProcess);
 }
 
-function* watchPostSponsor(){
+function* watchPostSponsor() {
   yield takeEvery(POST_SPONSOR, postSponsorProcess);
 }
 
-function* watchFetchPlace(){
+function* watchFetchPlace() {
   yield takeEvery(FETCH_PLACE, fetchPlaceProcess);
 }
 
-function* watchFetchCityPlaces(){
+function* watchFetchCityPlaces() {
   yield takeEvery(FETCH_CITY_PLACES, fetchCityPlacesProcess);
 }
 
-function* watchPostBid(){
-  yield takeEvery(POST_BID,postBidProcess);
+function* watchPostBid() {
+  yield takeEvery(POST_BID, postBidProcess);
+}
+
+function* watchPostSuccess() {
+  yield takeEvery([POST_BID_SUCCESS], postSuccessProcess);
 }
 
 function* rootSaga() {
@@ -542,6 +590,7 @@ function* rootSaga() {
     fork(watchFetchPlace),
     fork(watchFetchCityPlaces),
     fork(watchPostBid),
+    fork(watchPostSuccess)
   ]);
 }
 

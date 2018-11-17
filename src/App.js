@@ -15,6 +15,7 @@ import EventDetail from "./pages/eventDetail";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { loginSuccess, fetchProfile } from "./actions";
 import firebase from "firebase";
+import SuccessPopup from "./components/successPopup";
 
 class App extends Component {
   componentDidMount() {
@@ -30,14 +31,26 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
+          <SuccessPopup />
           <Bar />
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/profile" component={this.props.user && Profile} />
-          <Route exact path="/profile/bids" component={this.props.user && MyBids} />
-          <Route exact path="/profile/sponsors" component={this.props.user && MySponsors} />
-          <Route path="/profile/sponsors/:id" component={this.props.user && SponsorDetail} />
+          <Route
+            exact
+            path="/profile/bids"
+            component={this.props.user && MyBids}
+          />
+          <Route
+            exact
+            path="/profile/sponsors"
+            component={this.props.user && MySponsors}
+          />
+          <Route
+            path="/profile/sponsors/:id"
+            component={this.props.user && SponsorDetail}
+          />
           <Route path="/manage/addEvent" component={AddEvent} />
           <Route path="/event/:id" component={EventDetail} />
 

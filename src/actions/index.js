@@ -47,6 +47,8 @@ import {
   POST_BID,
   POST_BID_SUCCESS,
   POST_BID_FAILURE,
+  CLEAR_ERROR,
+  CLEAR_SUCCESS
 } from "./type";
 
 export const fetchEvents = (pais, ciudad) => ({
@@ -154,20 +156,20 @@ export const fetchPlaceFailure = err => ({
 
 export const fetchCityPlaces = cityID => ({
   type: FETCH_CITY_PLACES,
-  payload: {cityID}
+  payload: { cityID }
 });
 
 export const fetchCityPlacesSuccess = places => ({
   type: FETCH_CITY_PLACES_SUCCESS,
-  payload: {places}
+  payload: { places }
 });
 
 export const fetchCityPlacesFailure = err => ({
   type: FETCH_CITY_PLACES_FAILURE,
-  payload: {err}
+  payload: { err }
 });
 
-export const fetchEventBid = (eventID) => ({
+export const fetchEventBid = eventID => ({
   type: FETCH_EVENT_BID,
   payload: { eventID }
 });
@@ -193,62 +195,61 @@ export const initialFetchFailure = error => ({
 
 export const postEvent = form => ({
   type: POST_EVENT,
-  payload: {form}
+  payload: { form }
 });
 
 export const postEventSuccess = () => ({
   type: POST_EVENT_SUCCESS
 });
 
-export const postEventFailure = (err) => ({
+export const postEventFailure = err => ({
   type: POST_EVENT_FAILURE,
-  payload: {err}
+  payload: { err }
 });
 
-
-export const fetchUserEventBids = (userID) => ({
+export const fetchUserEventBids = userID => ({
   type: FETCH_USER_EVENT_BIDS,
-  payload: {userID}
-})
+  payload: { userID }
+});
 
-export const fetchUserEventBidsSuccess = (userEventBids) => ({
+export const fetchUserEventBidsSuccess = userEventBids => ({
   type: FETCH_USER_EVENT_BIDS_SUCCESS,
-  payload: {userEventBids}
-})
+  payload: { userEventBids }
+});
 
-export const fetchUserEventBidsFailure = (err) => ({
+export const fetchUserEventBidsFailure = err => ({
   type: FETCH_USER_EVENT_BIDS_FAILURE,
-  payload: {err }
-})
+  payload: { err }
+});
 
-export const fetchUserSponsors = (userID) => ({
+export const fetchUserSponsors = userID => ({
   type: FETCH_USER_SPONSORS,
-  payload: {userID}
+  payload: { userID }
 });
 
-export const fetchUserSponsorsSuccess = (sponsors) => ({
+export const fetchUserSponsorsSuccess = sponsors => ({
   type: FETCH_USER_SPONSORS_SUCCESS,
-  payload: {sponsors}
+  payload: { sponsors }
 });
 
-export const fetchUserSponsorsFailure = (err) => ({
-  type:FETCH_USER_SPONSORS_FAILURE,
-  payload: {err}
+export const fetchUserSponsorsFailure = err => ({
+  type: FETCH_USER_SPONSORS_FAILURE,
+  payload: { err }
 });
 
 export const fetchSponsorDetail = (sponsorID, userID) => ({
   type: FETCH_SPONSOR_DETAIL,
-  payload: {sponsorID, userID}
+  payload: { sponsorID, userID }
 });
 
-export const fetchSponsorDetailSuccess = (sponsorDetail) => ({
+export const fetchSponsorDetailSuccess = sponsorDetail => ({
   type: FETCH_SPONSOR_DETAIL_SUCCESS,
-  payload: {sponsorDetail}
+  payload: { sponsorDetail }
 });
 
-export const fetchSponsorDetailFailure = (err) => ({
+export const fetchSponsorDetailFailure = err => ({
   type: FETCH_SPONSOR_DETAIL_FAILURE,
-  payload: {err}
+  payload: { err }
 });
 
 export const postSponsor = () => ({
@@ -261,21 +262,30 @@ export const postSponsorSuccess = () => ({
   payload: {}
 });
 
-export const postSponsorFailure = (err) => ({
+export const postSponsorFailure = err => ({
   type: POST_SPONSOR_FAILURE,
-  payload: {err}
+  payload: { err }
 });
 
-export const postBid = (form) => ({
+export const postBid = form => ({
   type: POST_BID,
-  payload: {form}
+  payload: { form }
 });
 
-export const postBidSuccess = () => ({
-  type: POST_BID_SUCCESS
+export const postBidSuccess = (participaciones, cantidad) => ({
+  type: POST_BID_SUCCESS,
+  payload: { participaciones, cantidad }
 });
 
-export const postBidFailure = (err) => ({
+export const postBidFailure = err => ({
   type: POST_BID_FAILURE,
-  payload: {err}
+  payload: { err }
+});
+
+export const clearError = () => ({
+  type: CLEAR_ERROR
+});
+
+export const clearSuccess = () => ({
+  type: CLEAR_SUCCESS
 });
