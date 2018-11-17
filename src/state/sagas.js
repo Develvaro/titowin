@@ -471,11 +471,17 @@ function* postSponsorProcess(action) {
   }
 }
 
+const USER_NOT_LOGGED_IN_EXCEPTION = new Error("USER_NOT_LOGGED_IN");
+
 function* postBidProcess(action) {
   try {
     const user = yield select(state => state.profile);
     const eventDetail = yield select(state => state.eventDetail);
     const { form } = action.payload;
+
+    if (!user) {
+      throw USER_NOT_LOGGED_IN_EXCEPTION;
+    }
 
     const { participaciones, cantidad } = form;
 
@@ -494,11 +500,17 @@ function* postBidProcess(action) {
     }
     yield put(postBidSuccess(participaciones, cantidad));
   } catch (e) {
-    yield put(postBidFailure(e.message));
+    yield put(
+      postBidFailure(
+        e === USER_NOT_LOGGED_IN_EXCEPTION
+          ? "Debes estar logeado"
+          : "Ha habido un error pujando"
+      )
+    );
   }
 }
 
-function* postSuccessProcess() {
+function* successProcess() {
   yield call(delay, 3000);
   yield put(clearSuccess());
 }
@@ -567,8 +579,8 @@ function* watchPostBid() {
   yield takeEvery(POST_BID, postBidProcess);
 }
 
-function* watchPostSuccess() {
-  yield takeEvery([POST_BID_SUCCESS], postSuccessProcess);
+function* watchSuccess() {
+  yield takeEvery([POST_BID_SUCCESS], successProcess);
 }
 
 function* rootSaga() {
@@ -590,7 +602,7 @@ function* rootSaga() {
     fork(watchFetchPlace),
     fork(watchFetchCityPlaces),
     fork(watchPostBid),
-    fork(watchPostSuccess)
+    fork(watchSuccess)
   ]);
 }
 

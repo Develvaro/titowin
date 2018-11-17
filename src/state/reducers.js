@@ -137,7 +137,7 @@ const sponsorDetail = (state = null, action) => {
 const error = (state = null, action) => {
   switch (action.type) {
     case POST_BID_FAILURE:
-      return "Error en la puja";
+      return action.payload.err;
     case CLEAR_ERROR:
       return null;
     default:

@@ -16,6 +16,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { loginSuccess, fetchProfile } from "./actions";
 import firebase from "firebase";
 import SuccessPopup from "./components/successPopup";
+import ErrorPopup from "./components/errorPopup";
 
 class App extends Component {
   componentDidMount() {
@@ -32,6 +33,7 @@ class App extends Component {
       <Router>
         <div className="App">
           <SuccessPopup />
+          <ErrorPopup />
           <Bar />
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />

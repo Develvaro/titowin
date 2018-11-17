@@ -9,7 +9,7 @@ import {
   fetchCountries,
   fetchCities,
   initialFetch,
-  fetchCityPlaces,
+  fetchCityPlaces
 } from "../actions";
 import { Button } from "reactstrap";
 
@@ -39,7 +39,7 @@ class CardList extends Component {
       selectedCity,
       selectedCountry,
       cityPlaces,
-      selectedPlace,
+      selectedPlace
     } = this.props;
     if (!events) {
       return <p>Cargando</p>;
@@ -97,20 +97,17 @@ class CardList extends Component {
 
         <Button
           color="danger"
-          onClick={() => this.props.fetchEvents(selectedCountry, selectedCity, selectedPlace)}
+          onClick={() =>
+            this.props.fetchEvents(selectedCountry, selectedCity, selectedPlace)
+          }
         >
           Buscar
         </Button>
 
-         <br/> 
-         
-         <strong> Filtros </strong>
-        <Field
-          component={TextInput}
-          name="eventName"
-          id="eventName"
-          /> 
+        <br />
 
+        <strong> Filtros </strong>
+        <Field component={TextInput} name="eventName" id="eventName" />
 
         <Field
           component={Select}
@@ -131,11 +128,12 @@ class CardList extends Component {
         />
         <div>
           {this.props.filterName
-            ? events.map(
-                event =>
-                  event.titulo.toLowerCase().includes(this.props.filterName.toLowerCase()) ? (
-                    <Card {...event} key={event.id} />
-                  ) : null
+            ? events.map(event =>
+                event.titulo
+                  .toLowerCase()
+                  .includes(this.props.filterName.toLowerCase()) ? (
+                  <Card {...event} key={event.id} />
+                ) : null
               )
             : events.map(event => <Card {...event} key={event.id} />)}
         </div>
@@ -162,7 +160,7 @@ const mapDispatchToProps = dispatch => ({
   fetchCountries: () => dispatch(fetchCountries()),
   fetchCities: country => dispatch(fetchCities(country)),
   initialFetch: () => dispatch(initialFetch()),
-  fetchCityPlaces: (cityID) => dispatch(fetchCityPlaces(cityID)),
+  fetchCityPlaces: cityID => dispatch(fetchCityPlaces(cityID))
 });
 
 export default reduxForm({
