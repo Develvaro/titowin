@@ -28,7 +28,9 @@ class MyBids extends Component {
     const { profile, userEventBids } = this.props;
     return (
       <div>
-        <ProfileNav/>
+      <Row>
+        <Col md="3">       <ProfileNav selected="bids"/>  </Col>
+        <Col md="9">
         {
             userEventBids ?
                 userEventBids.map(eventBid => 
@@ -37,6 +39,8 @@ class MyBids extends Component {
                 :
                 <p>Cargando tus pujas.</p>
         }
+        </Col>
+      </Row>
       </div>
     );
   }

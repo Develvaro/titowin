@@ -27,7 +27,7 @@ class DetailTab extends Component{
         header.push(<td>Cantidad</td>);
         header.push(<td>Puesto</td>);
         table.push(<tr>{header}</tr>);
-        for (let i = 0; i <= eventDetail.bids; i++) {
+        for (let i = 0; i <= eventDetail.participaciones; i++) {
           let children = []
           //Inner loop to create children 
             children.push(<td>{eventDetail.bids[i].email}</td>);
@@ -80,22 +80,15 @@ class DetailTab extends Component{
           </TabPane>
           <TabPane tabId="2">
             <Row>
+
               <Col sm="6">
                 <Card body>
-                  <CardTitle>Special Title Treatment</CardTitle>
-                  <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
-              </Col>
-              <Col sm="6">
-                <Card body>
-                  <CardTitle>Special Title Treatment</CardTitle>
+                  <CardTitle>Estado de la subasta</CardTitle>
                   <CardText>
-                    {eventDetail ? <table> {this.createTable()} </table>: "Cargando..."}
+                    {eventDetail ? this.createTable(): "Cargando..."}
 
                                             
                   </CardText>
-                  <Button>Go somewhere</Button>
                 </Card>
               </Col>
             </Row>

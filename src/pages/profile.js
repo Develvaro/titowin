@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import ProfileNav from "../components/profileNav";
+import { Link } from 'react-router-dom'
 
 
 import {
@@ -25,8 +26,9 @@ class Profile extends Component {
     console.log(profile);
     return (
       <div>
-        <ProfileNav/>
-
+        <Row>
+        <Col md="3">       <ProfileNav selected="profile"/>  </Col>
+        <Col md="9"> 
         <Form>
         <FormGroup row> 
             <Label for="name" sm={2}>
@@ -45,19 +47,17 @@ class Profile extends Component {
 
           <FormGroup row> 
             <Label for="name" sm={2}>
-                Correo
+                Validado
             </Label>
             <Col sm={8}>
-              <Input
-                type="text"
-                name="email"
-                id="name"
-                placeholder={profile ? profile.email : ""}
-                disabled
-              />
+            {profile ? profile.validado ? "Usuario validado" : "Usuario no validado" : "Cargando ..."}
+            {profile ? !profile.validado ? <Col sm="{8}"> <Button color="danger"><Link to="/validate">Validar</Link></Button></Col> : "" : ""}
             </Col>
+
           </FormGroup>
         </Form>
+        </Col>
+        </Row>
       </div>
     );
   }

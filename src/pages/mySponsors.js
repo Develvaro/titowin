@@ -29,7 +29,9 @@ class MySponsors extends Component {
     const { profile, userSponsors } = this.props;
     return (
       <div>
-        <ProfileNav/>
+        <Row>
+        <Col md={{size: 3}}>       <ProfileNav selected="sponsors"/>  </Col>
+        <Col md="9">
         {
             userSponsors ?
                 userSponsors.map(sponsor => 
@@ -38,6 +40,9 @@ class MySponsors extends Component {
                 :
                 <p>Cargando tus sponsors.</p>
         }
+        </Col>
+        {/* <Col md="1"> </Col > */}
+        </Row>
       </div>
     );
   }
