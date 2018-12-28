@@ -12,6 +12,7 @@ import {
   fetchCityPlaces
 } from "../actions";
 import { Button } from "reactstrap";
+import { Row, Col } from 'reactstrap';
 
 import Select from "./form/select";
 import TextInput from "./form/textinput";
@@ -19,13 +20,56 @@ import TextInput from "./form/textinput";
 import Card from "./card";
 
 class CardList extends Component {
+
+  isFirst(){
+    if (this.state.count % this.state.numElemRow == 1)
+      {
+        return true;
+      }
+      else{
+        return false;
+      }
+  }
+
+  isLast(){
+    if (this.state.count % this.state.numElemRow == 1)
+    {
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  incrementCount() {
+    this.setState((state) => {
+      // Important: read `state` instead of `this.state` when updating.
+      return {count: (state.count % state.numElemRow ) + 1}
+    });
+  }
+
   componentDidMount() {
     const { initialFetch } = this.props;
+    //TODO Aquí el setState?
+    this.setState((state) => {
+      // Important: read `state` instead of `this.state` when updating.
+      return {
+        count: 0,
+        numElemRow : 5
+      }
+    });
     initialFetch();
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.selectedCountry !== prevProps.selectedCountry) {
+
+      this.setState((state) => {
+        return {
+          count: 0,
+        }
+      });
+
       this.props.fetchEvents(this.props.selectedCountry);
       this.props.fetchCities(this.props.selectedCountry);
     }
@@ -41,74 +85,111 @@ class CardList extends Component {
       cityPlaces,
       selectedPlace
     } = this.props;
+
+
     if (!events) {
       return <p>Cargando</p>;
     }
 
     return (
       <div>
-        <Field
-          component={Select}
-          name="country"
-          id="country"
-          options={countries.map(country => ({
-            name: country.nombre,
-            value: country.nombre
-          }))}
-          onChangeFn={country => this.props.fetchCities(country)}
-        />
+        <Row>
+          <Col md="4"><span></span></Col>
+          <Col md="4"><h5>Eventos</h5></Col>
+          <Col md="4"><span></span></Col>
+        </Row>
+        <Row >
+          <Col md="3"><span></span></Col>
+          <Col md="2">
+          <Field
+            component={Select}
+            name="country"
+            id="country"
+            options={countries.map(country => ({
+              name: country.nombre,
+              value: country.nombre
+            }))}
+            onChangeFn={country => this.props.fetchCities(country)}
+          />
+          </Col>
+          
+          <Col md="2">
+          <Field
+            component={Select}
+            name="city"
+            id="city"
+            options={[
+              {
+                name: "Todas",
+                value: ""
+              },
+              ...(cities
+                ? cities.map(city => ({
+                    name: city.nombre,
+                    value: city.nombre
+                  }))
+                : {})
+            ]}
+            onChangeFn={city => this.props.fetchCityPlaces(city)}
+          />
+          </Col>
 
-        <Field
-          component={Select}
-          name="city"
-          id="city"
-          options={[
-            {
-              name: "Todas",
-              value: ""
-            },
-            ...(cities
-              ? cities.map(city => ({
-                  name: city.nombre,
-                  value: city.nombre
-                }))
-              : {})
-          ]}
-          onChangeFn={city => this.props.fetchCityPlaces(city)}
-        />
+          <Col md="2">
+          <Field
+            component={Select}
+            name="place"
+            id="place"
+            options={[
+              {
+                name: "Todos",
+                value: ""
+              },
+              ...(cityPlaces
+                ? cityPlaces.map(place => ({
+                    name: place.nombre,
+                    value: place.id
+                  }))
+                : {})
+            ]}
+          />
+          </Col>
+          <Col md="3"><span></span></Col>
 
-        <Field
-          component={Select}
-          name="place"
-          id="place"
-          options={[
-            {
-              name: "Todos",
-              value: ""
-            },
-            ...(cityPlaces
-              ? cityPlaces.map(place => ({
-                  name: place.nombre,
-                  value: place.id
-                }))
-              : {})
-          ]}
-        />
+        </Row>
+        <br></br>
+        <Row>
+          <Col md="5"><span></span></Col>
+          <Col md="2">
+            <Button
+              color="danger"
+              onClick={() =>
+                this.props.fetchEvents(selectedCountry, selectedCity, selectedPlace)
+              }
+            >
+              Buscar
+            </Button>
+              </Col>
+          <Col md="5"><span></span></Col>
+       
+        </Row>
+        
 
-        <Button
-          color="danger"
-          onClick={() =>
-            this.props.fetchEvents(selectedCountry, selectedCity, selectedPlace)
-          }
-        >
-          Buscar
-        </Button>
+
 
         <br />
-
         <strong> Filtros </strong>
-        <Field component={TextInput} name="eventName" id="eventName" />
+        <br/>
+        <Row>
 
+          <Col md="3"><span></span></Col>
+          <Col md="1"><label for="eventName">Nombre </label></Col>
+          
+          <Col md="2">
+            <Field component={TextInput} name="eventName" id="eventName" />
+          </Col>
+        <Col md="1"><label for="category">Tipo</label></Col>
+        <Col md="2">
+        
         <Field
           component={Select}
           name="category"
@@ -126,17 +207,26 @@ class CardList extends Component {
               : {})
           ]}
         />
-        <div>
-          {this.props.filterName
-            ? events.map(event =>
-                event.titulo
-                  .toLowerCase()
-                  .includes(this.props.filterName.toLowerCase()) ? (
-                  <Card {...event} key={event.id} />
-                ) : null
-              )
-            : events.map(event => <Card {...event} key={event.id} />)}
-        </div>
+        </Col>
+        <Col md="3"><span></span></Col>
+        </Row>
+
+        <Row>
+
+          <div>
+            {this.props.filterName
+              ? events.map(event =>
+                  event.titulo
+                    .toLowerCase()
+                    .includes(this.props.filterName.toLowerCase()) ? (
+                    <Card {...event} key={event.id} />
+                  ) : null
+                )
+              : events.map(event => <Col md="2"> <Card {...event} key={event.id} /> </Col>
+              )}
+          </div>
+        </Row>
+
       </div>
     );
   }

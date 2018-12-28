@@ -13,22 +13,25 @@ import {
 
 import React from 'react';
 import {connect} from 'react-redux';
-import {login, logout} from '../actions'
+import {login, logout, fetch_profile} from '../actions'
 
 const Bar = ({login, logout, user}) => (
     <div>
-        <Navbar color="light" light expand="md">
-          <NavbarBrand href="/">TitoWin</NavbarBrand>
+        <Navbar color="danger" light expand="md">
+          <NavbarBrand className="text-white" href="/">TitoWin</NavbarBrand>
           <NavbarToggler /*onClick={}*/ />
           <Collapse /*isOpen={}*/ navbar>
             <Nav className="ml-auto" navbar>
-              <NavItem>
-                <NavLink href="/components/">Components</NavLink>
-              </NavItem>
+              {user ?
+                <NavItem>
+                  <NavLink className="text-white" href="/profile">{user.displayName}</NavLink>
+                </NavItem> : <span></span>
+              }
+
               <NavItem>
                 {!user ? 
-                    <NavLink href="#" onClick={login}> Acceder </NavLink>
-                    : <p>{user.displayName} <NavLink href="#" onClick={logout}> Salir </NavLink> </p>
+                    <NavLink className="text-white" href="#" onClick={login}>  Acceder</NavLink>
+                    : <NavLink className="text-white" href="#" onClick={logout}> Salir </NavLink> 
                 }
               </NavItem>
               {/* <UncontrolledDropdown nav inNavbar>

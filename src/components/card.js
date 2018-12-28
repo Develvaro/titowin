@@ -21,15 +21,17 @@ const Imagen = styled.div`
 const Card = ( {titulo, categoria, fecha, place, pujaActual, id, urlPhoto} ) => {
 
     return(
-        <Link to={`/event/${id}`}>
-        <Container>
-            <Imagen url={urlPhoto} />
-            <span> <strong>Evento: </strong> {titulo} </span>
-            <span> <strong>Categoría: </strong> {categoria} </span>
-            <span> <strong>Fecha: </strong> {moment(fecha).format('MMMM Do YYYY, h:mm:ss a')} </span>
-            <span> <strong>Lugar: </strong> {place.nombre} </span>
-        </Container>
-        </Link>
+        <div>
+            <Link to={`/event/${id}`}>
+            <Container>
+                <Imagen url={urlPhoto} />
+                <span> <strong>Evento: </strong> {titulo} </span>
+                <span> <strong>Categoría: </strong> {categoria} </span>
+                <span> <strong>Fecha: </strong> {moment(fecha).format('MMMM Do YYYY, h:mm:ss a')} </span>
+                <span> <strong>Lugar: </strong> {place.nombre} </span>
+            </Container>
+            </Link>
+        </div>
     );
 }
 

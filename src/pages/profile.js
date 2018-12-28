@@ -47,7 +47,7 @@ class Profile extends Component {
 
           <FormGroup row> 
             <Label for="name" sm={2}>
-                Validado
+                Estado
             </Label>
             <Col sm={8}>
             {profile ? profile.validado ? "Usuario validado" : "Usuario no validado" : "Cargando ..."}
