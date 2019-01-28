@@ -11,12 +11,16 @@ import MyBids from "./pages/myBids";
 import SponsorDetail from "./pages/sponsorDetail";
 import MySponsors from "./pages/mySponsors";
 import AddEvent from "./components/addEvent";
+import ValidateCompanies from "./components/validateCompanies"
+import ValidateMe from "./components/validateMe"
 import EventDetail from "./pages/eventDetail";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { loginSuccess, fetchProfile } from "./actions";
 import firebase from "firebase";
 import SuccessPopup from "./components/successPopup";
 import ErrorPopup from "./components/errorPopup";
+import '@trendmicro/react-sidenav/dist/react-sidenav.css';
+import validateMe from "./components/validateMe";
 
 class App extends Component {
   componentDidMount() {
@@ -54,8 +58,10 @@ class App extends Component {
             component={this.props.user && SponsorDetail}
           />
           <Route path="/manage/addEvent" component={AddEvent} />
-          <Route path="/event/:id" component={EventDetail} />
+          <Route path="/admin/validateCompanies" component={ValidateCompanies} />
 
+          <Route path="/event/:id" component={EventDetail} />
+          <Route path="/validateme" component={ValidateMe} />
           {/* <Route exact path="/profile" component={Profile} />
           <Route exact path="/admin" component={Admin} />
           <Route path="/admin/editEvent/:id" component={EditEvent} />

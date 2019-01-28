@@ -19,7 +19,9 @@ import {
   POST_BID_FAILURE,
   CLEAR_ERROR,
   POST_BID_SUCCESS,
-  CLEAR_SUCCESS
+  CLEAR_SUCCESS,
+  POST_VALIDATE_ME_FAILURE,
+  POST_VALIDATE_ME_SUCCESS,
 } from "../actions/type";
 
 const events = (state = null, action) => {

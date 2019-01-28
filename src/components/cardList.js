@@ -2,6 +2,8 @@ import React, { Component } from "react";
 
 import { reduxForm, Field } from "redux-form";
 import styled from "styled-components";
+import Spinner from 'react-spinner-material';
+
 import { connect } from "react-redux";
 import { formValueSelector } from "redux-form";
 import {
@@ -88,7 +90,11 @@ class CardList extends Component {
 
 
     if (!events) {
-      return <p>Cargando</p>;
+      return         <Row>
+      <Col md="4"><span></span></Col>
+      <Col md="4"><p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p></Col>
+      <Col md="4"><span></span></Col>
+    </Row>;
     }
 
     return (

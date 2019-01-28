@@ -27,7 +27,7 @@ class Profile extends Component {
     return (
       <div>
         <Row>
-        <Col md="3">       <ProfileNav selected="profile"/>  </Col>
+        <Col md="3">       <ProfileNav/>  </Col>
         <Col md="9"> 
         <Form>
         <FormGroup row> 
@@ -51,7 +51,7 @@ class Profile extends Component {
             </Label>
             <Col sm={8}>
             {profile ? profile.validado ? "Usuario validado" : "Usuario no validado" : "Cargando ..."}
-            {profile ? !profile.validado ? <Col sm="{8}"> <Button color="danger"><Link to="/validate">Validar</Link></Button></Col> : "" : ""}
+            {profile ? !profile.validado ? <Col sm="{8}"> <Button color="danger"><Link to="/validateme">Validar</Link></Button></Col> : "" : ""}
             </Col>
 
           </FormGroup>

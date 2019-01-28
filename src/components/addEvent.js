@@ -158,7 +158,6 @@ const minValue1 = minValue(1);
 const validate = ({eventName, eventDate, imgupload, category, bidDate, bidTime, startBid, increment, participaciones}) => ({
   eventName: required(eventName),
   eventDate: required(eventDate) || isAfterToday(eventDate),
-  imgupload: required(imgupload),
   startBid: minValue0(startBid) || required(startBid),
   increment: minValue1(increment) || required(increment),
   bidDate: required(bidDate) || isAfterToday(bidDate) || isBeforeEvent(bidDate,eventDate),

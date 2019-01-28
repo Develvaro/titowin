@@ -48,7 +48,10 @@ import {
   POST_BID_SUCCESS,
   POST_BID_FAILURE,
   CLEAR_ERROR,
-  CLEAR_SUCCESS
+  CLEAR_SUCCESS,
+  POST_VALIDATE_ME,
+  POST_VALIDATE_ME_SUCCESS,
+  POST_VALIDATE_ME_FAILURE,
 } from "./type";
 
 export const fetchEvents = (pais, ciudad) => ({
@@ -289,3 +292,18 @@ export const clearError = () => ({
 export const clearSuccess = () => ({
   type: CLEAR_SUCCESS
 });
+
+
+export const postValidateMe = form => ({
+  type: POST_VALIDATE_ME,
+  payload: {form}
+});
+
+export const postValidateMeSuccess = () => ({
+  type: POST_VALIDATE_ME_SUCCESS,
+});
+
+export const postValidateMeFailure = (err) => ({
+  type: POST_VALIDATE_ME_FAILURE,
+  payload: {err}
+})

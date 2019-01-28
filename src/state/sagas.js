@@ -22,7 +22,8 @@ import {
   POST_SPONSOR,
   FETCH_PLACE,
   FETCH_CITY_PLACES,
-  POST_BID_SUCCESS
+  POST_BID_SUCCESS,
+  POST_VALIDATE_ME
 } from "../actions/type";
 import {
   fetchEventsFailure,
@@ -61,7 +62,9 @@ import {
   postEventSuccess,
   postBidSuccess,
   postBidFailure,
-  clearSuccess
+  clearSuccess,
+  postValidateMeSuccess,
+  postValidateMeFailure,
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
@@ -322,6 +325,53 @@ function* initialFetchProcess() {
   }
 }
 
+function* postValidateMeProcess(action){
+  try{
+
+
+    const id = uuid();
+
+    const user = yield select(state => state.profile);
+
+    const { form } = action.payload;
+
+    const {
+      companyName,
+      phone,
+      nif,
+      email,
+      //imgupload,
+      place,
+    } = form;
+
+    //const storageRef = firebase
+    //  .storage()
+    //  .ref(`Validar/${id}.${mime.getExtension(imgupload[0].type)}`);
+
+    //const task = yield call([storageRef, "put"], imgupload[0]);
+    //const ref = task.ref;
+    //const url = yield call([ref, "getDownloadURL"]);
+
+
+    const result = databaseRef.collection("PeticionEmpresa").doc(id);
+
+    yield call([result, "set"], {
+      empresa: companyName,
+      telefono: phone,
+      nif: nif,
+      email: email,
+      //urlPhoto: url,
+      place: place,
+    });
+
+    yield put(postValidateMeSuccess());
+  }
+  catch(e){
+    yield put(postValidateMeFailure(e));
+  }
+}
+
+
 function* postEventProcess(action) {
   try {
     const id = uuid();
@@ -441,6 +491,8 @@ function* fetchSponsorDetailProcess(action) {
     yield put(fetchSponsorDetailFailure(e));
   }
 }
+
+
 
 function* fetchUserSponsorsProcess(action) {
   try {
@@ -583,6 +635,10 @@ function* watchSuccess() {
   yield takeEvery([POST_BID_SUCCESS], successProcess);
 }
 
+function* watchPostValidateMe() {
+    yield takeEvery([POST_VALIDATE_ME], postValidateMeProcess);
+}
+
 function* rootSaga() {
   yield all([
     fork(watchFetchEvents),
@@ -602,7 +658,8 @@ function* rootSaga() {
     fork(watchFetchPlace),
     fork(watchFetchCityPlaces),
     fork(watchPostBid),
-    fork(watchSuccess)
+    fork(watchSuccess),
+    fork(watchPostValidateMe),
   ]);
 }
 

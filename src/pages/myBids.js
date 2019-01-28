@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import ProfileNav from "../components/profileNav";
+import Spinner from 'react-spinner-material';
+
 import {
     fetchUserEventBids
 } from '../actions';
@@ -37,8 +39,9 @@ class MyBids extends Component {
                     <p>{eventBid.eventID}</p>
                 )
                 :
-                <p>Cargando tus pujas.</p>
-        }
+                
+                <div><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></div>
+              }
         </Col>
       </Row>
       </div>
