@@ -6,12 +6,10 @@ const FileInput = ({
   name,
   id,
   placeholder,
-  meta: { touched, error, warning }
 }) => (
   <div>
     <Input
-      valid={touched && !error}
-      invalid={touched && error}
+
       type="file"
       {...restInput}
       value={value}
@@ -20,9 +18,7 @@ const FileInput = ({
       placeholder={placeholder}
     />
 
-    {touched &&
-      ((error && <FormFeedback>{error}</FormFeedback>) ||
-        (warning && <span>{warning}</span>))}
+
   </div>
 );
 

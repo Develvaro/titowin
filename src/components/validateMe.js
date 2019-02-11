@@ -112,9 +112,19 @@ class ValidateMe extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup row>
-                <Label for="imgupload" sm={2}>Imágen del Evento</Label>
-                <Col sm={10}><Field name="imgupload" id="imgupload" component={FileInput}></Field></Col>
+          <FormGroup row> 
+            <Label for="fileurl" sm={2}>
+            File
+            </Label>
+            <Col sm={8}>
+              <Field
+                component={TextInput}
+                type="text"
+                name="fileurl"
+                id="fileurl"
+                placeholder="fileReference"
+              />
+            </Col>
           </FormGroup>
 
           <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" type="submit" /*disabled={invalid}*/>Validar</Button> </Col> </Row>
@@ -138,7 +148,7 @@ const mapStateToProps = (state) => ({
   email: filterSelector(state, "email"),
   imgupload: filterSelector(state, "imgupload"),
   place: filterSelector(state, "place"),
-
+  fileurl: filterSelector(state, "fileurl"),
   profile: state.profile,
   user: state.user,
 });

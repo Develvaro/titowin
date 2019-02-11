@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import moment from 'moment';
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { formValueSelector } from "redux-form";
 import {
-  postEvent, fetchEventBid,
+  postNewForm,
 } from '../actions'
 
 import {
@@ -30,13 +29,13 @@ import FileInput from "./form/fileinput";
 import TimePicker from "./form/timepicker";
 import NumberInput from "./form/numberinput";
 
-class AddEvent extends Component {
+class PostNewForm extends Component {
   render() {
 
-    const {postEvent, handleSubmit, invalid} = this.props;
+    const {postNewForm, handleSubmit, invalid} = this.props;
     return (
       <div>
-        <form onSubmit={handleSubmit(postEvent)}>
+        <form onSubmit={handleSubmit(postNewForm)}>
           <FormGroup row> 
             <Label for="name" sm={2}>
               Nombre del Evento
@@ -155,7 +154,7 @@ const minValue0 = minValue(0);
 const minValue1 = minValue(1);
 
 
-const validate = ({eventName, eventDate, category, bidDate, bidTime, startBid, increment, participaciones}) => ({
+const validate = ({eventName, eventDate, imgupload, category, bidDate, bidTime, startBid, increment, participaciones}) => ({
   eventName: required(eventName),
   eventDate: required(eventDate) || isAfterToday(eventDate),
   startBid: minValue0(startBid) || required(startBid),
@@ -165,10 +164,9 @@ const validate = ({eventName, eventDate, category, bidDate, bidTime, startBid, i
 });
 
 const mapDispatchToProps = dispatch => ({
-  postEvent: (data) => dispatch(postEvent(data)),
+  postNewForm: (data) => dispatch(postNewForm(data)),
 });
 
-export default reduxForm({ form: "add-event", 
-validate })
+export default reduxForm({ form: "PostNewForm", validate })
 
-(connect(mapStateToProps,mapDispatchToProps)(AddEvent));
+(connect(mapStateToProps,mapDispatchToProps)(PostNewForm));

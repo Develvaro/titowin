@@ -52,7 +52,45 @@ import {
   POST_VALIDATE_ME,
   POST_VALIDATE_ME_SUCCESS,
   POST_VALIDATE_ME_FAILURE,
+  FETCH_VALIDATION_REQUESTS,
+  FETCH_VALIDATION_REQUESTS_SUCCESS,
+  FETCH_VALIDATION_REQUESTS_FAILURE,
+  POST_VALIDATE_COMPANY_SUCCESS,
+  POST_VALIDATE_COMPANY_FAILURE,
+  POST_VALIDATE_COMPANY,
+  FETCH_VALIDATION_COMPANY_DETAIL,
+  FETCH_VALIDATION_COMPANY_DETAIL_FAILURE,
+  FETCH_VALIDATION_COMPANY_DETAIL_SUCCESS,
 } from "./type";
+
+export const fetchValidationCompanyDetail = (validationID) => ({
+  type: FETCH_VALIDATION_COMPANY_DETAIL,
+  payload: {validationID}
+});
+
+export const fetchValidationCompanyDetailSuccess = (detail) =>({
+  type: FETCH_VALIDATION_COMPANY_DETAIL_SUCCESS,
+  payload: { detail} 
+});
+
+export const fetchValidationCompanyDetailFailure = (err) => ({
+  type: FETCH_VALIDATION_COMPANY_DETAIL_FAILURE,
+  payload: {err}
+});
+
+export const postValidateCompany = (validationID) => ({
+  type: POST_VALIDATE_COMPANY,
+  payload: { validationID }
+});
+
+export const postValidateCompanySuccess = () => ({
+  type: POST_VALIDATE_COMPANY_SUCCESS,
+});
+
+export const postValidateCompanyFailure = (err) => ({
+  type: POST_VALIDATE_COMPANY_FAILURE,
+  payload: {err}
+});
 
 export const fetchEvents = (pais, ciudad) => ({
   type: FETCH_EVENTS,
@@ -307,3 +345,17 @@ export const postValidateMeFailure = (err) => ({
   type: POST_VALIDATE_ME_FAILURE,
   payload: {err}
 })
+
+export const fetchValidationRequests = () => ({
+  type: FETCH_VALIDATION_REQUESTS,
+});
+
+export const fetchValidationRequestsSuccess = (requests) => ({
+  type: FETCH_VALIDATION_REQUESTS_SUCCESS,
+  payload: {requests}
+});
+
+export const fetchValidationRequestsFailure = (err) => ({
+  type: FETCH_VALIDATION_REQUESTS_FAILURE,
+  payload: {err}
+});

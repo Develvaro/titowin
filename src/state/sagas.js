@@ -23,7 +23,10 @@ import {
   FETCH_PLACE,
   FETCH_CITY_PLACES,
   POST_BID_SUCCESS,
-  POST_VALIDATE_ME
+  POST_VALIDATE_ME,
+  FETCH_VALIDATION_REQUESTS,
+  POST_VALIDATE_COMPANY,
+  FETCH_VALIDATION_COMPANY_DETAIL,
 } from "../actions/type";
 import {
   fetchEventsFailure,
@@ -65,10 +68,73 @@ import {
   clearSuccess,
   postValidateMeSuccess,
   postValidateMeFailure,
+  fetchValidationRequestsSuccess,
+  fetchValidationRequestsFailure,
+  postValidateCompanySuccess,
+  postValidateCompanyFailure,
+  fetchValidationCompanyDetailSuccess,
+  fetchValidationCompanyDetailFailure,
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
 import { getCountryByLocale } from "../utils/countries";
+
+function* fetchValidationCompanyDetailProcess(action){
+  try{
+    const { validationID } = action.payload;
+
+    const validationRef = databaseRef
+      .collection("PeticionEmpresa")
+      .doc(validationID);
+
+    const doc = yield call([validationRef, "get"]);
+      yield put(fetchValidationCompanyDetailSuccess(doc.data()));
+  }
+  catch(e){
+    yield put(fetchValidationCompanyDetailFailure(e));
+  }
+}
+
+
+function* postValidateCompanyProcess(action){
+  try{
+
+    const {
+      validationID
+    } = action.payload;
+
+    const validationRef = databaseRef.collection("PeticionEmpresa").doc(validationID);
+    const validationDoc = yield call([validationRef,'get']);
+    const validationData = validationDoc.data();
+    const userID = validationData.userID;
+
+    const userRef = databaseRef.collection("Usuario").doc(userID);
+        // Get a new write batch
+    var batch = databaseRef.batch();
+
+    // Set the value of 'NYC'
+    batch.set(userRef, {
+      validado: true, 
+      email_empresa: validationData.email,
+      nif: validationData.nif,
+      companyPlace: validationData.place,
+      telefono: validationData.telefno,
+      fileurl: validationData.fileurl,
+    });
+
+    // Delete the city 'LA'
+    batch.delete(validationRef);
+
+    // Commit the batch
+    yield call([batch,'commit']);
+
+    yield put(postValidateCompanySuccess());
+
+  }
+  catch (e){
+    yield put(postValidateCompanyFailure(e))
+  }
+}
 
 function* fetchEventDetailProcess(action) {
   try {
@@ -111,7 +177,26 @@ function* fetchEventDetailProcess(action) {
     yield put(fetchEventDetailFailure(e));
   }
 }
+function * fetchValidationRequestsProcess(){
+  try{
+    const requestsRef = databaseRef.collection("PeticionEmpresa");
 
+    const {docs} = yield call([requestsRef, "get"]);
+
+    const requests = docs.map(doc => doc.data());
+
+    yield put(fetchValidationRequestsSuccess(requests));
+
+  }
+  catch(e){
+    yield put(fetchValidationRequestsFailure(e))
+  }
+}
+
+function * watchFetchValidationRequests(){
+  yield takeEvery(FETCH_VALIDATION_REQUESTS, fetchValidationRequestsProcess);
+
+}
 function* fetchEventProcess(action) {
   try {
     const { pais, ciudad, place } = action.payload;
@@ -328,7 +413,6 @@ function* initialFetchProcess() {
 function* postValidateMeProcess(action){
   try{
 
-
     const id = uuid();
 
     const user = yield select(state => state.profile);
@@ -340,7 +424,7 @@ function* postValidateMeProcess(action){
       phone,
       nif,
       email,
-      //imgupload,
+      fileurl,
       place,
     } = form;
 
@@ -356,11 +440,13 @@ function* postValidateMeProcess(action){
     const result = databaseRef.collection("PeticionEmpresa").doc(id);
 
     yield call([result, "set"], {
+      userID: user.id,
       empresa: companyName,
       telefono: phone,
       nif: nif,
       email: email,
-      //urlPhoto: url,
+      id: id,
+      fileurl: fileurl,
       place: place,
     });
 
@@ -391,11 +477,12 @@ function* postEventProcess(action) {
       increment,
       participaciones
     } = form;
-
+    console.log("Antes de la referencia");
     const storageRef = firebase
       .storage()
       .ref(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
 
+    console.log("POR AQUI");
     const task = yield call([storageRef, "put"], imgupload[0]);
     const ref = task.ref;
     const url = yield call([ref, "getDownloadURL"]);
@@ -632,11 +719,19 @@ function* watchPostBid() {
 }
 
 function* watchSuccess() {
-  yield takeEvery([POST_BID_SUCCESS], successProcess);
+  yield takeEvery([POST_BID_SUCCESS, POST_VALIDATE_ME], successProcess);
 }
 
 function* watchPostValidateMe() {
     yield takeEvery([POST_VALIDATE_ME], postValidateMeProcess);
+}
+
+function * watchPostValidateCompany() {
+  yield takeEvery(POST_VALIDATE_COMPANY, postValidateCompanyProcess);
+}
+
+function* watchFetchValidationCompanyDetail(){
+  yield takeEvery(FETCH_VALIDATION_COMPANY_DETAIL, fetchValidationCompanyDetailProcess);
 }
 
 function* rootSaga() {
@@ -660,6 +755,9 @@ function* rootSaga() {
     fork(watchPostBid),
     fork(watchSuccess),
     fork(watchPostValidateMe),
+    fork(watchFetchValidationRequests),
+    fork(watchPostValidateCompany),
+    fork(watchFetchValidationCompanyDetail),
   ]);
 }
 

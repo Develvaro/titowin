@@ -8,6 +8,7 @@ import Login from "./components/login";
 import Register from "./components/register";
 import Profile from "./pages/profile";
 import MyBids from "./pages/myBids";
+import ManageUsers from "./pages/manageUsers";
 import SponsorDetail from "./pages/sponsorDetail";
 import MySponsors from "./pages/mySponsors";
 import AddEvent from "./components/addEvent";
@@ -21,6 +22,8 @@ import SuccessPopup from "./components/successPopup";
 import ErrorPopup from "./components/errorPopup";
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import validateMe from "./components/validateMe";
+import ListValidateUsers from "./components/listValidateUsers";
+import ValidateCompanyDetail from "./components/validateCompanyDetail"
 
 class App extends Component {
   componentDidMount() {
@@ -58,10 +61,13 @@ class App extends Component {
             component={this.props.user && SponsorDetail}
           />
           <Route path="/manage/addEvent" component={AddEvent} />
-          <Route path="/admin/validateCompanies" component={ValidateCompanies} />
+          <Route exact path="/admin/users/" component={ManageUsers} />
 
           <Route path="/event/:id" component={EventDetail} />
           <Route path="/validateme" component={ValidateMe} />
+          <Route exact path="/admin/users/listvalidate" component={this.props.user && ListValidateUsers} />
+          <Route path="/admin/users/validatecompany/:id" component={ValidateCompanyDetail}/>
+          
           {/* <Route exact path="/profile" component={Profile} />
           <Route exact path="/admin" component={Admin} />
           <Route path="/admin/editEvent/:id" component={EditEvent} />
@@ -75,7 +81,8 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.user
+  user: state.user,
+  profile: state.profile
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -16,13 +16,35 @@ import {
   FETCH_USER_SPONSORS_SUCCESS,
   FETCH_SPONSOR_DETAIL_SUCCESS,
   FETCH_CITY_PLACES_SUCCESS,
+  FETCH_VALIDATION_REQUESTS,
+  FETCH_VALIDATION_REQUESTS_SUCCESS,
   POST_BID_FAILURE,
   CLEAR_ERROR,
   POST_BID_SUCCESS,
   CLEAR_SUCCESS,
-  POST_VALIDATE_ME_FAILURE,
-  POST_VALIDATE_ME_SUCCESS,
+  POST_VALIDATE_ME,
+  FETCH_VALIDATION_COMPANY_DETAIL,
+  FETCH_VALIDATION_COMPANY_DETAIL_SUCCESS,
+  FETCH_VALIDATION_COMPANY_FAILURE,
 } from "../actions/type";
+
+const companyValidationRequests = (state = null, action) => {
+  switch(action.type) {
+    case FETCH_VALIDATION_REQUESTS_SUCCESS:
+      return action.payload.requests;
+    default:
+      return state;
+  }
+}
+
+const validationCompanyDetail = (state = null, action) => {
+  switch(action.type){
+    case FETCH_VALIDATION_COMPANY_DETAIL_SUCCESS:
+      return action.payload.detail;
+    default:
+      return state;
+  }
+}
 
 const events = (state = null, action) => {
   switch (action.type) {
@@ -159,6 +181,8 @@ const success = (state = successInitialState, action) => {
       return { data: { participaciones, cantidad }, type: "bid" };
     case CLEAR_SUCCESS:
       return successInitialState;
+    case POST_VALIDATE_ME:
+      return {data : {} , type: "postValidate"}
     default:
       return state;
   }
@@ -179,5 +203,7 @@ export default combineReducers({
   sponsorDetail,
   cityPlaces,
   error,
-  success
+  success,
+  companyValidationRequests,
+  validationCompanyDetail,
 });

@@ -11,6 +11,10 @@ const getSuccessMessage = (type, data) => {
       return (
         <div>{`${participaciones} pujas de ${cantidad}€ se han realizado correctamente`}</div>
       );
+      break;
+    case "postValidate":
+        return <div>Su petición de validación ha sido registrada</div>
+        break;
     default:
       return null;
   }
