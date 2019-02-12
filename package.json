@@ -16,6 +16,7 @@
     "npm": "^6.1.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-leaflet": "^2.2.0",
     "react-loader-spinner": "^2.1.0",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",

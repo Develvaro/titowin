@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import ProfileNav from "../components/profileNav";
+import ProfileNav from "../../components/profileNav";
 import {
     fetchUserSponsors
-} from '../actions';
+} from '../../actions';
 
 import {
   Row,
@@ -15,7 +15,7 @@ import {
   Input
 } from "reactstrap";
 
-import TextInput from "../components/form/textinput";
+import TextInput from "../../components/form/textinput";
 import {Field} from "redux-form";
 
 class MySponsors extends Component {

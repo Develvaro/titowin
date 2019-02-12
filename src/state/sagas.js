@@ -103,10 +103,14 @@ function* postValidateCompanyProcess(action){
       validationID
     } = action.payload;
 
+    console.log(validationID);
+
     const validationRef = databaseRef.collection("PeticionEmpresa").doc(validationID);
     const validationDoc = yield call([validationRef,'get']);
     const validationData = validationDoc.data();
     const userID = validationData.userID;
+
+    console.log(userID);
 
     const userRef = databaseRef.collection("Usuario").doc(userID);
         // Get a new write batch
@@ -118,7 +122,7 @@ function* postValidateCompanyProcess(action){
       email_empresa: validationData.email,
       nif: validationData.nif,
       companyPlace: validationData.place,
-      telefono: validationData.telefno,
+      telefono: validationData.telefono,
       fileurl: validationData.fileurl,
     });
 
@@ -132,6 +136,7 @@ function* postValidateCompanyProcess(action){
 
   }
   catch (e){
+    console.log(e);
     yield put(postValidateCompanyFailure(e))
   }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import ProfileNav from "../components/profileNav";
+import ProfileNav from "../../components/profileNav";
 import { Link } from 'react-router-dom'
 
 
@@ -14,7 +14,7 @@ import {
   Input
 } from "reactstrap";
 
-import TextInput from "../components/form/textinput";
+import TextInput from "../../components/form/textinput";
 import {Field} from "redux-form";
 
 class Profile extends Component {

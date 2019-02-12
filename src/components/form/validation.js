@@ -1,5 +1,5 @@
 import moment from 'moment';
-import myBids from '../../pages/myBids';
+import myBids from '../../pages/manage/myBids';
 
 export const required = value => (value || typeof value === 'number' ? undefined : 'Required')
 export const maxLength = max => value =>

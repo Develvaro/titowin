@@ -24,9 +24,9 @@ class ProfileNav extends Component {
                 {profile && ( profile.tipo == "manager" || profile.tipo == "admin" ) &&
                     <div>
 
-                                <Link to ="/manage/event/add"><ListGroupItem className={selected == "addevent" ? "text-white bg-danger" : "text-white bg-dark"}>Añadir Evento</ListGroupItem> </Link>
-                                <Link to ="/manage/event/delete"><ListGroupItem className={selected == "deleteevent" ? "text-white bg-danger" : "text-white bg-dark"}>Eliminar Eventos</ListGroupItem> </Link>
-                                <Link to ="/manage/event/validate"><ListGroupItem className={selected == "validateevent" ? "text-white bg-danger" : "text-white bg-dark"}>Validar Publicidad</ListGroupItem> </Link>
+                                <Link to ="/manage/addevent"><ListGroupItem className={selected == "addevent" ? "text-white bg-danger" : "text-white bg-dark"}>Añadir Evento</ListGroupItem> </Link>
+                                <Link to ="/manage/deleteevent"><ListGroupItem className={selected == "deleteevent" ? "text-white bg-danger" : "text-white bg-dark"}>Eliminar Eventos</ListGroupItem> </Link>
+                                <Link to ="/manage/validateevent"><ListGroupItem className={selected == "validateevent" ? "text-white bg-danger" : "text-white bg-dark"}>Validar Publicidad</ListGroupItem> </Link>
                     </div>
                 }
 
