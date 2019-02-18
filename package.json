@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@brainhubeu/react-file-input": "^0.7.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.0-14",
     "@fortawesome/free-solid-svg-icons": "^5.1.0-11",
     "@fortawesome/react-fontawesome": "0.1.0-11",
@@ -11,6 +12,8 @@
     "connected-react-router": "^4.3.0",
     "firebase": "^5.2.0",
     "i": "^0.3.6",
+    "leaflet": "^1.4.0",
+    "leaflet-geosearch": "^2.7.0",
     "mime": "^2.3.1",
     "moment": "^2.22.2",
     "npm": "^6.1.0",

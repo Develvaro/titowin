@@ -26,7 +26,20 @@ import {
   FETCH_VALIDATION_COMPANY_DETAIL,
   FETCH_VALIDATION_COMPANY_DETAIL_SUCCESS,
   FETCH_VALIDATION_COMPANY_FAILURE,
+  SET_LEAFLET_PLACE,
+  UNSET_LEAFLET_PLACE,
 } from "../actions/type";
+
+const leafletPlace = (state = null, action) => {
+  switch(action.type){
+    case SET_LEAFLET_PLACE:
+      return action.payload.leafletPlace;
+    case UNSET_LEAFLET_PLACE:
+      return null;
+    default:
+      return state;
+  }
+}
 
 const companyValidationRequests = (state = null, action) => {
   switch(action.type) {
@@ -206,4 +219,5 @@ export default combineReducers({
   success,
   companyValidationRequests,
   validationCompanyDetail,
+  leafletPlace,
 });

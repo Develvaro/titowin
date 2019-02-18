@@ -27,6 +27,7 @@ import {
   FETCH_VALIDATION_REQUESTS,
   POST_VALIDATE_COMPANY,
   FETCH_VALIDATION_COMPANY_DETAIL,
+  SET_LEAFLET_PLACE,
 } from "../actions/type";
 import {
   fetchEventsFailure,
@@ -74,10 +75,22 @@ import {
   postValidateCompanyFailure,
   fetchValidationCompanyDetailSuccess,
   fetchValidationCompanyDetailFailure,
+  setLeafletPlace,
+  unSetLeafletPlace,
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
 import { getCountryByLocale } from "../utils/countries";
+
+function* setLeafletPlaceProcess(action){
+  try{
+    const { leafletPlace } = action.payload;
+    yield put(setLeafletPlace(leafletPlace));
+  }
+  catch(e){
+    yield put(unSetLeafletPlace());
+  }
+}
 
 function* fetchValidationCompanyDetailProcess(action){
   try{
@@ -739,6 +752,10 @@ function* watchFetchValidationCompanyDetail(){
   yield takeEvery(FETCH_VALIDATION_COMPANY_DETAIL, fetchValidationCompanyDetailProcess);
 }
 
+function* watchSetLeafletPlace(){
+  yield takeEvery(SET_LEAFLET_PLACE, setLeafletPlaceProcess);
+}
+
 function* rootSaga() {
   yield all([
     fork(watchFetchEvents),
@@ -763,6 +780,7 @@ function* rootSaga() {
     fork(watchFetchValidationRequests),
     fork(watchPostValidateCompany),
     fork(watchFetchValidationCompanyDetail),
+    fork(watchSetLeafletPlace),
   ]);
 }
 

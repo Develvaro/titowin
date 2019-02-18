@@ -61,7 +61,18 @@ import {
   FETCH_VALIDATION_COMPANY_DETAIL,
   FETCH_VALIDATION_COMPANY_DETAIL_FAILURE,
   FETCH_VALIDATION_COMPANY_DETAIL_SUCCESS,
+  SET_LEAFLET_PLACE,
+  UNSET_LEAFLET_PLACE,
 } from "./type";
+
+export const setLeafletPlace = (leafletPlace) => ({
+  type: SET_LEAFLET_PLACE,
+  payload: {leafletPlace}
+});
+
+export const unSetLeafletPlace = ()  => ({
+  type: UNSET_LEAFLET_PLACE,
+});
 
 export const fetchValidationCompanyDetail = (validationID) => ({
   type: FETCH_VALIDATION_COMPANY_DETAIL,

@@ -8,6 +8,8 @@ import {
   postValidateMe,
 } from '../actions'
 
+import Map from '../components/map';
+
 import {
   Row,
   Col,
@@ -25,9 +27,17 @@ import TimePicker from "./form/timepicker";
 import NumberInput from "./form/numberinput";
 
 class ValidateMe extends Component {
+
+    componentDidUpdate(prevProps) {
+      if (!prevProps.leafletPlace && this.props.leafletPlace) {
+          console.log(this.props.leafletPlace);
+      }
+    }
   render() {
 
-    const {postValidateMe, handleSubmit} = this.props;
+
+
+    const {postValidateMe, handleSubmit, leafletPlace } = this.props;
     return (
       
       <div>
@@ -101,15 +111,8 @@ class ValidateMe extends Component {
             <Label for="place" sm={2}>
             Lugar
             </Label>
-            <Col sm={8}>
-              <Field
-                component={TextInput}
-                type="text"
-                name="place"
-                id="place"
-                placeholder="+34666999888"
-              />
-            </Col>
+            <Map width="900px" height="400px"/>
+
           </FormGroup>
 
           <FormGroup row> 
@@ -151,6 +154,7 @@ const mapStateToProps = (state) => ({
   fileurl: filterSelector(state, "fileurl"),
   profile: state.profile,
   user: state.user,
+  leafletPlace: state.leafletPlace,
 });
 
 const mapDispatchToProps = dispatch => ({
