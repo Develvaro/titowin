@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import { reducer as formReducer } from "redux-form";
 import {
+  POST_VALIDATE_ME_SUCCESS,
   FETCH_EVENTS_SUCCESS,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
@@ -28,6 +29,7 @@ import {
   FETCH_VALIDATION_COMPANY_FAILURE,
   SET_LEAFLET_PLACE,
   UNSET_LEAFLET_PLACE,
+  POST_SPONSOR_SUCCESS,
 } from "../actions/type";
 
 const leafletPlace = (state = null, action) => {
@@ -82,7 +84,7 @@ const user = (state = null, action) => {
 const profile = (state = null, action) => {
   switch (action.type) {
     case SET_PROFILE:
-      return action.payload.user;
+      return action.payload.profile;
     case UNSET_PROFILE:
       return null;
     default:
@@ -184,18 +186,24 @@ const error = (state = null, action) => {
 
 const successInitialState = {
   data: null,
-  type: null
+  type: null,
+  redirect: null,
 };
 
 const success = (state = successInitialState, action) => {
+  let redirect = null;
   switch (action.type) {
     case POST_BID_SUCCESS:
       const { participaciones, cantidad } = action.payload;
-      return { data: { participaciones, cantidad }, type: "bid" };
+      return { data: { participaciones, cantidad }, type: "bid"};
     case CLEAR_SUCCESS:
       return successInitialState;
-    case POST_VALIDATE_ME:
-      return {data : {} , type: "postValidate"}
+    case POST_VALIDATE_ME_SUCCESS:
+        redirect  = action.payload.redirect; 
+      return {data : {redirect} , type: "postValidate"}
+    case POST_SPONSOR_SUCCESS:
+        redirect  = action.payload.redirect;
+      return {data: {redirect} , type: "postSponsor"}
     default:
       return state;
   }

@@ -76,6 +76,7 @@ class AddEvent extends Component {
                     name: "Baloncesto"
                   }
                 ]}
+                
               />
             </Col>
           </FormGroup>
@@ -116,7 +117,9 @@ class AddEvent extends Component {
             <Col sm={2}><Field parse={value => Number(value)} name="startBid" id="startBid" component={NumberInput} /></Col>
 
           <Label for="increment" sm={2} >Incremento Mínimo</Label>
-            <Col sm={2}><Field parse={value => Number(value)} name="increment" id="increment" component={NumberInput} /></Col>
+            <Col sm={2}>
+            <Field parse={value => Number(value)} name="increment" id="increment" component={NumberInput} />
+            </Col>
           </FormGroup> 
 
           <FormGroup row>

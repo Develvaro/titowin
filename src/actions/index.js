@@ -63,8 +63,60 @@ import {
   FETCH_VALIDATION_COMPANY_DETAIL_SUCCESS,
   SET_LEAFLET_PLACE,
   UNSET_LEAFLET_PLACE,
+  POST_PLACE,
+  POST_PLACE_FAILURE,
+  POST_PLACE_SUCCESS,
+  POST_VALIDATE_PLACE,
+  POST_VALIDATE_PLACE_SUCCESS,
+  POST_VALIDATE_PLACE_FAILURE,
+  POST_VALIDATE_SPONSOR,
+  POST_VALIDATE_SPONSOR_SUCCESS,
+  POST_VALIDATE_SPONSOR_FAILURE,
+  POST_SPONSOR_SUCCESS,
 } from "./type";
 
+export const postValidatePlace = (form) => ({
+  type: POST_VALIDATE_PLACE,
+  payload: {form}
+});
+
+export const postValidatePlaceSuccess = () => ({
+  type: POST_VALIDATE_PLACE_SUCCESS,
+});
+
+export const postValidatePlaceFailure = (e) => ({
+  type: POST_VALIDATE_PLACE_FAILURE,
+  payload: {e}
+});
+
+export const postValidateSponsor = (data) => ({
+  type: POST_VALIDATE_SPONSOR,
+  payload: {data}
+});
+
+export const postValidateSponsorSuccess = () => ({
+  type: POST_VALIDATE_SPONSOR_SUCCESS,
+});
+
+export const postValidateSponsorFailure = (e) => ({
+  type: POST_VALIDATE_SPONSOR_FAILURE,
+  payload: {e}
+});
+
+
+export const postPlace = (data) => ({
+  type: POST_PLACE,
+  payload: {data}
+});
+
+export const postPlaceSuccess = () => ({
+  type: POST_PLACE_SUCCESS,
+});
+
+export const postPlaceFailure = (e) => ({
+  type: POST_PLACE_FAILURE,
+  payload: {e}
+});
 export const setLeafletPlace = (leafletPlace) => ({
   type: SET_LEAFLET_PLACE,
   payload: {leafletPlace}
@@ -169,9 +221,9 @@ export const fetchProfile = user => ({
   payload: { user }
 });
 
-export const setProfile = user => ({
+export const setProfile = profile => ({
   type: SET_PROFILE,
-  payload: { user }
+  payload: { profile }
 });
 
 export const unSetProfile = () => ({ type: UNSET_PROFILE });
@@ -289,9 +341,9 @@ export const fetchUserSponsorsFailure = err => ({
   payload: { err }
 });
 
-export const fetchSponsorDetail = (sponsorID, userID) => ({
+export const fetchSponsorDetail = (sponsorID) => ({
   type: FETCH_SPONSOR_DETAIL,
-  payload: { sponsorID, userID }
+  payload: { sponsorID }
 });
 
 export const fetchSponsorDetailSuccess = sponsorDetail => ({
@@ -304,14 +356,14 @@ export const fetchSponsorDetailFailure = err => ({
   payload: { err }
 });
 
-export const postSponsor = () => ({
+export const postSponsor = form => ({
   type: POST_SPONSOR,
-  payload: {}
+  payload: {form}
 });
 
-export const postSponsorSuccess = () => ({
-  type: POST_SPONSOR,
-  payload: {}
+export const postSponsorSuccess = (redirect) => ({
+  type: POST_SPONSOR_SUCCESS,
+  payload: {redirect},
 });
 
 export const postSponsorFailure = err => ({
@@ -348,8 +400,9 @@ export const postValidateMe = form => ({
   payload: {form}
 });
 
-export const postValidateMeSuccess = () => ({
+export const postValidateMeSuccess = (redirect) => ({
   type: POST_VALIDATE_ME_SUCCESS,
+  payload: {redirect},
 });
 
 export const postValidateMeFailure = (err) => ({

@@ -17,23 +17,31 @@ class ProfileNav extends Component {
             <div>
             <ListGroup>
                 <Link to="/profile/" ><ListGroupItem className={selected == "profile" ? "text-white bg-danger" : "text-white bg-dark"} >Perfil</ListGroupItem></Link>
-                <Link to="/profile/bids/"><ListGroupItem className={selected == "bids" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Pujas</ListGroupItem></Link>
-                <Link to="/profile/sponsors"><ListGroupItem className={selected == "sponsors" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Anuncios</ListGroupItem></Link>
-                <Link to ="/profile/addsponsor"><ListGroupItem className={selected == "addsponsor" ? "text-white bg-danger" : "text-white bg-dark"}> Subir Anuncio</ListGroupItem> </Link>
+                {profile && ( profile.tipo == "empresa" ) && 
+                        <div>
+                            <Link to="/profile/bids/"><ListGroupItem className={selected == "bids" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Pujas</ListGroupItem></Link>
+                            <Link to="/profile/sponsors"><ListGroupItem className={selected == "sponsors" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Anuncios</ListGroupItem></Link>
+                            <Link to ="/profile/sponsors/add"><ListGroupItem className={selected == "addsponsor" ? "text-white bg-danger" : "text-white bg-dark"}> Subir Anuncio</ListGroupItem> </Link>
 
-                {profile && ( profile.tipo == "manager" || profile.tipo == "admin" ) &&
+                        </div>
+                }
+
+
+                {profile && ( profile.tipo == "manager") &&
                     <div>
-
-                                <Link to ="/manage/addevent"><ListGroupItem className={selected == "addevent" ? "text-white bg-danger" : "text-white bg-dark"}>Añadir Evento</ListGroupItem> </Link>
-                                <Link to ="/manage/deleteevent"><ListGroupItem className={selected == "deleteevent" ? "text-white bg-danger" : "text-white bg-dark"}>Eliminar Eventos</ListGroupItem> </Link>
-                                <Link to ="/manage/validateevent"><ListGroupItem className={selected == "validateevent" ? "text-white bg-danger" : "text-white bg-dark"}>Validar Publicidad</ListGroupItem> </Link>
+                        <Link to ="/manage/myevents"><ListGroupItem className={selected == "myevents" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Eventos</ListGroupItem> </Link>
+                        <Link to ="/manage/addevent"><ListGroupItem className={selected == "addevent" ? "text-white bg-danger" : "text-white bg-dark"}>Añadir Evento</ListGroupItem> </Link>
+                        <Link to ="/manage/deleteevent"><ListGroupItem className={selected == "deleteevent" ? "text-white bg-danger" : "text-white bg-dark"}>Eliminar Eventos</ListGroupItem> </Link>
                     </div>
                 }
 
-                {profile && (profile.tipo = "admin" ) && 
+                {profile && (profile.tipo == "admin" ) && 
             
-                    <Link to ="/admin/users/listvalidate"><ListGroupItem className={selected == "listvalidate" ? "text-white bg-danger" : "text-white bg-dark"}>Validar Usuarios</ListGroupItem> </Link>
-
+                <div>
+                    <Link to ="/admin/validatesponsors"><ListGroupItem className={selected == "validatesponsors" ? "text-white bg-danger" : "text-white bg-dark"}>Validar Sponsors</ListGroupItem> </Link>
+                    <Link to ="/admin/addplaceandmanager"><ListGroupItem className={selected == "addplaceandmanager" ? "text-white bg-danger" : "text-white bg-dark"}>Añadir Lugar y Manager</ListGroupItem></Link>
+                    <Link to ="/admin/validatecompany"><ListGroupItem className={selected == "validatecompany" ? "text-white bg-danger" : "text-white bg-dark"}>Validar Empresa</ListGroupItem></Link>
+                </div>    
                 }
 
 

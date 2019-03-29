@@ -23,7 +23,16 @@ import ErrorPopup from "./components/errorPopup";
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import validateMe from "./components/validateMe";
 import ListValidateUsers from "./components/listValidateUsers";
-import ValidateCompanyDetail from "./pages/manage/validateCompanyDetail"
+import ValidateCompany from "./pages/manage/ValidateCompany"
+
+import DeleteSponsor from "./pages/manage/DeleteSponsor";
+import ManageEvent from "./pages/manage/ManageEvent";
+import AddPlaceAndManager from "./pages/manage/AddPlaceAndManager";
+import ValidateSponsors from "./pages/manage/ValidateSponsors";
+import MyEvents from "./pages/manage/MyEvents";
+import AddEventPage from './pages/manage/AddEventPage';
+import AddSponsorPage from './pages/manage/AddSponsorPage';
+import SponsorDetailPage from './pages/manage/SponsorDetailPage';
 
 class App extends Component {
   componentDidMount() {
@@ -57,17 +66,25 @@ class App extends Component {
             component={this.props.user && MySponsors}
           />
           <Route
-            path="/profile/sponsors/:id"
-            component={this.props.user && SponsorDetail}
-          />
-          <Route path="/manage/addEvent" component={AddEvent} />
-          <Route exact path="/admin/users/" component={ManageUsers} />
+             path="/profile/sponsors/add" component={this.props.user && AddSponsorPage} />
+          <Route exact path="/profile/sponsors/detail/:id" component={this.props.user && SponsorDetailPage} />  
+
+          
+          <Route path="/manage/events" component={MyEvents} />
+          <Route path="/manage/events/:id" component={ManageEvent} />
+          <Route path="/manage/addevent" component={this.props.profile && this.props.profile.tipo == "manager" && AddEventPage} />
+
+
 
           <Route path="/event/:id" component={EventDetail} />
-          <Route path="/validateme" component={ValidateMe} />
-          <Route exact path="/admin/users/listvalidate" component={this.props.user && ListValidateUsers} />
-          <Route path="/admin/users/validatecompany/:id" component={ValidateCompanyDetail}/>
-          
+         { /* <Route path="/validateme" component={ValidateMe}
+                  <Route exact path="/admin/users/listvalidate" component={this.props.user && ListValidateUsers} />
+
+        /> */ } 
+          <Route path="/admin/validatecompany" component={ValidateCompany}/>
+          <Route path="/admin/addplaceandmanager" component={AddPlaceAndManager}/>
+          <Route path="/admin/validatesponsors" component={ValidateSponsors}/>
+
           {/* <Route exact path="/profile" component={Profile} />
           <Route exact path="/admin" component={Admin} />
           <Route path="/admin/editEvent/:id" component={EditEvent} />

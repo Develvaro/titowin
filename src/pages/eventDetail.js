@@ -74,8 +74,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     fetchEventDetail: (idEvent) => dispatch(fetchEventDetail(idEvent)),
-    //fetchPlace: (idEvent) => dispatch(fetchPlace(idEvent)),
-    //fetchEventBid: (idEvent) => dispatch(fetchEventBid(idEvent)), 
+
 });
 
 export default connect (mapStateToProps, mapDispatchToProps)(EventDetail);

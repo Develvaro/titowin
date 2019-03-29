@@ -1,8 +1,10 @@
 import { fork, takeEvery, put, call, all, select } from "redux-saga/effects";
+import History from "../config/History";
 import { delay } from "redux-saga";
 import { initialize } from "redux-form";
 import moment from "moment";
 import mime from "mime";
+import axios from 'axios';
 import uuid from "uuid";
 import {
   FETCH_EVENTS,
@@ -24,12 +26,18 @@ import {
   FETCH_CITY_PLACES,
   POST_BID_SUCCESS,
   POST_VALIDATE_ME,
+  POST_VALIDATE_ME_SUCCESS,
   FETCH_VALIDATION_REQUESTS,
   POST_VALIDATE_COMPANY,
   FETCH_VALIDATION_COMPANY_DETAIL,
   SET_LEAFLET_PLACE,
+  POST_PLACE,
+  POST_VALIDATE_PLACE,
+  POST_SPONSOR_SUCCESS,
 } from "../actions/type";
 import {
+  postPlaceSuccess,
+  postPlaceFailure,
   fetchEventsFailure,
   fetchEventsSuccess,
   loginSuccess,
@@ -77,10 +85,158 @@ import {
   fetchValidationCompanyDetailFailure,
   setLeafletPlace,
   unSetLeafletPlace,
+  postValidatePlaceFailure,
+  postValidatePlaceSuccess,
+  postValidatePlace,
+  fetchCityPlaces,
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
 import { getCountryByLocale } from "../utils/countries";
+
+function getCityName(lat, lon) {
+  const cadenaWeb = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon="+ lon +"&accept_language=es&zoom=18&addressdetails=1";
+  console.log(cadenaWeb);
+  return axios.request({
+    method: 'get',
+    url: cadenaWeb,
+  });
+}
+
+
+function* postValidatePlaceProcess(action){
+  try{
+    const id = uuid();
+
+    const { form } = action.payload;
+    console.log(form);
+    const {
+      placename,
+      aforo,
+      photo,
+      lat,
+      lon,
+      email,
+      files,
+    } = form;
+
+    const storageRef = firebase
+    .storage()
+    .ref(`Lugar/${id}`);
+
+    const task = yield call([storageRef, "put"], photo[0]);
+    const ref = task.ref;
+    const urlphoto = yield call([ref, "getDownloadURL"]);
+
+
+    const otherStorageRef = firebase
+    .storage()
+    .ref(`Manager/${email}`);
+    
+    yield call([otherStorageRef, "put"], files[0]);
+
+
+
+    var location = new firebase.firestore.GeoPoint(parseFloat(lat),parseFloat(lon));
+
+    const result = databaseRef.collection("Usuario").where("email", "==", email);
+    const emailDocs = yield call([result, "get"]);
+    const actualizar = databaseRef.collection("Usuario").doc(emailDocs.docs[0].id);
+    
+    const nuevoLugarRef = databaseRef.collection("Lugar").doc(id);
+
+    let {data} = yield call(getCityName , lat, lon );
+
+    var batch = databaseRef.batch();
+
+    batch.update(actualizar,{
+      tipo: "manager",
+      manage: id,
+    });
+
+    batch.set(nuevoLugarRef,{
+      nombre: placename,
+      posicion: location,
+      aforoMax: aforo,
+      ciudad: data.address.city,
+      foto: urlphoto,
+    });
+
+    yield call([batch,'commit']);
+
+    yield put(postValidatePlaceSuccess());
+  }
+  catch(e){
+    console.log(e);
+    yield put(postValidatePlaceFailure(e));
+  }
+}
+
+function * postPlaceProcess(action){
+  try{
+
+    const id = uuid();
+
+    const { form } = action.payload;
+
+    const {
+      peticionID,
+      placeName,
+      aforo,
+      lat,
+      lon,
+      ciudad: ciudad,
+      qr: qr,
+      manager: manager,
+    } = form;
+
+    const result = databaseRef.collection("Lugar").doc(id);
+/*
+    if(manager){
+      const userRef = databaseRef.collection("Usuario").doc(manager);
+      const userDoc = yield call([userRef,'get']);
+      const user = userDoc.data();
+
+      if(user.tipo == "novalidado")
+      {
+            // Get a new write batch
+        var batch = databaseRef.batch();
+
+        // Set the value of 'NYC'
+        batch.set(userRef, {
+          validado: true, 
+          email_empresa: validationData.email,
+          nif: validationData.nif,
+          companyPlace: validationData.place,
+          telefono: validationData.telefono,
+          fileurl: validationData.fileurl,
+        });
+
+        // Delete the city 'LA'
+        batch.delete(validationRef);
+
+        yield call([batch,'commit']);
+
+      }
+    }
+*/
+
+    yield call([result, "set"], {
+      placeName: placeName,
+      aforoMax: aforo,
+      lat: lat,
+      lon: lon,
+      qr: qr,
+      ciudad: ciudad,
+    });
+
+    yield put(postPlaceSuccess());
+
+  }
+  catch(e){
+    yield put(postPlaceFailure(e));
+  }
+}
 
 function* setLeafletPlaceProcess(action){
   try{
@@ -109,7 +265,7 @@ function* fetchValidationCompanyDetailProcess(action){
 }
 
 
-function* postValidateCompanyProcess(action){
+function* postValidateProcess(action){
   try{
 
     const {
@@ -236,8 +392,7 @@ function* fetchEventProcess(action) {
 
     const places = yield all(
       docs.map(event => {
-        console.log(event.data());
-        console.log(event.data());
+
 
         const placeRef = databaseRef
           .collection("Lugar")
@@ -317,13 +472,14 @@ function* fetchProfileProcess(action) {
       const data = {
         id: action.payload.user.uid,
         email: action.payload.user.email,
-        tipo: "empresa",
+        tipo: "new",
         validado: false
       };
       console.log("User does not exist");
       userRef.set(data);
       yield put(setProfile(data));
     } else {
+      //console.log(doc.data());
       yield put(setProfile(doc.data()));
     }
   } catch (err) {
@@ -419,6 +575,7 @@ function* initialFetchProcess() {
     const { docs: result } = yield call([cityRef, "get"]);
     const cities = result.map(doc => doc.data());
     yield put(fetchCitiesSuccess(cities));
+    yield put(fetchCityPlaces(capital));
 
     yield put(initialize("filter", { city: capital }));
 
@@ -433,44 +590,44 @@ function* postValidateMeProcess(action){
 
     const id = uuid();
 
-    const user = yield select(state => state.profile);
-
     const { form } = action.payload;
 
     const {
       companyName,
       phone,
       nif,
+      lat,
+      lon,
       email,
       fileurl,
-      place,
     } = form;
+    var location = new firebase.firestore.GeoPoint(parseFloat(lat),parseFloat(lon));
+    const storageRef = firebase
+      .storage()
+      .ref(`Empresa/${email}`);
 
-    //const storageRef = firebase
-    //  .storage()
-    //  .ref(`Validar/${id}.${mime.getExtension(imgupload[0].type)}`);
-
-    //const task = yield call([storageRef, "put"], imgupload[0]);
-    //const ref = task.ref;
-    //const url = yield call([ref, "getDownloadURL"]);
+    const task = yield call([storageRef, "put"], fileurl[0]);
+    const ref = task.ref;
+    const url = yield call([ref, "getDownloadURL"]);
 
 
-    const result = databaseRef.collection("PeticionEmpresa").doc(id);
-
-    yield call([result, "set"], {
-      userID: user.id,
+    const result = databaseRef.collection("Usuario").where("email", "==", email);
+    const emailDocs = yield call([result, "get"]);
+    const actualizar = databaseRef.collection("Usuario").doc(emailDocs.docs[0].id);
+    
+    yield call([actualizar, "update"], {
       empresa: companyName,
       telefono: phone,
       nif: nif,
-      email: email,
-      id: id,
-      fileurl: fileurl,
-      place: place,
+      place: location,
+      tipo: "empresa",
     });
 
-    yield put(postValidateMeSuccess());
+    const redirect = "/profile";
+    yield put(postValidateMeSuccess(redirect));
   }
   catch(e){
+    console.log(e)
     yield put(postValidateMeFailure(e));
   }
 }
@@ -482,6 +639,9 @@ function* postEventProcess(action) {
     const user = yield select(state => state.profile);
 
     const { form } = action.payload;
+
+
+    console.log(form);
 
     const {
       imgupload,
@@ -495,12 +655,13 @@ function* postEventProcess(action) {
       increment,
       participaciones
     } = form;
-    console.log("Antes de la referencia");
+
+    console.log(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
     const storageRef = firebase
       .storage()
       .ref(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
 
-    console.log("POR AQUI");
+
     const task = yield call([storageRef, "put"], imgupload[0]);
     const ref = task.ref;
     const url = yield call([ref, "getDownloadURL"]);
@@ -582,13 +743,11 @@ function* fetchUserEventBidsProcess(action) {
 
 function* fetchSponsorDetailProcess(action) {
   try {
-    const { sponsorID, userID } = action.payload;
+    const { sponsorID } = action.payload;
 
     const sponsorRef = databaseRef
-      .collection("Usuario")
-      .doc(userID)
-      .collection("Publicidad")
-      .doc(sponsorID);
+      .collection("Sponsors")
+      .doc(sponsorID)
 
     const doc = yield call([sponsorRef, "get"]);
     yield put(fetchSponsorDetailSuccess({ ...doc.data(), id: doc.id }));
@@ -623,7 +782,42 @@ function* fetchUserSponsorsProcess(action) {
 //TODO
 function* postSponsorProcess(action) {
   try {
+    const id = uuid();
+    const user = yield select(state => state.user);
+    console.log(action.payload);
+    const { form } = action.payload;
+
+    console.log(form);
+
+    const {
+      imgupload,
+      nombreanuncio,
+      urlweb,
+    } = form;
+
+    const storageRef = firebase
+      .storage()
+      .ref(`Sponsors/${id}.${mime.getExtension(imgupload[0].type)}`);
+
+
+    const task = yield call([storageRef, "put"], imgupload[0]);
+    const ref = task.ref;
+    const url = yield call([ref, "getDownloadURL"]);
+
+    const sponsorRef = databaseRef.collection("Sponsors").doc(id);
+    yield call([sponsorRef, "set"], {
+      id: id,
+      texto: nombreanuncio,
+      urlPhoto: url,
+      urlWeb: urlweb,
+      user: user.uid,
+      validado: false,
+    });
+    const redirect = `/profile/sponsors/detail/${id}`
+    yield put(postSponsorSuccess(redirect));
+
   } catch (e) {
+    console.log(e);
     yield put(postSponsorFailure(e));
   }
 }
@@ -737,7 +931,7 @@ function* watchPostBid() {
 }
 
 function* watchSuccess() {
-  yield takeEvery([POST_BID_SUCCESS, POST_VALIDATE_ME], successProcess);
+  yield takeEvery([POST_BID_SUCCESS, POST_VALIDATE_ME_SUCCESS, POST_SPONSOR_SUCCESS], successProcess);
 }
 
 function* watchPostValidateMe() {
@@ -745,7 +939,7 @@ function* watchPostValidateMe() {
 }
 
 function * watchPostValidateCompany() {
-  yield takeEvery(POST_VALIDATE_COMPANY, postValidateCompanyProcess);
+  yield takeEvery(POST_VALIDATE_COMPANY, postValidateProcess);
 }
 
 function* watchFetchValidationCompanyDetail(){
@@ -754,6 +948,14 @@ function* watchFetchValidationCompanyDetail(){
 
 function* watchSetLeafletPlace(){
   yield takeEvery(SET_LEAFLET_PLACE, setLeafletPlaceProcess);
+}
+
+function * watchPostPlace(){
+  yield takeEvery(POST_PLACE, postPlaceProcess);
+}
+
+function * watchPostValidatePlace(){
+  yield takeEvery(POST_VALIDATE_PLACE, postValidatePlaceProcess)
 }
 
 function* rootSaga() {
@@ -781,6 +983,8 @@ function* rootSaga() {
     fork(watchPostValidateCompany),
     fork(watchFetchValidationCompanyDetail),
     fork(watchSetLeafletPlace),
+    fork(watchPostPlace),
+    fork(watchPostValidatePlace),
   ]);
 }
 

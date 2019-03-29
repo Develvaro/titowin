@@ -5,6 +5,7 @@ import {
     fetchUserSponsors
 } from '../../actions';
 
+import {Link } from 'react-router-dom';
 import {
   Row,
   Col,
@@ -40,6 +41,7 @@ class MySponsors extends Component {
                 :
                 <p>Cargando tus sponsors.</p>
         }
+        <Link to="/profile/sponsors/add">Añadir anuncio</Link>
         </Col>
         {/* <Col md="1"> </Col > */}
         </Row>

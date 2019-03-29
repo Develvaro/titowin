@@ -4,8 +4,10 @@ import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { formValueSelector } from "redux-form";
 import {
-  postEvent,
+  postSponsor, fetchProfile
 } from '../actions'
+import styled from 'styled-components';
+import Spinner from 'react-spinner-material';
 
 import {
   Row,
@@ -23,98 +25,68 @@ import FileInput from "./form/fileinput";
 import TimePicker from "./form/timepicker";
 import NumberInput from "./form/numberinput";
 
+const Jumbotron = styled.div`
+  margin: 50px
+`;
+
 class AddSponsor extends Component {
+
+  componentDidMount() {
+    if(this.props.user){
+        this.props.fetchProfile(this.props.user);
+    }
+}
   render() {
 
-    const {postEvent} = this.props;
+    const {postSponsor, handleSubmit} = this.props;
     return (
       <div>
-        <Form>
+        {this.props.profile ? 
+        this.props.profile.tipo == "empresa" ?
+        <div>
+          <Jumbotron>
+          <h4>
+            Con este formulario podrás añadir un evento, pero nuestro equipo deverá validarlo para valorar que el contenido sea apropiado antes de poder usarse en un evento.
+          </h4>
+        </Jumbotron>
+        <form onSubmit={handleSubmit(postSponsor)}>
           <FormGroup row> 
-            <Label for="name" sm={2}>
-              Nombre del Evento
+            <Label for="nombreanuncio" sm={2}>
+              Nombre del Anuncio
             </Label>
             <Col sm={8}>
               <Field
                 component={TextInput}
                 type="text"
-                name="eventName"
-                id="name"
-                placeholder="Madrid - Barcelona"
+                name="nombreanuncio"
+                id="nombreanuncio"
+                placeholder="Oferta 2x1 camisetas"
               />
             </Col>
           </FormGroup>
 
-          <FormGroup row>
-            <Label for="category" sm={2}>
-              Categoría
-            </Label>
-            <Col sm={8}>
-              <Field
-                component={Select}
-                type="select"
-                name="category"
-                id="category"
-                options={[
-                  {
-                    value: "Concierto",
-                    name: "Concierto"
-                  },
-                  {
-                    value: "Futbol",
-                    name: "Futbol"
-                  },
-                  {
-                    value: "Baloncesto",
-                    name: "Baloncesto"
-                  }
-                ]}
-              />
-            </Col>
-          </FormGroup>
-
-          <FormGroup row>
-            <Label for="eventDate" sm={2} >Fecha del Evento</Label>
-            <Col sm={3}>
-          <Field name="eventDate" id="eventDate" component={DatePicker} /></Col>
-
-
-          <Label for="eventTime" sm={2} >Hora del Evento</Label>
-            <Col sm={3}>
-            <Field name="eventTime" id="eventTime" component={TimePicker} /></Col>
-          </FormGroup>
-
-          <FormGroup row>
-                <Label for="imgupload" sm={2}>Imágen del Evento</Label>
-                <Col sm={10}><Field name="imgupload" id="imgupload" component={FileInput}></Field></Col>
-          </FormGroup>
-
-          <FormGroup row>
-                <Label for="place" sm={2}>Lugar</Label>
-                <Col sm={8}><Field name="place" id="place" value="" component={TextInput}></Field></Col>
-          </FormGroup>
 
 
           <FormGroup row>
-            <Label for="bidDate" sm={2} >Dia fin de puja</Label>
-            <Col sm={3}><Field name="bidDate" id="bidDate" component={DatePicker} /></Col>
- 
-            <Label for="bidTime" sm={2} >Hora fin de puja</Label>
-            <Col sm={3}><Field name="bidTime" id="bidTime" component={TimePicker} /></Col>
+                <Label for="imgupload" sm={2}>Imagen</Label>
+                <Col sm={10}><Field type="file" name="imgupload" id="imgupload" component={FileInput}></Field></Col>
           </FormGroup>
-
 
           <FormGroup row>
-            <Label for="startBid" sm={2}>Puja Inicial</Label>
-            <Col sm={3}><Field name="startBid" id="startBid" component={NumberInput} /></Col>
-
-
-          <Label for="increment" sm={2} >Incremento Mínimo</Label>
-            <Col sm={3}><Field name="increment" id="increment" component={NumberInput} /></Col>
+                <Label for="urlweb" sm={2}>Link</Label>
+                <Col sm={8}><Field name="urlweb" id="urlweb" value="" placeholder="www.miempresa.com/mioferta"component={TextInput}></Field></Col>
           </FormGroup>
+
+          <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" type="submit" /*disabled={invalid}*/>Añadir</Button> </Col> </Row>
+        </form>
+        </div>
           
-          <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" onClick={() => postEvent()}>Añadir</Button> </Col> </Row>
-        </Form>
+          : <p>You should not be here</p>
+          :
+          <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p>                 
+
+          }
+        
       </div>
     );
   }
@@ -123,23 +95,17 @@ class AddSponsor extends Component {
 const filterSelector = formValueSelector("add-sponsor");
 
 const mapStateToProps = (state) => ({
-  eventName: filterSelector(state, "eventName"),
-  eventDate: filterSelector(state, "eventDate"),
-  category: filterSelector(state, "category"),
-  eventTime: filterSelector(state, "eventTime"),
+  nombreanuncio: filterSelector(state, "nombreanuncio"),
+  urlweb: filterSelector(state, "urlweb"),
   imgupload: filterSelector(state, "imgupload"),
-  place: filterSelector(state, "place"),
-  bidDate: filterSelector(state, "bidDate"),
-  bidTime: filterSelector(state, "bidTime"),
-  startBid: filterSelector(state, "startBid"),
-  increment: filterSelector(state, "increment"),
 
   profile: state.profile,
   user: state.user,
 });
 
 const mapDispatchToProps = dispatch => ({
-  postEvent: (data) => dispatch(postEvent(data)),
+  postSponsor: (data) => dispatch(postSponsor(data)),
+  fetchProfile: (user) => dispatch(fetchProfile(user)),
 });
 
 export default reduxForm({ form: "add-sponsor" })(connect(mapStateToProps,mapDispatchToProps)(AddSponsor));

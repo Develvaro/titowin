@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { formValueSelector } from "redux-form";
 import ProfileNav from "./profileNav";
 import {
-  postValidateMe,
+  postValidatePlace,
 } from '../actions'
 
 import Map from '../components/map';
@@ -26,19 +26,25 @@ import FileInput from "./form/fileinput";
 import TimePicker from "./form/timepicker";
 import NumberInput from "./form/numberinput";
 
-class ValidateMe extends Component {
+class ValidatePlace extends Component {
 
+    componentDidUpdate(prevProps) {
+      if (!prevProps.leafletPlace && this.props.leafletPlace) {
+          console.log(this.props.leafletPlace);
+      }
+    }
   render() {
 
 
 
-    const {postValidateMe, handleSubmit, leafletPlace } = this.props;
+    const {postValidatePlace, handleSubmit, leafletPlace } = this.props;
     return (
       
       <div>
-
-      
-        <Form onSubmit={handleSubmit(postValidateMe)}>
+        <Row>
+        <Col md="3">       <ProfileNav/>  </Col>
+        <Col md="9">         
+        <Form onSubmit={handleSubmit(postValidatePlace)}>
           <FormGroup row> 
             <Label for="name" sm={2}>
               Nombre de la empresa
@@ -87,36 +93,6 @@ class ValidateMe extends Component {
           </FormGroup>
 
           <FormGroup row> 
-            <Label for="lat" sm={2}>
-              Latitud: 
-            </Label>
-            <Col sm={8}>
-              <Field
-                component={TextInput}
-                type="text"
-                name="lat"
-                id="lat"
-                placeholder="example@gmail.com"
-              />
-            </Col>
-          </FormGroup>
-
-          <FormGroup row> 
-            <Label for="lon" sm={2}>
-              Longitud: 
-            </Label>
-            <Col sm={8}>
-              <Field
-                component={TextInput}
-                type="text"
-                name="lon"
-                id="lon"
-                placeholder="example@gmail.com"
-              />
-            </Col>
-          </FormGroup>
-
-          <FormGroup row> 
             <Label for="phone" sm={2}>
               Teléfono de Contacto
             </Label>
@@ -131,6 +107,13 @@ class ValidateMe extends Component {
             </Col>
           </FormGroup>
 
+          <FormGroup row> 
+            <Label for="place" sm={2}>
+            Lugar
+            </Label>
+            <Map width="900px" height="400px"/>
+
+          </FormGroup>
 
           <FormGroup row> 
             <Label for="fileurl" sm={2}>
@@ -138,28 +121,28 @@ class ValidateMe extends Component {
             </Label>
             <Col sm={8}>
               <Field
-                component={FileInput}
-                type="file"
+                component={TextInput}
+                type="text"
                 name="fileurl"
                 id="fileurl"
-                placeholder="Fichero"
+                placeholder="fileReference"
               />
             </Col>
           </FormGroup>
-
-          
 
           <Row> <Col sm={6}></Col><Col sm={4}> <Button color="danger" type="submit" /*disabled={invalid}*/>Validar</Button> </Col> </Row>
 
           
         </Form>
         
+        </Col>
+        </Row>
       </div>
     );
   }
 }
 
-const filterSelector = formValueSelector("validate-me");
+const filterSelector = formValueSelector("validate-place");
 
 const mapStateToProps = (state) => ({
   name: filterSelector(state, "name"),
@@ -171,11 +154,11 @@ const mapStateToProps = (state) => ({
   fileurl: filterSelector(state, "fileurl"),
   profile: state.profile,
   user: state.user,
-  leafletPlace: state.leafletPlace,
+
 });
 
 const mapDispatchToProps = dispatch => ({
-  postValidateMe: (data) => dispatch(postValidateMe(data)),
+  postValidatePlace: (data) => dispatch(postValidatePlace(data)),
 });
 
-export default reduxForm({ form: "validate-me" })(connect(mapStateToProps,mapDispatchToProps)(ValidateMe));
+export default reduxForm({ form: "validate-place" })(connect(mapStateToProps,mapDispatchToProps)(ValidatePlace));

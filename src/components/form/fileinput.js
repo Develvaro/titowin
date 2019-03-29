@@ -7,19 +7,22 @@ const FileInput = ({
   name,
   id,
   placeholder,
+  meta: { touched, error, warning }
+
 }) => (
   <div>
     <Input
-
       type="file"
       {...restInput}
-      value={value}
       name={name}
       id={id}
       placeholder={placeholder}
     />
 
 
+{touched &&
+      ((error && <FormFeedback>{error}</FormFeedback>) ||
+        (warning && <span>{warning}</span>))}
   </div>
 );
 

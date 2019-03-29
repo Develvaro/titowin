@@ -21,27 +21,21 @@ import TextInput from "./form/textinput";
 
 import Card from "./card";
 
+const FlexList = styled.div`
+  display: flex; 
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding:5px; 
+
+`;
+
+const BlankSpace = styled.div`
+  height: 20px;
+`;
+
 class CardList extends Component {
 
-  isFirst(){
-    if (this.state.count % this.state.numElemRow == 1)
-      {
-        return true;
-      }
-      else{
-        return false;
-      }
-  }
-
-  isLast(){
-    if (this.state.count % this.state.numElemRow == 1)
-    {
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
 
   incrementCount() {
     this.setState((state) => {
@@ -52,25 +46,12 @@ class CardList extends Component {
 
   componentDidMount() {
     const { initialFetch } = this.props;
-    //TODO Aquí el setState?
-    this.setState((state) => {
-      // Important: read `state` instead of `this.state` when updating.
-      return {
-        count: 0,
-        numElemRow : 5
-      }
-    });
+
     initialFetch();
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.selectedCountry !== prevProps.selectedCountry) {
-
-      this.setState((state) => {
-        return {
-          count: 0,
-        }
-      });
+    if (this.props.selectedCountry !== prevProps.selectedCountry ) {
 
       this.props.fetchEvents(this.props.selectedCountry);
       this.props.fetchCities(this.props.selectedCountry);
@@ -217,9 +198,8 @@ class CardList extends Component {
         <Col md="3"><span></span></Col>
         </Row>
 
-        <Row>
-
-          <div>
+          <BlankSpace /> 
+          <FlexList>
             {this.props.filterName
               ? events.map(event =>
                   event.titulo
@@ -228,10 +208,9 @@ class CardList extends Component {
                     <Card {...event} key={event.id} />
                   ) : null
                 )
-              : events.map(event => <Col md="2"> <Card {...event} key={event.id} /> </Col>
+              : events.map(event => <Card {...event} key={event.id} />  
               )}
-          </div>
-        </Row>
+            </FlexList>
 
       </div>
     );

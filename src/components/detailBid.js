@@ -1,5 +1,5 @@
-import React, { Component } from "react";
 
+import React, { Component } from "react";
 import { reduxForm, Field, formValueSelector } from "redux-form";
 import {
   Row,
@@ -10,8 +10,9 @@ import {
   ModalBody,
   ModalFooter
 } from "reactstrap";
+import Countdown from '../components/Countdown'
 import { connect } from "react-redux";
-import { postBid } from "../actions";
+import { postBid, fetchEventDetail } from "../actions";
 import Select from "./form/select";
 import NumberInput from "./form/numberinput";
 
@@ -26,6 +27,7 @@ import {
   isGreaterThanLowest
 } from "./form/validation";
 
+require('moment-countdown');
 const Imagen = styled.div`
   height: 160px;
   background-image: url(${props => props.url});
@@ -38,7 +40,7 @@ class DetailBid extends Component {
     super(props);
     this.state = {
       modal: false,
-      selectParticipaciones: []
+      selectParticipaciones: [],
     };
 
     this.toggle = this.toggle.bind(this);
@@ -71,16 +73,17 @@ class DetailBid extends Component {
           })
         : "";
     }
+
+
+
     return (
       <div>
         <Row>
-          <Col> Tiempo Límite </Col>
           <Col>
             {" "}
-            {eventDetail ? eventDetail.bidDate.seconds : "Cargando..."}{" "}
+            {eventDetail ? <Countdown date = {moment.unix(eventDetail.fecha.seconds).toDate()} /> : "Cargando..."}{" "}
           </Col>
-          <Col> </Col>
-          <Col> </Col>
+ 
         </Row>
         <Col sm="12">
           <Imagen
@@ -131,7 +134,7 @@ class DetailBid extends Component {
               />
             </Col>
             <Col>
-              Nº Participaciones <br />
+              Participaciones<br />
               <Field
                 component={Select}
                 type="select"

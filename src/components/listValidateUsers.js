@@ -22,8 +22,11 @@ class ListValidateUsers extends Component {
     componentDidMount() {
         if(this.props.user){
             this.props.fetchProfile(this.props.user);
+            if(this.props.user.type == "admin")
+            {
+                this.props.fetchValidationRequests();
+            }
         }
-        this.props.fetchValidationRequests();
     }
 
     render(){
