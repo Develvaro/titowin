@@ -149,8 +149,10 @@ class CardList extends Component {
           <Col md="2">
             <Button
               color="danger"
-              onClick={() =>
+              onClick={() => {
+                console.log(selectedPlace)
                 this.props.fetchEvents(selectedCountry, selectedCity, selectedPlace)
+              }
               }
             >
               Buscar
@@ -231,7 +233,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchEvents: (country, city) => dispatch(fetchEvents(country, city)),
+  fetchEvents: (country, city, place, status) => dispatch(fetchEvents(country, city, place,status)),
   fetchCountries: () => dispatch(fetchCountries()),
   fetchCities: country => dispatch(fetchCities(country)),
   initialFetch: () => dispatch(initialFetch()),

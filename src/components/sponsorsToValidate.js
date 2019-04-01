@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import ProfileNav from "../../components/profileNav";
 import {
-    fetchSponsorsToValidate
+    fetchUserSponsors
 } from '../../actions';
 
 import SponsorCard from '../../components/sponsorCard';
@@ -33,15 +33,15 @@ const FlexList = styled.div`
 `;
 
 
-class ValidateSponsors extends Component {
+class MySponsors extends Component {
   componentDidMount() {
 
-    this.props.fetchSponsorsToValidate();
+    this.props.fetchUserSponsors(this.props.user.uid);
 
 
   }
   render() {
-    const { listSponsors } = this.props;
+    const { userSponsors } = this.props;
     return (
       <div>
         <Row>
@@ -49,8 +49,8 @@ class ValidateSponsors extends Component {
         <Col md="9">
         <Link to="/profile/sponsors/add">Añadir anuncio</Link>
         <FlexList>{
-            listSponsors ?
-                listSponsors.map(sponsor => 
+            userSponsors ?
+                userSponsors.map(sponsor => 
                   <SponsorCard id={sponsor.id}
                   titulo = {sponsor.texto} 
                   url = {sponsor.urlWeb} 
@@ -70,13 +70,13 @@ class ValidateSponsors extends Component {
 }
 const mapStateToProps = state => ({
   user: state.user,
-  listSponsors: state.listSponsors,
+  userSponsors: state.userSponsors,
 });
 
 const mapDispatchToProps = dispatch => ({
-    fetchSponsorsToValidate: () => dispatch(fetchSponsorsToValidate()),
+    fetchUserSponsors: () => dispatch(fetchUserSponsors()),
 });
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ValidateSponsors);
+)(MySponsors);

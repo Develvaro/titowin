@@ -4,6 +4,8 @@ import {
     fetchSponsorDetail,
 } from '../actions';
 
+import SponsorCard from './sponsorCard';
+
 
 class SponsorDetail extends Component {
 
@@ -23,13 +25,10 @@ class SponsorDetail extends Component {
       <div>    
         {
         this.props.sponsorDetail ?
-        <div>
-            <p>{this.props.sponsorDetail.texto}</p>
-            <br />
-            <img src={this.props.sponsorDetail.urlPhoto} />
-            <br />
-            <a href={this.props.sponsorDetail.urlWeb}>Web</a>
-        </div>
+        <SponsorCard  titulo = {this.props.sponsorDetail.texto} 
+        url = {this.props.sponsorDetail.urlWeb} 
+        urlPhoto = {this.props.sponsorDetail.urlPhoto}
+          />
         :
         <p>Cargando...</p> 
         

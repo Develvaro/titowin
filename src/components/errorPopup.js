@@ -6,6 +6,7 @@ import { clearError } from "../actions";
 
 class ErrorPopup extends Component {
   render() {
+    console.log(this.props);
     const { message, clearError } = this.props;
     return (
       <Modal isOpen={message} toggle={clearError}>

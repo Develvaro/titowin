@@ -30,6 +30,10 @@ import {
   SET_LEAFLET_PLACE,
   UNSET_LEAFLET_PLACE,
   POST_SPONSOR_SUCCESS,
+  DELETE_SPONSOR_SUCCESS,
+  DELETE_SPONSOR_FAILURE,
+  FETCH_SPONSORS_TO_VALIDATE_SUCCESS,
+  
 } from "../actions/type";
 
 const leafletPlace = (state = null, action) => {
@@ -155,10 +159,13 @@ const userEventBids = (state = null, action) => {
   }
 };
 
-const userSponsors = (state = null, action) => {
+const listSponsors = (state = null, action) => {
   switch (action.type) {
     case FETCH_USER_SPONSORS_SUCCESS:
       return action.payload.sponsors;
+    case FETCH_SPONSORS_TO_VALIDATE_SUCCESS:
+      return action.payload.sponsors;
+
     default:
       return state;
   }
@@ -179,6 +186,8 @@ const error = (state = null, action) => {
       return action.payload.err;
     case CLEAR_ERROR:
       return null;
+    case DELETE_SPONSOR_FAILURE:
+      return action.payload.err;
     default:
       return state;
   }
@@ -204,6 +213,9 @@ const success = (state = successInitialState, action) => {
     case POST_SPONSOR_SUCCESS:
         redirect  = action.payload.redirect;
       return {data: {redirect} , type: "postSponsor"}
+    case DELETE_SPONSOR_SUCCESS:
+      redirect = action.payload.redirect;
+      return {data: {redirect} , type: "deleteSponsor"}
     default:
       return state;
   }
@@ -220,7 +232,7 @@ export default combineReducers({
   eventBids,
   place,
   userEventBids,
-  userSponsors,
+  listSponsors,
   sponsorDetail,
   cityPlaces,
   error,

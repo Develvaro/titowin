@@ -73,7 +73,27 @@ import {
   POST_VALIDATE_SPONSOR_SUCCESS,
   POST_VALIDATE_SPONSOR_FAILURE,
   POST_SPONSOR_SUCCESS,
+  DELETE_SPONSOR,
+  DELETE_SPONSOR_FAILURE,
+  DELETE_SPONSOR_SUCCESS,
+  FETCH_SPONSORS_TO_VALIDATE,
+  FETCH_SPONSORS_TO_VALIDATE_SUCCESS,
+  FETCH_SPONSORS_TO_VALIDATE_FAILURE,
 } from "./type";
+
+export const fetchSponsorsToValidate = () => ({
+  type: FETCH_SPONSORS_TO_VALIDATE,
+});
+
+export const fetchSponsorsToValidateSuccess = (sponsors) => ({
+  type: FETCH_SPONSORS_TO_VALIDATE_SUCCESS,
+  payload: {sponsors}
+});
+
+export const fetchSponsorsToValidateFailure = (e) => ({
+  type: FETCH_SPONSORS_TO_VALIDATE_FAILURE,
+  payload: {e}
+});
 
 export const postValidatePlace = (form) => ({
   type: POST_VALIDATE_PLACE,
@@ -155,9 +175,9 @@ export const postValidateCompanyFailure = (err) => ({
   payload: {err}
 });
 
-export const fetchEvents = (pais, ciudad) => ({
+export const fetchEvents = (pais, ciudad, place, status) => ({
   type: FETCH_EVENTS,
-  payload: { pais, ciudad }
+  payload: { pais, ciudad, place, status }
 });
 
 export const fetchEventsSuccess = events => ({
@@ -326,9 +346,8 @@ export const fetchUserEventBidsFailure = err => ({
   payload: { err }
 });
 
-export const fetchUserSponsors = userID => ({
+export const fetchUserSponsors = () => ({
   type: FETCH_USER_SPONSORS,
-  payload: { userID }
 });
 
 export const fetchUserSponsorsSuccess = sponsors => ({
@@ -423,3 +442,21 @@ export const fetchValidationRequestsFailure = (err) => ({
   type: FETCH_VALIDATION_REQUESTS_FAILURE,
   payload: {err}
 });
+
+export const deleteSponsor = (id) => ({
+  type: DELETE_SPONSOR,
+  payload: {id}
+});
+
+
+export const deleteSponsorSuccess = (redirect) => ({
+  type: DELETE_SPONSOR_SUCCESS,
+  payload: {redirect}
+});
+
+
+export const deleteSponsorFailure = (err) => ({
+  type: DELETE_SPONSOR_FAILURE,
+  payload: {err}
+});
+

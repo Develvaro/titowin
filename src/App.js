@@ -72,7 +72,7 @@ class App extends Component {
           
           <Route path="/manage/events" component={MyEvents} />
           <Route path="/manage/events/:id" component={ManageEvent} />
-          <Route path="/manage/addevent" component={this.props.profile && this.props.profile.tipo == "manager" && AddEventPage} />
+          <Route path="/manage/addevent" component={this.props.profile  && AddEventPage} />
 
 
 

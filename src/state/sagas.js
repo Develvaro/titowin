@@ -34,6 +34,8 @@ import {
   POST_PLACE,
   POST_VALIDATE_PLACE,
   POST_SPONSOR_SUCCESS,
+  DELETE_SPONSOR,
+  FETCH_SPONSORS_TO_VALIDATE,
 } from "../actions/type";
 import {
   postPlaceSuccess,
@@ -89,6 +91,11 @@ import {
   postValidatePlaceSuccess,
   postValidatePlace,
   fetchCityPlaces,
+  deleteSponsor,
+  deleteSponsorSuccess,
+  deleteSponsorFailure,
+  fetchSponsorsToValidateSuccess,
+  fetchSponsorsToValidateFailure,
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
@@ -103,6 +110,67 @@ function getCityName(lat, lon) {
   });
 }
 
+function* fetchSponsorsToValidateProcess(){
+  try{
+
+    const sponsorsRef = databaseRef.collection("Sponsors").where("validado", "==", false)
+    const { docs } = yield call([sponsorsRef, "get"]);
+    const result = docs.map(doc => {
+      return doc.data();
+    });
+
+    yield put(fetchSponsorsToValidateSuccess(result))
+  }
+  catch(e){
+    if(e.message){
+      yield put(fetchSponsorsToValidateFailure(e.message))
+    }
+    else{
+      yield put(fetchSponsorsToValidateFailure(e))
+
+    }
+  }
+}
+
+function * deleteSponsorProcess(action){
+  try{
+
+    const {id} = action.payload;
+    console.log("COMENCEMOS");
+    const user = yield select(state => state.user);
+    console.log(user);
+
+    const sponsorRef = databaseRef.collection('Sponsors').doc(id)
+
+    const sponsorDoc = yield call([sponsorRef, "get"]);
+    
+    yield call([sponsorRef, "delete"]);
+/*
+    
+    if(user.uid == sponsorDoc.data().user){
+      const storageRef = firebase
+      .storage()
+      .ref(`Sponsors/${id}`);
+
+      yield call([storageRef, "delete"]);
+    }
+    else{
+      throw new Error("Not your sponsor");
+    }
+  */  
+    const redirect = "/profile/sponsors/"
+    yield put(deleteSponsorSuccess(redirect));
+  }
+  catch(e){
+    console.log(e);
+    if(e.message){
+      yield put(deleteSponsorFailure(e.message));
+
+    }else{
+      yield put(deleteSponsorFailure("Debido a un error no se ha podido borrar tu anuncio."));
+    }
+  }
+}
 
 function* postValidatePlaceProcess(action){
   try{
@@ -167,8 +235,12 @@ function* postValidatePlaceProcess(action){
     yield put(postValidatePlaceSuccess());
   }
   catch(e){
-    console.log(e);
-    yield put(postValidatePlaceFailure(e));
+    if(e.message){
+      yield put(postValidatePlaceFailure(e.message));
+    }else{
+      yield put(postValidatePlaceFailure(e));
+
+    }
   }
 }
 
@@ -234,7 +306,12 @@ function * postPlaceProcess(action){
 
   }
   catch(e){
-    yield put(postPlaceFailure(e));
+    if(e.message){
+      yield put(postPlaceFailure(e.message));
+    }else{
+      yield put(postPlaceFailure(e));
+
+    }
   }
 }
 
@@ -260,7 +337,12 @@ function* fetchValidationCompanyDetailProcess(action){
       yield put(fetchValidationCompanyDetailSuccess(doc.data()));
   }
   catch(e){
-    yield put(fetchValidationCompanyDetailFailure(e));
+    if(e.message){
+      yield put(fetchValidationCompanyDetailFailure(e.message));
+    }else{
+      yield put(fetchValidationCompanyDetailFailure(e));
+
+    }
   }
 }
 
@@ -305,8 +387,12 @@ function* postValidateProcess(action){
 
   }
   catch (e){
-    console.log(e);
-    yield put(postValidateCompanyFailure(e))
+    if(e.message){
+      yield put(postValidateCompanyFailure(e.message));
+    }else{
+      yield put(postValidateCompanyFailure(e));
+
+    }
   }
 }
 
@@ -347,8 +433,12 @@ function* fetchEventDetailProcess(action) {
       })
     );
   } catch (e) {
-    console.log(e);
-    yield put(fetchEventDetailFailure(e));
+    if(e.message){
+      yield put(fetchEventDetailFailure(e.message));
+    }else{
+      yield put(fetchEventDetailFailure(e));
+
+    }
   }
 }
 function * fetchValidationRequestsProcess(){
@@ -363,7 +453,12 @@ function * fetchValidationRequestsProcess(){
 
   }
   catch(e){
-    yield put(fetchValidationRequestsFailure(e))
+    if(e.message){
+      yield put(fetchValidationRequestsFailure(e.message));
+    }else{
+      yield put(fetchValidationRequestsFailure(e));
+
+    }
   }
 }
 
@@ -373,7 +468,8 @@ function * watchFetchValidationRequests(){
 }
 function* fetchEventProcess(action) {
   try {
-    const { pais, ciudad, place } = action.payload;
+    const { pais, ciudad, place, status } = action.payload;
+    console.log(action.payload);
     let colRef = databaseRef.collection("Evento");
 
     if (pais) {
@@ -386,6 +482,7 @@ function* fetchEventProcess(action) {
 
     if (place) {
       colRef = colRef.where("lugar", "==", place);
+      console.log(place);
     }
 
     const { docs } = yield call([colRef, "get"]);
@@ -408,9 +505,13 @@ function* fetchEventProcess(action) {
     }));
 
     yield put(fetchEventsSuccess(events));
-  } catch (err) {
-    console.log(err);
-    yield put(fetchEventsFailure(err));
+  } catch (e) {
+    if(e.message){
+      yield put(fetchEventsFailure(e.message));
+    }else{
+      yield put(fetchEventsFailure(e));
+
+    }
   }
 }
 
@@ -444,7 +545,13 @@ function* fetchEventBidProcess(action) {
 
     yield put(fetchEventBidSuccess(result));
   } catch (e) {
-    yield put(fetchEventBidFailure(e));
+    if(e.message){
+      yield put(fetchEventBidFailure(e.message));
+    }else{
+      yield put(fetchEventBidFailure(e));
+
+    }
+
   }
 }
 
@@ -457,7 +564,12 @@ function* loginProcess() {
     yield put(loginSuccess(result.user));
     yield put(fetchProfile(result.user));
   } catch (e) {
-    yield put(loginFailure(e));
+    if(e.message){
+      yield put(loginFailure(e.message));
+    }else{
+      yield put(loginFailure(e));
+
+    }
   }
 }
 
@@ -499,7 +611,12 @@ function* fetchCountriesProcess() {
     yield put(fetchCities());
   } catch (e) {
     //console.log(e);
-    yield put(fetchCountriesFailure(e));
+    if(e.message){
+      yield put(fetchCountriesFailure(e.message));
+    }else{
+      yield put(fetchCountriesFailure(e));
+
+    }
   }
 }
 
@@ -511,8 +628,13 @@ function* fetchCitiesProcess(action) {
     const { docs } = yield call([cityRef, "get"]);
     const cities = docs.map(doc => doc.data());
     yield put(fetchCitiesSuccess(cities));
-  } catch (error) {
-    yield put(fetchCitiesFailure(error));
+  } catch (e) {
+    if(e.message){
+      yield put(fetchCitiesFailure(e.message));
+    }else{
+      yield put(fetchCitiesFailure(e));
+
+    }
   }
 }
 
@@ -529,7 +651,12 @@ function* fetchCityPlacesProcess(action) {
     });
     yield put(fetchCityPlacesSuccess(places));
   } catch (e) {
-    yield put(fetchCityPlacesFailure(e));
+    if(e.message){
+      yield put(fetchCityPlacesFailure(e.message));
+    }else{
+      yield put(fetchCityPlacesFailure(e));
+
+    }
   }
 }
 
@@ -540,7 +667,12 @@ function* fetchPlaceProcess(action) {
     const doc = yield call([placeRef, "get"]);
     yield put(fetchPlaceProcess({ ...doc.data(), id: doc.id }));
   } catch (e) {
-    yield put(fetchPlaceFailure(e));
+    if(e.message){
+      yield put(fetchPlaceFailure(e.message));
+    }else{
+      yield put(fetchPlaceFailure(e));
+
+    }
   }
 }
 
@@ -551,7 +683,13 @@ function* logoutProcess() {
     yield put(logoutSuccess());
     yield put(unSetProfile());
   } catch (e) {
-    yield put(logoutFailure(e));
+
+    if(e.message){
+      yield put(logoutFailure(e.message));
+    }else{
+      yield put(logoutFailure(e));
+
+    }
   }
 }
 
@@ -581,7 +719,12 @@ function* initialFetchProcess() {
 
     yield put(fetchEvents(pais, capital));
   } catch (e) {
-    yield put(initialFetchFailure(e));
+    if(e.message){
+      yield put(initialFetchFailure(e.message));
+    }else{
+      yield put(initialFetchFailure(e));
+
+    }
   }
 }
 
@@ -627,8 +770,12 @@ function* postValidateMeProcess(action){
     yield put(postValidateMeSuccess(redirect));
   }
   catch(e){
-    console.log(e)
-    yield put(postValidateMeFailure(e));
+    if(e.message){
+      yield put(postValidateMeFailure(e.message));
+    }else{
+      yield put(postValidateMeFailure(e));
+
+    }
   }
 }
 
@@ -639,9 +786,6 @@ function* postEventProcess(action) {
     const user = yield select(state => state.profile);
 
     const { form } = action.payload;
-
-
-    console.log(form);
 
     const {
       imgupload,
@@ -656,7 +800,6 @@ function* postEventProcess(action) {
       participaciones
     } = form;
 
-    console.log(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
     const storageRef = firebase
       .storage()
       .ref(`Eventos/${id}.${mime.getExtension(imgupload[0].type)}`);
@@ -690,7 +833,8 @@ function* postEventProcess(action) {
       startBid,
       increment,
       participaciones,
-      lugar: user.manage
+      lugar: user.manage,
+      status: "bid",
     });
     for (let i = 0; i < participaciones + 1; i++) {
       let pujasRef = databaseRef
@@ -708,8 +852,12 @@ function* postEventProcess(action) {
     //console.log(moment(`${eventDate} ${eventTime}`));
     yield put(postEventSuccess());
   } catch (e) {
-    console.log(e);
-    yield put(postEventFailure(e));
+    if(e.message){
+      yield put(postEventFailure(e.message));
+    }else{
+      yield put(postEventFailure(e));
+
+    }
   }
 }
 
@@ -752,20 +900,24 @@ function* fetchSponsorDetailProcess(action) {
     const doc = yield call([sponsorRef, "get"]);
     yield put(fetchSponsorDetailSuccess({ ...doc.data(), id: doc.id }));
   } catch (e) {
-    yield put(fetchSponsorDetailFailure(e));
+    if(e.message){
+      yield put(fetchSponsorDetailFailure(e.message));
+    }else{
+      yield put(fetchSponsorDetailFailure(e));
+
+    }
   }
 }
 
 
 
-function* fetchUserSponsorsProcess(action) {
+function* fetchUserSponsorsProcess() {
   try {
-    const { userID } = action.payload;
+    const user = yield select(state => state.user);
 
     const sponsorsRef = databaseRef
-      .collection("Usuario")
-      .doc(userID)
-      .collection("Publicidad");
+      .collection("Sponsors")
+      .where("user", "==", user.uid );
 
     const { docs } = yield call([sponsorsRef, "get"]);
     const result = docs.map(doc => {
@@ -775,7 +927,13 @@ function* fetchUserSponsorsProcess(action) {
 
     yield put(fetchUserSponsorsSuccess(result));
   } catch (e) {
-    yield put(fetchUserSponsorsFailure(e));
+
+    if(e.message){
+      yield put(fetchUserSponsorsFailure(e.message));
+    }else{
+      yield put(fetchUserSponsorsFailure(e));
+
+    }
   }
 }
 
@@ -797,7 +955,7 @@ function* postSponsorProcess(action) {
 
     const storageRef = firebase
       .storage()
-      .ref(`Sponsors/${id}.${mime.getExtension(imgupload[0].type)}`);
+      .ref(`Sponsors/${id}aa`);
 
 
     const task = yield call([storageRef, "put"], imgupload[0]);
@@ -817,8 +975,18 @@ function* postSponsorProcess(action) {
     yield put(postSponsorSuccess(redirect));
 
   } catch (e) {
-    console.log(e);
-    yield put(postSponsorFailure(e));
+    if(e.message){
+      yield put(postSponsorFailure(e.message));
+      
+    }
+    else{
+      if(e.message){
+        yield put(postSponsorFailure(e.message));
+      }else{
+        yield put(postSponsorFailure(e));
+  
+      }
+    }
   }
 }
 
@@ -955,8 +1123,17 @@ function * watchPostPlace(){
 }
 
 function * watchPostValidatePlace(){
-  yield takeEvery(POST_VALIDATE_PLACE, postValidatePlaceProcess)
+  yield takeEvery(POST_VALIDATE_PLACE, postValidatePlaceProcess);
 }
+
+function * watchDeleteSponsor(){
+  yield takeEvery( DELETE_SPONSOR, deleteSponsorProcess);
+}
+
+function * watchFetchSponsorsToValidate(){
+  yield takeEvery( FETCH_SPONSORS_TO_VALIDATE, fetchSponsorsToValidateProcess);
+}
+
 
 function* rootSaga() {
   yield all([
@@ -985,6 +1162,8 @@ function* rootSaga() {
     fork(watchSetLeafletPlace),
     fork(watchPostPlace),
     fork(watchPostValidatePlace),
+    fork(watchDeleteSponsor),
+    fork(watchFetchSponsorsToValidate),
   ]);
 }
 

@@ -5,6 +5,10 @@ import {
     fetchUserSponsors
 } from '../../actions';
 
+import SponsorCard from '../../components/sponsorCard';
+
+import styled from 'styled-components';
+
 import {Link } from 'react-router-dom';
 import {
   Row,
@@ -19,29 +23,44 @@ import {
 import TextInput from "../../components/form/textinput";
 import {Field} from "redux-form";
 
+const FlexList = styled.div`
+  display: flex; 
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding:5px; 
+
+`;
+
+
 class MySponsors extends Component {
   componentDidMount() {
 
-    this.props.fetchUserSponsors(this.props.user.uid);
-    //console.log(this.props);
-    //this.props.location.pathname
+    this.props.fetchUserSponsors();
+
+
   }
   render() {
-    const { profile, userSponsors } = this.props;
+    const { listSponsors } = this.props;
     return (
       <div>
         <Row>
         <Col md={{size: 3}}>       <ProfileNav selected="sponsors"/>  </Col>
         <Col md="9">
-        {
-            userSponsors ?
-                userSponsors.map(sponsor => 
-                    <p>{sponsor.urlPhoto}</p>
-                )
+        <Link to="/profile/sponsors/add">Añadir anuncio</Link>
+        <FlexList>{
+            listSponsors ?
+                listSponsors.map(sponsor => 
+                  <SponsorCard id={sponsor.id}
+                  titulo = {sponsor.texto} 
+                  url = {sponsor.urlWeb} 
+                  urlPhoto = {sponsor.urlPhoto}
+                  validado = {sponsor.validado}
+                    />                  )
                 :
                 <p>Cargando tus sponsors.</p>
         }
-        <Link to="/profile/sponsors/add">Añadir anuncio</Link>
+        </FlexList>
         </Col>
         {/* <Col md="1"> </Col > */}
         </Row>
@@ -51,12 +70,11 @@ class MySponsors extends Component {
 }
 const mapStateToProps = state => ({
   user: state.user,
-  profile: state.profile,
-  userSponsors: state.userSponsors,
+  listSponsors: state.listSponsors,
 });
 
 const mapDispatchToProps = dispatch => ({
-    fetchUserSponsors: (userID) => dispatch(fetchUserSponsors(userID)),
+    fetchUserSponsors: () => dispatch(fetchUserSponsors()),
 });
 export default connect(
   mapStateToProps,
