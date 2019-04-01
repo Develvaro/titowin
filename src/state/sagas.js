@@ -1014,8 +1014,10 @@ function* postBidProcess(action) {
       yield call([pujasRef, "set"], {
         cantidad,
         usuario: user.id,
-        email: user.email
+        email: user.email,
+        time: firebase.firestore.FieldValue.serverTimestamp(),
       });
+
     }
     yield put(postBidSuccess(participaciones, cantidad));
   } catch (e) {
