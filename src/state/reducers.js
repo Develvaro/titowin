@@ -33,6 +33,7 @@ import {
   DELETE_SPONSOR_SUCCESS,
   DELETE_SPONSOR_FAILURE,
   FETCH_SPONSORS_TO_VALIDATE_SUCCESS,
+  POST_VALIDATE_SPONSOR_FAILURE,
   
 } from "../actions/type";
 
@@ -165,7 +166,6 @@ const listSponsors = (state = null, action) => {
       return action.payload.sponsors;
     case FETCH_SPONSORS_TO_VALIDATE_SUCCESS:
       return action.payload.sponsors;
-
     default:
       return state;
   }
@@ -183,11 +183,13 @@ const sponsorDetail = (state = null, action) => {
 const error = (state = null, action) => {
   switch (action.type) {
     case POST_BID_FAILURE:
-      return action.payload.err;
+      return action.payload.e;
     case CLEAR_ERROR:
       return null;
     case DELETE_SPONSOR_FAILURE:
-      return action.payload.err;
+      return action.payload.e;
+    case POST_VALIDATE_SPONSOR_FAILURE:
+      return action.payload.e;
     default:
       return state;
   }

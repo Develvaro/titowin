@@ -9,6 +9,8 @@ import Spinner from 'react-spinner-material';
 import {
     fetchSponsorDetail,
     deleteSponsor,
+    fetchProfile,
+    postValidateSponsor,
 }
 from '../../actions'
 
@@ -32,15 +34,18 @@ class SponsorDetailPage extends Component{
         this.props.deleteSponsor(this.props.match.params.id);
     };
 
-    componentDidMount(){
+    handleValidate = event => {
+      this.props.postValidateSponsor(this.props.match.params.id);
+    }
 
+    componentDidMount(){
+        this.props.fetchProfile(this.props.user);
         this.props.fetchSponsorDetail(this.props.match.params.id);
         //fetchEventBid(idEvent);
     }
 
     render(){
         const idSponsor = this.props.match.params.id;
-        const {deleteSponsor } = this.props;
         return(
             <div>
         <Modal isOpen={this.state.modal} fade={false} toggle={this.toggle} className={this.props.className}>
@@ -66,7 +71,10 @@ class SponsorDetailPage extends Component{
         validado = {this.props.sponsorDetail.validado}
           />
           {!this.props.sponsorDetail.validado ? <Button onClick={this.toggle}>Eliminar</Button> : ""}
-          
+          {this.props.profile ? 
+            !this.props.sponsorDetail.validado && this.props.profile.tipo ==  "admin" ? 
+             <Button onClick={this.handleValidate}>Validar</Button> : "" : ""}
+
         </div>
 
         :
@@ -85,11 +93,14 @@ class SponsorDetailPage extends Component{
 const mapStateToProps = (state) => ({
     sponsorDetail: state.sponsorDetail,
     user: state.user,
+    profile: state.profile,
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    fetchProfile: user => dispatch(fetchProfile(user)),
     fetchSponsorDetail: (idSponsor) => dispatch(fetchSponsorDetail(idSponsor)),
     deleteSponsor: (idSponsor) => dispatch(deleteSponsor(idSponsor)),
+    postValidateSponsor: (idSponsor) => dispatch(postValidateSponsor(idSponsor)),
 });
 
 export default connect (mapStateToProps, mapDispatchToProps)(SponsorDetailPage);

@@ -70,7 +70,7 @@ class App extends Component {
           <Route exact path="/profile/sponsors/detail/:id" component={this.props.user && SponsorDetailPage} />  
 
           
-          <Route path="/manage/events" component={MyEvents} />
+          <Route path="/manage/myevents" component={MyEvents} />
           <Route path="/manage/events/:id" component={ManageEvent} />
           <Route path="/manage/addevent" component={this.props.profile  && AddEventPage} />
 

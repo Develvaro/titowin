@@ -36,6 +36,7 @@ import {
   POST_SPONSOR_SUCCESS,
   DELETE_SPONSOR,
   FETCH_SPONSORS_TO_VALIDATE,
+  POST_VALIDATE_SPONSOR,
 } from "../actions/type";
 import {
   postPlaceSuccess,
@@ -96,6 +97,8 @@ import {
   deleteSponsorFailure,
   fetchSponsorsToValidateSuccess,
   fetchSponsorsToValidateFailure,
+  postValidateSponsorSuccess,
+  postValidateSponsorFailure
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
@@ -110,13 +113,39 @@ function getCityName(lat, lon) {
   });
 }
 
+function* postValidateSponsorProcess(action){
+  try{
+
+    const {id} = action.payload;
+    const sponsorRef = databaseRef.collection("Sponsors").doc(id);
+    yield call([sponsorRef, "update"], {
+      validado: true,
+    });
+    const redirect = "/"
+
+    yield put(postValidateSponsorSuccess(redirect));
+
+  }catch(e){
+    if(e.message){
+      yield put(postValidateSponsorFailure(e.message))
+    }
+    else{
+      yield put(postValidateSponsorFailure(e))
+    }
+  }
+}
+
 function* fetchSponsorsToValidateProcess(){
   try{
 
     const sponsorsRef = databaseRef.collection("Sponsors").where("validado", "==", false)
+
+
+    
     const { docs } = yield call([sponsorsRef, "get"]);
     const result = docs.map(doc => {
-      return doc.data();
+      const data = doc.data();
+      return { ...data, id: doc.id };
     });
 
     yield put(fetchSponsorsToValidateSuccess(result))
@@ -142,11 +171,11 @@ function * deleteSponsorProcess(action){
 
     const sponsorRef = databaseRef.collection('Sponsors').doc(id)
 
-    const sponsorDoc = yield call([sponsorRef, "get"]);
     
     yield call([sponsorRef, "delete"]);
 /*
-    
+    const sponsorDoc = yield call([sponsorRef, "get"]);
+
     if(user.uid == sponsorDoc.data().user){
       const storageRef = firebase
       .storage()
@@ -898,7 +927,14 @@ function* fetchSponsorDetailProcess(action) {
       .doc(sponsorID)
 
     const doc = yield call([sponsorRef, "get"]);
-    yield put(fetchSponsorDetailSuccess({ ...doc.data(), id: doc.id }));
+    console.log(doc);
+    console.log(doc.data());
+    if(!doc.exists){
+      yield put(fetchSponsorDetailFailure("No detail"))
+    }
+    else{
+      yield put(fetchSponsorDetailSuccess(doc.data()));
+    }
   } catch (e) {
     if(e.message){
       yield put(fetchSponsorDetailFailure(e.message));
@@ -1136,6 +1172,11 @@ function * watchFetchSponsorsToValidate(){
   yield takeEvery( FETCH_SPONSORS_TO_VALIDATE, fetchSponsorsToValidateProcess);
 }
 
+function * watchPostValidateSponsor(){
+  yield takeEvery( POST_VALIDATE_SPONSOR, postValidateSponsorProcess);
+}
+
+
 
 function* rootSaga() {
   yield all([
@@ -1166,6 +1207,7 @@ function* rootSaga() {
     fork(watchPostValidatePlace),
     fork(watchDeleteSponsor),
     fork(watchFetchSponsorsToValidate),
+    fork(watchPostValidateSponsor),
   ]);
 }
 

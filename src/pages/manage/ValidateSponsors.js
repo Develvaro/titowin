@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import ProfileNav from "../../components/profileNav";
 import {
-    fetchSponsorsToValidate
+    fetchSponsorsToValidate,
+    postValidateSponsor,
 } from '../../actions';
 
 import SponsorCard from '../../components/sponsorCard';
@@ -42,14 +43,17 @@ class ValidateSponsors extends Component {
   }
   render() {
     const { listSponsors } = this.props;
+    console.log(listSponsors);
     return (
       <div>
         <Row>
         <Col md={{size: 3}}>       <ProfileNav selected="sponsors"/>  </Col>
         <Col md="9">
-        <Link to="/profile/sponsors/add">Añadir anuncio</Link>
-        <FlexList>{
+
+        <FlexList>
+        {
             listSponsors ?
+              listSponsors.length > 0 ?
                 listSponsors.map(sponsor => 
                   <SponsorCard id={sponsor.id}
                   titulo = {sponsor.texto} 
@@ -57,8 +61,9 @@ class ValidateSponsors extends Component {
                   urlPhoto = {sponsor.urlPhoto}
                   validado = {sponsor.validado}
                     />                  )
+                : <p>Todos los anuncios están validados</p>
                 :
-                <p>Cargando tus sponsors.</p>
+                <p>Cargando..</p>
         }
         </FlexList>
         </Col>
@@ -75,6 +80,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     fetchSponsorsToValidate: () => dispatch(fetchSponsorsToValidate()),
+    postValidateSponsor: (id) => dispatch(postValidateSponsor(id)),
 });
 export default connect(
   mapStateToProps,

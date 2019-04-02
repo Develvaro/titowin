@@ -9,7 +9,7 @@ const Container = styled.div`
     min-width: 25%;
     width: 300px; 
     height: 500px;
-    border: 1px solid black;
+    border: 2px solid ${props => props.borderColor};
 
     margin:5px; 
     @media (max-width: 700px) {
@@ -18,7 +18,7 @@ const Container = styled.div`
     `;
 
 const Imagen = styled.div`
-    height: 160px;
+    height: 390px;
     background-image : url(${props => props.url});
     background-size: cover;
     background-repeat: no-repeat;
@@ -29,20 +29,20 @@ const SponsorCard = ( {titulo, url, urlPhoto, id, validado} ) => {
         <span>
             {id ? 
             <Link to={`/profile/sponsors/detail/${id}`}>
-            <Container>
+            <Container borderColor={validado ? "green" : "red"}>
                 <Imagen url={urlPhoto} />
                 <span> <strong>Nombre: </strong> {titulo} </span>
                 <br />
 
             </Container>
             </Link> :
-                <Container>
+                <Container borderColor={validado ? "green" : "red"}>
                     <Imagen url={urlPhoto} />
                         <span> <strong>Nombre: </strong> {titulo} </span>
                         <br />
                         <a href={url} > <strong> URL </strong>  </a>
                         <br />
-                        <strong>Estado : {validado ? <em>Validado</em> : <em>No Validado</em>}</strong>
+                        <strong>Estado : {validado ? <em><font color="green">Validado</font></em> : <em><font color="red">No Validado</font></em>}</strong>
                 </Container>
             }
 

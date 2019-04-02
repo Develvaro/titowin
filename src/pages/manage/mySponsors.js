@@ -42,13 +42,15 @@ class MySponsors extends Component {
   }
   render() {
     const { listSponsors } = this.props;
+    console.log(listSponsors);
     return (
       <div>
         <Row>
         <Col md={{size: 3}}>       <ProfileNav selected="sponsors"/>  </Col>
         <Col md="9">
         <Link to="/profile/sponsors/add">Añadir anuncio</Link>
-        <FlexList>{
+        <FlexList>
+        {
             listSponsors ?
                 listSponsors.map(sponsor => 
                   <SponsorCard id={sponsor.id}
