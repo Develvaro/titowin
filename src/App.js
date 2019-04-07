@@ -7,7 +7,9 @@ import Home from "./pages/home";
 import Login from "./components/login";
 import Register from "./components/register";
 import Profile from "./pages/manage/profile";
-import MyBids from "./pages/manage/myBids";
+import WonEvents from "./pages/manage/WonEvents";
+import WonEventDetail from "./pages/manage/WonEventDetail";
+
 import ManageUsers from "./pages/manage/manageUsers";
 import SponsorDetail from "./pages/sponsorDetail";
 import MySponsors from "./pages/manage/mySponsors";
@@ -57,8 +59,13 @@ class App extends Component {
           <Route exact path="/profile" component={this.props.user && Profile} />
           <Route
             exact
-            path="/profile/bids"
-            component={this.props.user && MyBids}
+            path="/profile/wonevents"
+            component={this.props.user && WonEvents}
+          />
+          <Route
+            exact
+            path="/profile/wonevent/:id"
+            component={this.props.user && WonEventDetail}
           />
           <Route
             exact
@@ -71,7 +78,7 @@ class App extends Component {
 
           
           <Route path="/manage/myevents" component={MyEvents} />
-          <Route path="/manage/events/:id" component={ManageEvent} />
+          <Route path="/manage/event/:id" component={ManageEvent} />
           <Route path="/manage/addevent" component={this.props.profile  && AddEventPage} />
 
 

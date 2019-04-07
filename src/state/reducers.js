@@ -34,8 +34,12 @@ import {
   DELETE_SPONSOR_FAILURE,
   FETCH_SPONSORS_TO_VALIDATE_SUCCESS,
   POST_VALIDATE_SPONSOR_FAILURE,
-  
+  FETCH_EVENT_WINNERS_SUCCESS,
+  FETCH_MY_EVENTS_SUCCESS,
+  FETCH_WON_EVENTS_SUCCESS,
+  FETCH_MY_EVENTS_FAILURE,
 } from "../actions/type";
+
 
 const leafletPlace = (state = null, action) => {
   switch(action.type){
@@ -43,6 +47,15 @@ const leafletPlace = (state = null, action) => {
       return action.payload.leafletPlace;
     case UNSET_LEAFLET_PLACE:
       return null;
+    default:
+      return state;
+  }
+}
+
+const eventWinners = (state =null, action) => {
+  switch(action.type){
+    case FETCH_EVENT_WINNERS_SUCCESS:
+      return action.payload.winners;
     default:
       return state;
   }
@@ -69,6 +82,10 @@ const validationCompanyDetail = (state = null, action) => {
 const events = (state = null, action) => {
   switch (action.type) {
     case FETCH_EVENTS_SUCCESS:
+      return action.payload.events;
+    case FETCH_MY_EVENTS_SUCCESS:
+      return action.payload.events;
+    case FETCH_WON_EVENTS_SUCCESS:
       return action.payload.events;
     default:
       return state;
@@ -190,6 +207,8 @@ const error = (state = null, action) => {
       return action.payload.e;
     case POST_VALIDATE_SPONSOR_FAILURE:
       return action.payload.e;
+    case FETCH_MY_EVENTS_FAILURE:
+      return action.payload.e;
     default:
       return state;
   }
@@ -242,4 +261,5 @@ export default combineReducers({
   companyValidationRequests,
   validationCompanyDetail,
   leafletPlace,
+  eventWinners,
 });

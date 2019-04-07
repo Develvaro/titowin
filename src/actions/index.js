@@ -79,7 +79,82 @@ import {
   FETCH_SPONSORS_TO_VALIDATE,
   FETCH_SPONSORS_TO_VALIDATE_SUCCESS,
   FETCH_SPONSORS_TO_VALIDATE_FAILURE,
+  SET_EVENT_WINNERS,
+  SET_EVENT_WINNERS_FAILURE,
+  SET_EVENT_WINNERS_SUCCESS,
+  FETCH_EVENT_WINNERS,
+  FETCH_EVENT_WINNERS_FAILURE,
+  FETCH_EVENT_WINNERS_SUCCESS,
+  FETCH_MY_EVENTS,
+  FETCH_MY_EVENTS_FAILURE,
+  FETCH_MY_EVENTS_SUCCESS,
+  FETCH_WON_EVENTS,
+  FETCH_WON_EVENTS_FAILURE,
+  FETCH_WON_EVENTS_SUCCESS,
 } from "./type";
+
+export const fetchWonEvents = (id) => ({
+  type: FETCH_WON_EVENTS,
+  payload: {id},
+});
+
+export const fetchWonEventsSuccess = (events) => ({
+  type: FETCH_WON_EVENTS_SUCCESS,
+  payload: {events},
+});
+
+export const fetchWonEventsFailure = (e) => ({
+  type: FETCH_WON_EVENTS_FAILURE,
+  payload: {e},
+});
+
+export const fetchMyEvents = (id) => ({
+  type: FETCH_MY_EVENTS,
+  payload: {id},
+});
+
+export const fetchMyEventsSuccess = (events) => ({
+  type: FETCH_MY_EVENTS_SUCCESS,
+  payload: {events},
+});
+
+
+export const fetchMyEventsFailure = (e) => ({
+  type: FETCH_MY_EVENTS_FAILURE,
+  payload: {e},
+});
+
+
+export const fetchEventWinners = (id, ganadores) => ({
+  type: FETCH_EVENT_WINNERS,
+  payload: {id, ganadores}
+});
+
+export const fetchEventWinnersSuccess = (winners) => ({
+  type: FETCH_EVENT_WINNERS_SUCCESS,
+  payload: {winners}
+});
+
+export const fetchEventWinnersFailure = (e) => ({
+  type: FETCH_EVENT_WINNERS_FAILURE,
+  payload: {e}
+});
+
+
+export const setEventWinners = (id) => ({
+  type: SET_EVENT_WINNERS,
+  payload: {id}
+});
+
+export const setEventWinnersSuccess = (redirect) => ({
+  type: SET_EVENT_WINNERS_SUCCESS,
+  payload: {redirect}
+});
+
+export const setEventWinnersFailure = (e) => ({
+  type: SET_EVENT_WINNERS_FAILURE,
+  payload: {e}
+});
 
 export const fetchSponsorsToValidate = () => ({
   type: FETCH_SPONSORS_TO_VALIDATE,

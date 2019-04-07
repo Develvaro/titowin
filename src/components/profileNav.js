@@ -19,7 +19,7 @@ class ProfileNav extends Component {
                 <Link to="/profile/" ><ListGroupItem className={selected == "profile" ? "text-white bg-danger" : "text-white bg-dark"} >Perfil</ListGroupItem></Link>
                 {profile && ( profile.tipo == "empresa" ) && 
                         <div>
-                            <Link to="/profile/bids/"><ListGroupItem className={selected == "bids" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Pujas</ListGroupItem></Link>
+                            <Link to="/profile/wonevents/"><ListGroupItem className={selected == "wonevents" ? "text-white bg-danger" : "text-white bg-dark"}>Eventos Ganados</ListGroupItem></Link>
                             <Link to="/profile/sponsors"><ListGroupItem className={selected == "sponsors" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Anuncios</ListGroupItem></Link>
                             <Link to ="/profile/sponsors/add"><ListGroupItem className={selected == "addsponsor" ? "text-white bg-danger" : "text-white bg-dark"}> Subir Anuncio</ListGroupItem> </Link>
 
