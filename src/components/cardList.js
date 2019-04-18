@@ -37,12 +37,6 @@ const BlankSpace = styled.div`
 class CardList extends Component {
 
 
-  incrementCount() {
-    this.setState((state) => {
-      // Important: read `state` instead of `this.state` when updating.
-      return {count: (state.count % state.numElemRow ) + 1}
-    });
-  }
 
   componentDidMount() {
     const { initialFetch } = this.props;
@@ -188,12 +182,26 @@ class CardList extends Component {
               name: "Todas",
               value: ""
             },
-            ...(cities
-              ? cities.map(city => ({
-                  name: city.nombre,
-                  value: city.nombre
-                }))
-              : {})
+            {
+              name: "Fútbol",
+              value: "futbol",
+            },
+            {
+              name: "Baloncesto",
+              value: "baloncesto",
+            },
+            {
+              name: "Concierto",
+              value: "concierto",
+            },
+            {
+              name: "Eventos Sociales",
+              value: "sociales",
+            },
+            {
+              name: "Otros Deportes",
+              value: "otrosdeportes",
+            },
           ]}
         />
         </Col>
@@ -202,7 +210,20 @@ class CardList extends Component {
 
           <BlankSpace /> 
           <FlexList>
-            {this.props.filterName
+          {this.props.category ? 
+             this.props.filterName ? 
+              events.map(event => 
+                event.categoria == this.props.category ?
+                event.titulo.toLowerCase()
+                .includes(this.props.filterName.toLowerCase()) ?  <Card {...event} key={event.id} /> : null : null  )
+            //Hasta aquí si categoría + filtro
+            //Ahora solo categoría, sin filtro
+              : events.map(event => 
+                  event.categoria == this.props.category ?
+              <Card {...event} key={event.id} /> 
+                : null )
+              //Aquí no hay categoría seleccionada
+              : this.props.filterName
               ? events.map(event =>
                   event.titulo
                     .toLowerCase()
@@ -210,8 +231,22 @@ class CardList extends Component {
                     <Card {...event} key={event.id} />
                   ) : null
                 )
-              : events.map(event => <Card {...event} key={event.id} />  
-              )}
+             : events.map(event => <Card {...event} key={event.id} />  
+             )           
+            }
+            
+            {
+              //console.log(this.props.category)
+              /*this.props.filterName
+              ? events.map(event =>
+                  event.titulo
+                    .toLowerCase()
+                    .includes(this.props.filterName.toLowerCase()) ? (
+                    <Card {...event} key={event.id} />
+                  ) : null
+                )
+             : events.map(event => <Card {...event} key={event.id} />  
+             ) */}
             </FlexList>
 
       </div>
@@ -229,7 +264,8 @@ const mapStateToProps = state => ({
   cityPlaces: state.cityPlaces,
   selectedCity: filterSelector(state, "city"),
   selectedPlace: filterSelector(state, "place"),
-  filterName: filterSelector(state, "eventName")
+  filterName: filterSelector(state, "eventName"),
+  category: filterSelector(state, "category"),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -38,8 +38,19 @@ import {
   FETCH_MY_EVENTS_SUCCESS,
   FETCH_WON_EVENTS_SUCCESS,
   FETCH_MY_EVENTS_FAILURE,
+  SET_TICKET,
+  FETCH_WON_EVENT_DETAIL_SUCCESS,
+  FETCH_VALIDATED_SPONSORS_SUCCESS,
 } from "../actions/type";
 
+const ticket = (state = null, action ) => {
+  switch(action.type){
+    case FETCH_WON_EVENT_DETAIL_SUCCESS:
+      return action.payload.ticket;
+    default:
+      return state;
+  }
+}
 
 const leafletPlace = (state = null, action) => {
   switch(action.type){
@@ -183,6 +194,8 @@ const listSponsors = (state = null, action) => {
       return action.payload.sponsors;
     case FETCH_SPONSORS_TO_VALIDATE_SUCCESS:
       return action.payload.sponsors;
+    case FETCH_VALIDATED_SPONSORS_SUCCESS:
+      return action.payload.sponsors;
     default:
       return state;
   }
@@ -262,4 +275,5 @@ export default combineReducers({
   validationCompanyDetail,
   leafletPlace,
   eventWinners,
+  ticket,
 });

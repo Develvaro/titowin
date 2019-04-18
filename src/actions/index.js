@@ -91,7 +91,64 @@ import {
   FETCH_WON_EVENTS,
   FETCH_WON_EVENTS_FAILURE,
   FETCH_WON_EVENTS_SUCCESS,
+  FETCH_WON_EVENT_DETAIL,
+  FETCH_WON_EVENT_DETAIL_FAILURE,
+  FETCH_WON_EVENT_DETAIL_SUCCESS,
+  FETCH_VALIDATED_SPONSORS,
+  FETCH_VALIDATED_SPONSORS_FAILURE,
+  FETCH_VALIDATED_SPONSORS_SUCCESS,
+  POST_EVENT_SPONSOR,
+  POST_EVENT_SPONSOR_SUCCESS,
+  POST_EVENT_SPONSOR_FAILURE,
+  SET_EVENT_PAID,
+  SET_EVENT_PAID_FAILURE,
+  SET_EVENT_PAID_SUCCESS,
 } from "./type";
+
+export const postEventSponsor = (ticket, idEvent, idSponsor) => ({
+  type: POST_EVENT_SPONSOR,
+  payload: {ticket, idEvent, idSponsor},
+});
+
+export const postEventSponsorSuccess = () => ({
+  type: POST_EVENT_SPONSOR_SUCCESS,
+});
+
+export const postEventSponsorFailure = (e) => ({
+  type: POST_EVENT_SPONSOR_FAILURE,
+  payload: {e},
+});
+
+export const fetchValidatedSponsors = () => ({
+  type: FETCH_VALIDATED_SPONSORS,
+  
+});
+
+export const fetchValidatedSponsorsSuccess = (sponsors) => ({
+  type: FETCH_VALIDATED_SPONSORS_SUCCESS,
+  payload: {sponsors},
+});
+
+export const fetchValidatedSponsorsFailure = (e) => ({
+  type: FETCH_VALIDATED_SPONSORS_FAILURE,
+  payload: {e},
+});
+
+export const fetchWonEventDetail = (ticket) => ({
+  type: FETCH_WON_EVENT_DETAIL,
+  payload: {ticket},
+});
+
+export const fetchWonEventDetailSuccess = (ticket) => ({
+  type: FETCH_WON_EVENT_DETAIL_SUCCESS,
+  payload: {ticket},
+});
+
+export const fetchWonEventDetailFailure = (e) => ({
+  type: FETCH_WON_EVENT_DETAIL_FAILURE,
+  payload: {e},
+});
+
 
 export const fetchWonEvents = (id) => ({
   type: FETCH_WON_EVENTS,
@@ -536,3 +593,18 @@ export const deleteSponsorFailure = (e) => ({
   payload: {e}
 });
 
+export const setEventPaid = (idEvent) => ({
+  type: SET_EVENT_PAID,
+  payload: {idEvent}
+});
+
+export const setEventPaidSuccess = (redirect) => ({
+  type: SET_EVENT_PAID_SUCCESS,
+  payload: {redirect},
+});
+
+
+export const setEventPaidFailure = (e) => ({
+  type: SET_EVENT_PAID_FAILURE,
+  payload: {e}
+});

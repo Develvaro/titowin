@@ -9,6 +9,7 @@ import {
     fetchEventDetail,
     fetchEventWinners,
     setEventWinners,
+    setEventPaid,
 } from '../../actions';
 
 
@@ -23,7 +24,7 @@ class ManageEvent extends Component{
     };
 
     handlePay = event => {
-
+        this.props.setEventPaid(this.props.match.params.id)
     };
 
     createTable = () => {
@@ -81,7 +82,7 @@ class ManageEvent extends Component{
                 case "abierto":
                 boton = (<Button onClick={this.handleEventWinners}>Finalizar Puja</Button>);
                     break;
-                case "bidfinished":
+                case "pendingpay":
                 boton = (<Button onClick={this.handlePay}>Pagos Realizados</Button>);
                     break;
                 case "paid":
@@ -121,6 +122,7 @@ const mapStateToProps = state => ({
       fetchEventDetail: (id) => dispatch(fetchEventDetail(id)),
       fetchEventWinners: (id, ganadores) => (dispatch(fetchEventWinners(id,ganadores))),
       setEventWinners: (id) => (dispatch(setEventWinners(id))),
+      setEventPaid: (id) => (dispatch(setEventPaid(id))),
   });
   export default connect(
     mapStateToProps,

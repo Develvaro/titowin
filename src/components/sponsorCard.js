@@ -24,10 +24,10 @@ const Imagen = styled.div`
     background-repeat: no-repeat;
 `;
 
-const SponsorCard = ( {titulo, url, urlPhoto, id, validado} ) => {
+const SponsorCard = ( {titulo, url, urlPhoto, id, validado, link} ) => {
     return(
         <span>
-            {id ? 
+            {link ?
             <Link to={`/profile/sponsors/detail/${id}`}>
             <Container borderColor={validado ? "green" : "red"}>
                 <Imagen url={urlPhoto} />

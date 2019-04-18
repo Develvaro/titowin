@@ -24,19 +24,29 @@ const Imagen = styled.div`
     background-repeat: no-repeat;
 `;
 
-const CardCompany = ( {titulo, categoria, fecha, place, id, urlPhoto, } ) => {
+const CardCompany = ( {titulo, categoria, fecha, place, id, urlPhoto, ticket, link} ) => {
 
     return(
         <span>
-            <Link to={`/profile/wonevent/${id}`}>
-            <Container>
+            {
+                link ? <Link to={`/profile/wonevent/${ticket}`}>
+                <Container>
+                    <Imagen url={urlPhoto} />
+                    <span> <strong>Evento: </strong> {titulo} </span>
+                    <span> <strong>Categoría: </strong> {categoria} </span>
+                    <span> <strong>Fecha: </strong> {moment.unix(fecha.seconds).locale('es').format('LLLL')} </span>
+                    {place ? <span> <strong>Lugar: </strong> {place.nombre} </span> : ""}
+                </Container>
+                </Link>
+                :                 <Container>
                 <Imagen url={urlPhoto} />
                 <span> <strong>Evento: </strong> {titulo} </span>
                 <span> <strong>Categoría: </strong> {categoria} </span>
                 <span> <strong>Fecha: </strong> {moment.unix(fecha.seconds).locale('es').format('LLLL')} </span>
-                <span> <strong>Lugar: </strong> {place.nombre} </span>
+                {place ? <span> <strong>Lugar: </strong> {place.nombre} </span> : ""}
             </Container>
-            </Link>
+            }
+
         </span>
     );
 }

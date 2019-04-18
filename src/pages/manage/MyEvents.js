@@ -65,18 +65,14 @@ class MyEvents extends Component{
                   name: "Abierto",
                   value: "abierto" ,
               },
-              {
-                name: "Puja Finalizada",
-                value: "bidfinished" ,
-            },
             {
                 name: "Pendiente de Pago",
                 value: "pendingpay" ,
             },
-            {
-                name: "Pagado",
-                value: "paid" ,
-            },
+            //{
+            //    name: "Pagado",
+            //    value: "paid" ,
+            //},
             {
                 name: "Pendiente Sponsor",
                 value: "pendingsponsor",

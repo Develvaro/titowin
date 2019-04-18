@@ -57,7 +57,7 @@ class WonEvents extends Component {
             <FlexList>
             {
                  events.map(event =>
-                ( <div><p>{event.ticket}</p><CardCompany {...event} key={event.id} /> </div>) 
+                ( <div><p>{event.ticket}</p><CardCompany {...event} key={event.ticket} link = {true} /> </div>) 
                     )
                 
             }

@@ -64,17 +64,29 @@ class AddEvent extends Component {
                 id="category"
                 options={[
                   {
-                    value: "Concierto",
-                    name: "Concierto"
+                    name: "Todas",
+                    value: ""
                   },
                   {
-                    value: "Futbol",
-                    name: "Futbol"
+                    name: "Fútbol",
+                    value: "futbol",
                   },
                   {
-                    value: "Baloncesto",
-                    name: "Baloncesto"
-                  }
+                    name: "Baloncesto",
+                    value: "baloncesto",
+                  },
+                  {
+                    name: "Concierto",
+                    value: "concierto",
+                  },
+                  {
+                    name: "Eventos Sociales",
+                    value: "sociales",
+                  },
+                  {
+                    name: "Otros Deportes",
+                    value: "otrosdeportes",
+                  },
                 ]}
                 
               />

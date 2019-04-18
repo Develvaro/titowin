@@ -41,6 +41,10 @@ import {
   SET_EVENT_WINNERS,
   FETCH_MY_EVENTS,
   FETCH_WON_EVENTS,
+  FETCH_WON_EVENT_DETAIL,
+  FETCH_VALIDATED_SPONSORS,
+  POST_EVENT_SPONSOR,
+  SET_EVENT_PAID,
 } from "../actions/type";
 import {
   postPlaceSuccess,
@@ -111,6 +115,14 @@ import {
   fetchMyEventsFailure,
   fetchWonEventsSuccess,
   fetchWonEventsFailure,
+  fetchWonEventDetailSuccess,
+  fetchWonEventDetailFailure,
+  fetchValidatedSponsorsFailure,
+  fetchValidatedSponsorsSuccess,
+  postEventSponsorFailure,
+  postEventSponsorSuccess,
+  setEventPaidSuccess,
+  setEventPaidFailure,
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
@@ -123,6 +135,115 @@ function getCityName(lat, lon) {
     method: 'get',
     url: cadenaWeb,
   });
+}
+
+function * setEventPaidProcess(action){
+  try{
+    const {idEvent} = action.payload;
+
+    const eventRef = databaseRef.collection("Evento").doc(idEvent);
+    
+    yield call([eventRef,"update"],{
+      estado: "pendingsponsor"
+    })
+
+    yield put(setEventPaidSuccess());
+  }catch(e){
+    if(e.message){
+      yield put(setEventPaidFailure(e.message))
+    }
+    else{
+      yield put(setEventPaidFailure(e))
+    }
+  }
+}
+
+function * postEventSponsorProcess(action){
+  try{
+
+    const user = yield select(state => state.user);
+
+    const {ticket, idEvent, idSponsor} = action.payload;
+
+ 
+    const eventTicket = databaseRef.collection("Evento").doc(idEvent).collection("Winners").doc(ticket);
+    const ticketRef = databaseRef.collection("Usuario").doc(user.uid).collection("WonEvents").doc(ticket);
+    
+    var batch = databaseRef.batch();
+    
+    batch.update(eventTicket,{
+      sponsor: idSponsor,
+    });
+
+    batch.update(ticketRef,{  
+      hasSponsor: true,
+    });
+
+    console.log(batch);
+
+    yield call([batch, "commit"]);
+
+    yield put(postEventSponsorSuccess());
+  }
+  catch(e){
+    if(e.message){
+      yield put(postEventSponsorFailure(e.message))
+    }
+    else{
+      yield put(postEventSponsorFailure(e))
+    }
+  }
+}
+
+function * fetchValidatedSponsorsProcess(){
+  try{
+    const user = yield select(state => state.user);
+
+    const sponsorsRef = databaseRef.collection("Sponsors")
+    .where("user", "==", user.uid)
+    .where("validado", "==", true);
+
+    const { docs } = yield call([sponsorsRef, "get"]);
+    const result = docs.map(doc => {
+      return  doc.data() ;
+    });
+
+    yield put(fetchValidatedSponsorsSuccess(result));
+
+  }
+  catch(e){
+    if(e.message){
+      yield put(fetchValidatedSponsorsFailure(e.message))
+    }
+    else{
+      yield put(fetchValidatedSponsorsFailure(e))
+    }
+  }
+}
+
+function * fetchWonEventDetailProcess(action){
+  
+  try{
+    const {ticket} = action.payload;
+    const user = yield select(state => state.user);
+    const ticketRef = databaseRef.collection("Usuario").doc(user.uid).collection("WonEvents").doc(ticket);
+    const ticketDoc = yield call([ticketRef, "get"]);
+    const ticketData = ticketDoc.data();
+
+    const eventRef = databaseRef.collection("Evento").doc(ticketData.evento);
+    const eventDoc = yield call([eventRef, "get"]);
+    yield put(fetchEventDetailSuccess({...eventDoc.data(), id: eventDoc.id}));
+    yield put(fetchWonEventDetailSuccess(ticketData));
+  }
+  catch(e){
+    if(e.message){
+      yield put(fetchWonEventDetailFailure(e.message))
+    }
+    else{
+      yield put(fetchWonEventDetailFailure(e))
+    }
+  }
+
 }
 
 function* fetchEventWinnersProcess(action){
@@ -145,7 +266,6 @@ function* fetchEventWinnersProcess(action){
     
     yield put(fetchEventWinnersSuccess(winners))
   }catch(e){
-    console.log(e);
     if(e.message){
       yield put(fetchEventWinnersFailure(e.message))
     }
@@ -296,7 +416,7 @@ function * setEventWinnersProcess(action){
     });
 
     batch.update(eventRef,{
-      estado: "bidfinished",
+      estado: "pendingpay",
     });
 
     yield call([batch, "commit"]);
@@ -1377,8 +1497,6 @@ function * watchFinishEventBid(){
   yield takeEvery( SET_EVENT_WINNERS, setEventWinnersProcess);
 }
 
-
-
 function * watchFetchEventWinners(){
   yield takeEvery( FETCH_EVENT_WINNERS, fetchEventWinnersProcess);
 }
@@ -1391,6 +1509,22 @@ function * watchFetchWonEvents(){
   yield takeEvery( FETCH_WON_EVENTS, fetchWonEventsProcess);
 }
 
+function * watchFetchWonEventDetail(){
+  yield takeEvery( FETCH_WON_EVENT_DETAIL, fetchWonEventDetailProcess);
+}
+
+function * watchFetchValidatedSponsors(){
+  yield takeEvery( FETCH_VALIDATED_SPONSORS , fetchValidatedSponsorsProcess);
+}
+
+function * watchPostEventSponsor(){
+  yield takeEvery( POST_EVENT_SPONSOR , postEventSponsorProcess);
+}
+
+
+function * watchSetEventPaid(){
+  yield takeEvery( SET_EVENT_PAID, setEventPaidProcess);
+}
 
 function* rootSaga() {
   yield all([
@@ -1426,6 +1560,10 @@ function* rootSaga() {
     fork(watchFetchEventWinners),
     fork(watchFetchMyEvents),
     fork(watchFetchWonEvents),
+    fork(watchFetchWonEventDetail),
+    fork(watchFetchValidatedSponsors),
+    fork(watchPostEventSponsor),
+    fork(watchSetEventPaid),
   ]);
 }
 
