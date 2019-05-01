@@ -19,6 +19,8 @@ const getSuccessMessage = (type, data) => {
         return <div>Su anuncio ha sido procesado, pronto un administrador lo validará</div>
     case "deleteSponsor":
         return <div>Anuncio eliminado correctamente.</div>
+    case "validateSponsor":
+        return <div>Anuncio validado correctamente</div>
     default:
       return null;
   }

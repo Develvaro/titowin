@@ -145,7 +145,7 @@ class CardList extends Component {
               color="danger"
               onClick={() => {
                 console.log(selectedPlace)
-                this.props.fetchEvents(selectedCountry, selectedCity, selectedPlace)
+                this.props.fetchEvents(selectedCountry, selectedCity, selectedPlace, "abierto")
               }
               }
             >

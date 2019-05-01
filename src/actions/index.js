@@ -103,6 +103,7 @@ import {
   SET_EVENT_PAID,
   SET_EVENT_PAID_FAILURE,
   SET_EVENT_PAID_SUCCESS,
+  CLEAR_LOADING,
 } from "./type";
 
 export const postEventSponsor = (ticket, idEvent, idSponsor) => ({
@@ -546,6 +547,9 @@ export const clearSuccess = () => ({
   type: CLEAR_SUCCESS
 });
 
+export const clearLoading = () => ({
+  type: CLEAR_LOADING
+});
 
 export const postValidateMe = form => ({
   type: POST_VALIDATE_ME,

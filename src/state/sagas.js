@@ -127,6 +127,7 @@ import {
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
 import { getCountryByLocale } from "../utils/countries";
+import { stat } from "fs";
 
 function getCityName(lat, lon) {
   const cadenaWeb = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon="+ lon +"&accept_language=es&zoom=18&addressdetails=1";
@@ -443,7 +444,7 @@ function* postValidateSponsorProcess(action){
     yield call([sponsorRef, "update"], {
       validado: true,
     });
-    const redirect = "/"
+    const redirect = "/profile"
 
     yield put(postValidateSponsorSuccess(redirect));
 
@@ -534,6 +535,7 @@ function* postValidatePlaceProcess(action){
       lat,
       lon,
       email,
+      telefono,
       files,
     } = form;
 
@@ -569,6 +571,7 @@ function* postValidatePlaceProcess(action){
     batch.update(actualizar,{
       tipo: "manager",
       manage: id,
+      telefono: telefono,
     });
 
     batch.set(nuevoLugarRef,{
@@ -731,8 +734,8 @@ function* postValidateProcess(action){
 
     // Commit the batch
     yield call([batch,'commit']);
-
-    yield put(postValidateCompanySuccess());
+    const redirect = "/profile";
+    yield put(postValidateCompanySuccess(redirect));
 
   }
   catch (e){
@@ -819,6 +822,7 @@ function* fetchEventProcess(action) {
   try {
     const { pais, ciudad, place, status } = action.payload;
     console.log(action.payload);
+
     let colRef = databaseRef.collection("Evento");
 
     if (pais) {
@@ -831,6 +835,10 @@ function* fetchEventProcess(action) {
 
     if (place) {
       colRef = colRef.where("lugar", "==", place);
+    }
+
+    if(status){
+      colRef = colRef.where("estado", "==", status);
     }
 
     const { docs } = yield call([colRef, "get"]);
@@ -935,7 +943,7 @@ function* fetchProfileProcess(action) {
         validado: false
       };
       console.log("User does not exist");
-      userRef.set(data);
+      yield call([userRef,"set"], data);
       yield put(setProfile(data));
     } else {
       //console.log(doc.data());
@@ -1057,6 +1065,7 @@ function* initialFetchProcess() {
     const { nombre: pais, capital } = selectedCountry;
 
     const cityRef = databaseRef.collection("Ciudad").where("pais", "==", pais);
+
     const { docs: result } = yield call([cityRef, "get"]);
     const cities = result.map(doc => doc.data());
     yield put(fetchCitiesSuccess(cities));
@@ -1064,7 +1073,7 @@ function* initialFetchProcess() {
 
     yield put(initialize("filter", { city: capital }));
 
-    yield put(fetchEvents(pais, capital));
+    yield put(fetchEvents(pais, capital, null, "abierto"));
   } catch (e) {
     if(e.message){
       yield put(initialFetchFailure(e.message));
@@ -1091,28 +1100,32 @@ function* postValidateMeProcess(action){
       email,
       fileurl,
     } = form;
+    console.log(form);
     var location = new firebase.firestore.GeoPoint(parseFloat(lat),parseFloat(lon));
     const storageRef = firebase
       .storage()
       .ref(`Empresa/${email}`);
 
+      console.log("HOLA");
     const task = yield call([storageRef, "put"], fileurl[0]);
     const ref = task.ref;
+    
     const url = yield call([ref, "getDownloadURL"]);
 
 
     const result = databaseRef.collection("Usuario").where("email", "==", email);
     const emailDocs = yield call([result, "get"]);
     const actualizar = databaseRef.collection("Usuario").doc(emailDocs.docs[0].id);
-    
+    console.log("LLEGO");
     yield call([actualizar, "update"], {
       empresa: companyName,
       telefono: phone,
       nif: nif,
       place: location,
       tipo: "empresa",
+      my_docs: url,
     });
-
+    console.log("CALLED");
     const redirect = "/profile";
     yield put(postValidateMeSuccess(redirect));
   }
@@ -1300,12 +1313,15 @@ function* postSponsorProcess(action) {
 
     console.log(form);
 
-    const {
+    let {
       imgupload,
       nombreanuncio,
       urlweb,
     } = form;
-
+    
+    if (!/^(f|ht)tps?:\/\//i.test(urlweb)) {
+      urlweb = "http://" + urlweb;
+   }
     const storageRef = firebase
       .storage()
       .ref(`Sponsors/${id}aa`);

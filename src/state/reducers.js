@@ -23,6 +23,7 @@ import {
   CLEAR_ERROR,
   POST_BID_SUCCESS,
   CLEAR_SUCCESS,
+  CLEAR_LOADING,
   POST_VALIDATE_ME,
   FETCH_VALIDATION_COMPANY_DETAIL,
   FETCH_VALIDATION_COMPANY_DETAIL_SUCCESS,
@@ -41,6 +42,15 @@ import {
   SET_TICKET,
   FETCH_WON_EVENT_DETAIL_SUCCESS,
   FETCH_VALIDATED_SPONSORS_SUCCESS,
+  POST_SPONSOR,
+  POST_SPONSOR_FAILURE,
+  POST_VALIDATE_ME_FAILURE,
+  POST_EVENT,
+  POST_EVENT_FAILURE,
+  POST_EVENT_SUCCESS,
+  POST_VALIDATE_SPONSOR,
+  POST_VALIDATE_SPONSOR_SUCCESS,
+  
 } from "../actions/type";
 
 const ticket = (state = null, action ) => {
@@ -233,6 +243,7 @@ const successInitialState = {
   redirect: null,
 };
 
+
 const success = (state = successInitialState, action) => {
   let redirect = null;
   switch (action.type) {
@@ -247,6 +258,9 @@ const success = (state = successInitialState, action) => {
     case POST_SPONSOR_SUCCESS:
         redirect  = action.payload.redirect;
       return {data: {redirect} , type: "postSponsor"}
+    case POST_VALIDATE_SPONSOR_SUCCESS:
+      redirect = action.payload.redirect;
+      return {data: {redirect} , type: "validateSponsor"}
     case DELETE_SPONSOR_SUCCESS:
       redirect = action.payload.redirect;
       return {data: {redirect} , type: "deleteSponsor"}
@@ -254,6 +268,42 @@ const success = (state = successInitialState, action) => {
       return state;
   }
 };
+
+const loading = (state = {status: false}, action) =>{
+  switch (action.type){
+
+    case POST_SPONSOR:
+      return {status: true};
+    case POST_SPONSOR_SUCCESS:
+      return {status: false};
+    case POST_SPONSOR_FAILURE:
+      return {status: false};
+
+    case POST_VALIDATE_ME:
+      return {status: true};
+    case POST_VALIDATE_ME_SUCCESS:
+      return {status: false};
+    case POST_VALIDATE_ME_FAILURE:
+      return {status: false};
+
+    case POST_VALIDATE_SPONSOR:
+      return {status: true};
+    case POST_VALIDATE_SPONSOR_SUCCESS:
+      return {status: false};
+    case POST_VALIDATE_SPONSOR_FAILURE:
+      return {status: false};
+      
+    case POST_EVENT:
+      return {status: true};
+    case POST_EVENT_FAILURE:
+      return {status: false};
+    case POST_EVENT_SUCCESS:
+      return {status: false};
+
+    default:
+      return state;
+  }
+}
 
 export default combineReducers({
   form: formReducer,
@@ -276,4 +326,5 @@ export default combineReducers({
   leafletPlace,
   eventWinners,
   ticket,
+  loading,
 });

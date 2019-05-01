@@ -8,7 +8,7 @@ class AddEventPage extends Component{
         return(
             <div>
             <Row>
-            <Col md="3">       <ProfileNav selected="AddEventPage"/>  </Col>
+            <Col md="3">       <ProfileNav selected="addevent"/>  </Col>
             <Col md="9">
             <AddEvent />
             </Col>

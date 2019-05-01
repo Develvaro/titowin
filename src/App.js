@@ -35,6 +35,7 @@ import MyEvents from "./pages/manage/MyEvents";
 import AddEventPage from './pages/manage/AddEventPage';
 import AddSponsorPage from './pages/manage/AddSponsorPage';
 import SponsorDetailPage from './pages/manage/SponsorDetailPage';
+import LoadingPopup from "./components/loadingPopup";
 
 class App extends Component {
   componentDidMount() {
@@ -52,6 +53,7 @@ class App extends Component {
         <div className="App">
           <SuccessPopup />
           <ErrorPopup />
+          <LoadingPopup />
           <Bar />
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
@@ -91,7 +93,7 @@ class App extends Component {
           <Route path="/admin/validatecompany" component={ValidateCompany}/>
           <Route path="/admin/addplaceandmanager" component={AddPlaceAndManager}/>
           <Route path="/admin/validatesponsors" component={ValidateSponsors}/>
-
+          
           {/* <Route exact path="/profile" component={Profile} />
           <Route exact path="/admin" component={Admin} />
           <Route path="/admin/editEvent/:id" component={EditEvent} />
@@ -116,5 +118,5 @@ const mapDispatchToProps = dispatch => ({
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(App);

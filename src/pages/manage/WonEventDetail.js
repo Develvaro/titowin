@@ -80,7 +80,7 @@ class WonEventDetail extends Component{
 
 
     render(){
-        const {eventDetail, ticket, listSponsors } = this.props;
+        const {eventDetail, ticket, listSponsors, user } = this.props;
         if(eventDetail && ticket){
             console.log(eventDetail);
             return(
@@ -100,7 +100,13 @@ class WonEventDetail extends Component{
                 </ModalFooter>
                 </Modal>
                     <CardCompany {...eventDetail} id={null}/>
-
+                {ticket.pagado ? "" :
+                    <div>
+                        Enhorabuena, has ganado este evento, para que los asistentes puedan ver tu Sponsor debes abonar {ticket.cantidad} €  en la cuenta " xxxxx " con el concepto {user.email}.
+                        <br/>
+                        El administrador del lugar pondrá tu Sponsor visible a los asistentes al evento.
+                    </div>
+                }
                 {ticket.hasSponsor ? "" : 
                 <div>
                 <FlexList>

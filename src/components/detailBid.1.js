@@ -8,15 +8,13 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
-  Table,
+  ModalFooter
 } from "reactstrap";
 import Countdown from '../components/Countdown'
 import { connect } from "react-redux";
-import { postBid, fetchEventDetail, postEventFailure } from "../actions";
+import { postBid, fetchEventDetail } from "../actions";
 import Select from "./form/select";
 import NumberInput from "./form/numberinput";
-import Spinner from 'react-spinner-material';
 
 import styled from "styled-components";
 
@@ -31,7 +29,7 @@ import {
 
 require('moment-countdown');
 const Imagen = styled.div`
-  height: 200px;
+  height: 160px;
   background-image: url(${props => props.url});
   background-size: cover;
   background-repeat: no-repeat;
@@ -42,6 +40,7 @@ const Container = styled.div`
     min-width: 25%;
     width: 250px; 
     height: 400px;
+    border: 1px solid black;
 
     margin:5px; 
     @media (max-width: 700px) {
@@ -88,24 +87,20 @@ class DetailBid extends Component {
         : "";
     }
 
-    if(!eventDetail){
-      return(
-        <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p>                 
-      );
-    }
-    else{
-      return(
-        <Container>
+
+
+    return (
+    <Container>
         <Row>
           <Col>
             {" "}
-            {<Countdown date = {moment.unix(eventDetail.bidDate.seconds).toDate()} /> }{" "}
+            {eventDetail ? <Countdown date = {moment.unix(eventDetail.bidDate.seconds).toDate()} /> : "Cargando..."}{" "}
           </Col>
  
         </Row>
         <Col sm="12">
           <Imagen
-            url={ eventDetail.urlPhoto}
+            url={eventDetail ? eventDetail.urlPhoto : ""}
             alt="Event Photo"
           />
         </Col>
@@ -115,12 +110,12 @@ class DetailBid extends Component {
           <Col sm="8">
             {" "}
             Última Puja realizada:
-            <br /> {eventDetail.bids[0].cantidad}
+            <br /> {eventDetail ? eventDetail.bids[0].cantidad : "Cargando..."}
           </Col>
           <Col sm="4">
             {" "}
             Participaciones: <br />
-            {eventDetail.participaciones}
+            {eventDetail ? eventDetail.participaciones : "Cargando..."}
           </Col>
         </Row>
 
@@ -172,9 +167,7 @@ class DetailBid extends Component {
           </Row>
         </form>
         </Container>
-      );
-    }
-
+    );
   }
 }
 

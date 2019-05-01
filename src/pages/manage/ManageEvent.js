@@ -4,7 +4,8 @@ import Spinner from 'react-spinner-material';
 import {Row, Col, Button} from 'reactstrap';
 import { connect } from "react-redux";
 import ProfileNav from '../../components/profileNav';
- 
+import styled from "styled-components";
+import {Table} from "reactstrap";
 import {
     fetchEventDetail,
     fetchEventWinners,
@@ -12,11 +13,46 @@ import {
     setEventPaid,
 } from '../../actions';
 
+var QRCode = require('qrcode.react');
+ 
+const FlexRow = styled.div`
+  display: flex; 
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding:5px; 
+  min-width: 0px;
+
+`;
+
+const FlexItem = styled.div`
+    flex: ${props => props.flex};
+    min-width: 31%;
+    width: 200px; 
+    height: 400px;
+    margin:5px; 
+    @media (max-width: 700px) {
+        min-width: 33.33%; 
+    }
+`;
+
+const BlankSpace = styled.div`
+    margin-top: 10px;
+`;
 
 class ManageEvent extends Component{
-
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+            disabled : false,        
+        }
+      }
     handleEventWinners = event => {
-        this.props.setEventWinners(this.props.match.params.id);
+        this.setState({
+            disabled : true,
+        })
+         this.props.setEventWinners(this.props.match.params.id);
     };
 
     handleDraw = event =>{
@@ -74,35 +110,73 @@ class ManageEvent extends Component{
           }
 
         else{
+
             const {estado} = eventDetail;
 
             let boton = "";
 
             switch(estado){
                 case "abierto":
-                boton = (<Button onClick={this.handleEventWinners}>Finalizar Puja</Button>);
+                boton = (<Button onClick={this.handleEventWinners} disabled={this.state.disabled}>Finalizar Puja</Button>);
                     break;
                 case "pendingpay":
                 boton = (<Button onClick={this.handlePay}>Pagos Realizados</Button>);
                     break;
-                case "paid":
+                case "pendingdraw":
                 boton = (<Button onClick={this.handleDraw}>Realizar Sorteo</Button>);
                     break;
                 case "finished":
                 boton = "";
                     break;
                 default:
-                    "";
+                boton = (<Button onClick={this.handleEventWinners} disabled={this.state.disabled}>Finalizar Puja</Button>);
+
+                    ;
             }
             return(
-                <div>            
+                <div>   
+                         
                     <Row>
+
                     <Col md="3">       <ProfileNav selected="myevents"/>  </Col>
                     <Col md="9">
-                        <CardManage {...eventDetail} key={eventDetail.id} />
-                        <br/>
-                        {eventWinners ? this.createTable(): <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p> }
+                    <FlexRow>
+                        <FlexItem flex="1">
+                            <QRCode size="128" renderAs="canvas" value={eventDetail.id} />
+                        </FlexItem>
+
+                        <FlexItem flex="1">
+                            <CardManage {...eventDetail} key={eventDetail.id} />
+                        </FlexItem>
+
+
+                    </FlexRow>
+                    <BlankSpace/>
+
+                    <FlexItem flex="1">
+                            {eventWinners ? <Table> {this.createTable()}</Table>: <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p> }
+                    </FlexItem>
+                    <FlexItem>
                         {boton}
+                    </FlexItem>
+
+
+                    {/*
+                                        <Row>
+                        <Col md="3" > 
+                            <QRCode size="128" renderAs="canvas" value={eventDetail.id} />
+                        </Col>
+                        <Col md="3" >                        
+                        <CardManage {...eventDetail} key={eventDetail.id} />
+                        </Col>
+                        <Col md="3" >                        {eventWinners ? this.createTable(): <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p> }
+                        </Col>
+                    </Row>
+                    */
+                    }
+                    
+                        <br/>
+
                     </Col>
                     </Row>
                 </div>
@@ -116,6 +190,7 @@ const mapStateToProps = state => ({
     user: state.user,
     eventDetail: state.eventDetail,
     eventWinners: state.eventWinners,
+    loading: state.loading,
   });
   
   const mapDispatchToProps = dispatch => ({

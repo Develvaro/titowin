@@ -6,13 +6,24 @@ import {
   fetchProfile,
   fetchEventBid,
 } from '../actions';
+import styled from "styled-components";
 
 import {Row, Col} from 'reactstrap';
 
+import Spinner from 'react-spinner-material';
+
 import DetailBid from '../components/detailBid';
 import DetailTab from '../components/detailTab';
+import DetailBidEvent from "../components/detailBidEvent";
 
+const FlexList = styled.div`
+  display: flex; 
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding:5px; 
 
+`;
 class EventDetail extends Component {
 
 
@@ -28,37 +39,67 @@ class EventDetail extends Component {
     render() {
 
       console.log(this.props.eventDetail);
-    return (
-      <div>
-        <Row>
-          <Col sm="8">{this.props.eventDetail ? <DetailTab /> : "Cargando..."}</Col>
-          <Col sm="4" >{this.props.eventDetail ? <DetailBid /> : "Cargando..."}</Col>
 
-        </Row>
-        
-        {
-          this.props.profile ?
-            <p> {this.props.profile.id} </p>
-            : <p> Cargando... </p>   
-        }
-        {
-          this.props.eventBids ?
-            <p> EventBids </p>
-            : <p> Cargando... </p>
-        }
-        {
-          this.props.eventDetail ?
-            <div>
-              <p> {this.props.eventDetail.titulo}</p>
-              <p> {this.props.eventDetail.categoria}</p>
-              <p> {this.props.eventDetail.place.nombre}</p>
-              <p> {this.props.eventDetail.titulo}</p>
-            </div>
-            : <p> Cargando... </p>
-        }
-        
-      </div>
-    );
+      const {eventDetail} = this.props;
+
+      if(!eventDetail){
+        return(
+          <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p>                 
+        );
+      }
+      else{
+    return (
+
+        <FlexList>
+          
+          <DetailBidEvent />
+
+          <DetailTab />
+
+          <DetailBid />
+
+          {
+
+            
+
+            /*
+
+            <Col sm="4">Hola</Col>
+            <Col sm="4">Hola</Col>
+
+            {//<Col sm="8">{this.props.eventDetail ? <DetailTab /> : "Cargando..."}</Col> 
+            }
+            <Col sm="4" >{this.props.eventDetail ? <DetailBid /> : "Cargando..."}</Col>
+
+
+          {
+            this.props.profile ?
+              <p> {this.props.profile.id} </p>
+              : <p> Cargando... </p>   
+          }
+          {
+            this.props.eventBids ?
+              <p> EventBids </p>
+              : <p> Cargando... </p>
+          }
+          {
+            this.props.eventDetail ?
+              <div>
+                <p> {this.props.eventDetail.titulo}</p>
+                <p> {this.props.eventDetail.categoria}</p>
+                <p> {this.props.eventDetail.place.nombre}</p>
+                <p> {this.props.eventDetail.titulo}</p>
+              </div>
+              : <p> Cargando... </p>
+          }
+          
+            */
+          }
+              </FlexList>
+            
+
+      );
+      }
   }
 }
 

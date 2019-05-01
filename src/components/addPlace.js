@@ -76,6 +76,22 @@ class AddPlace extends Component {
                                     </Col>
                                 </FormGroup>
 
+
+                                <FormGroup row> 
+                                    <Label for="telefono" sm={2}>
+                                    Teléfono
+                                    </Label>
+                                    <Col sm={8}>
+                                    <Field
+                                        component={TextInput}
+                                        type="text"
+                                        name="telefono"
+                                        id="telefono"
+                                        placeholder="+34 664332112"
+                                    />
+                                    </Col>
+                                </FormGroup>
+
                                 <FormGroup row> 
                                     <Label for="aforo" sm={2}>
                                     Aforo
@@ -175,6 +191,7 @@ const mapStateToProps = (state) => ({
     lon: filterSelector(state, "lon"),
     manager: filterSelector(state, "manager"),
     email: filterSelector(state,"email"),
+    telefono: filterSelector(state,"telefono"),
     files: filterSelector(state, "files"),
     profile: state.profile,
     user: state.user,

@@ -27,7 +27,7 @@ const Imagen = styled.div`
 const SponsorCard = ( {titulo, url, urlPhoto, id, validado, link} ) => {
     return(
         <span>
-            {link ?
+            {id ?
             <Link to={`/profile/sponsors/detail/${id}`}>
             <Container borderColor={validado ? "green" : "red"}>
                 <Imagen url={urlPhoto} />
