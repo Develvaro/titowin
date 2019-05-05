@@ -174,6 +174,7 @@ function * postEventSponsorProcess(action){
     
     batch.update(eventTicket,{
       sponsor: idSponsor,
+      visualizaciones: 0,
     });
 
     batch.update(ticketRef,{  
@@ -554,8 +555,6 @@ function* postValidatePlaceProcess(action){
     
     yield call([otherStorageRef, "put"], files[0]);
 
-
-
     var location = new firebase.firestore.GeoPoint(parseFloat(lat),parseFloat(lon));
 
     const result = databaseRef.collection("Usuario").where("email", "==", email);
@@ -565,6 +564,35 @@ function* postValidatePlaceProcess(action){
     const nuevoLugarRef = databaseRef.collection("Lugar").doc(id);
 
     let {data} = yield call(getCityName , lat, lon );
+    if(!data.address.city && !data.address.village && !data.address.town){
+      yield put(postValidatePlaceFailure("Fallo al encontrar la ciudad, inténtalo de nuevo"));
+    }
+    else{
+    
+    
+    let city = "";
+
+    //Nominatim puede devolver ciudad, o villa o town dependiendo de lo que tenga asignado esa zona.
+    //Para nosotros nos da igual como lo llame, será la ciudad.
+    if(data.address.town){
+      city = data.address.town;
+    }   
+    if(data.address.village){
+      city= data.address.village;
+    }
+    if(data.address.city){
+      city = data.address.city;
+    }
+    
+    const cityRef = databaseRef.collection("Ciudad").doc(city )
+    const citiDoc = yield call([cityRef,"get"]);
+   
+    if(!citiDoc.exists){
+      yield call([cityRef,"set"],{
+        nombre: city,
+        pais: data.address.country,
+      })
+    }
 
     var batch = databaseRef.batch();
 
@@ -578,13 +606,16 @@ function* postValidatePlaceProcess(action){
       nombre: placename,
       posicion: location,
       aforoMax: aforo,
-      ciudad: data.address.city,
+      ciudad: city,
       foto: urlphoto,
     });
 
     yield call([batch,'commit']);
 
-    yield put(postValidatePlaceSuccess());
+    const redirect = "/profile";
+    yield put(postValidatePlaceSuccess(redirect));
+  }
+
   }
   catch(e){
     if(e.message){

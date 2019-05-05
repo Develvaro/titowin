@@ -21,17 +21,19 @@ const getSuccessMessage = (type, data) => {
         return <div>Anuncio eliminado correctamente.</div>
     case "validateSponsor":
         return <div>Anuncio validado correctamente</div>
+    case "postplace":
+        return <div>Lugar y usuario añadidos correctamente</div>
     default:
       return null;
   }
 };
 
 class SuccessPopup extends Component {
-  // componentDidUpdate(prevProps) {
-  //   if (!prevProps.type && this.props.type) {
-  //     setTimeout(this.props.clearSuccess, 3000);
-  //   }
-  // }
+   componentDidUpdate(prevProps) {
+    if (!prevProps.type && this.props.type) {
+       setTimeout(this.props.clearSuccess, 3000);
+     }
+   }
 
 
   render() {

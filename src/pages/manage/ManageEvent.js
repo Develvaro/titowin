@@ -155,9 +155,10 @@ class ManageEvent extends Component{
 
                     <FlexItem flex="1">
                             {eventWinners ? <Table> {this.createTable()}</Table>: <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p> }
+                            {boton}
+
                     </FlexItem>
                     <FlexItem>
-                        {boton}
                     </FlexItem>
 
 

@@ -22,6 +22,7 @@
     "npm": "^6.1.0",
     "qrcode.react": "^0.9.3",
     "react": "^16.7.0",
+    "react-autocomplete": "^1.8.1",
     "react-dom": "^16.7.0",
     "react-leaflet": "^2.2.0",
     "react-loader-spinner": "^2.1.0",

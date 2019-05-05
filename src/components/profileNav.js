@@ -21,7 +21,7 @@ class ProfileNav extends Component {
                         <div>
                             <Link to="/profile/wonevents/"><ListGroupItem className={selected == "wonevents" ? "text-white bg-danger" : "text-white bg-dark"}>Eventos Ganados</ListGroupItem></Link>
                             <Link to="/profile/sponsors"><ListGroupItem className={selected == "sponsors" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Anuncios</ListGroupItem></Link>
-                            <Link to ="/profile/sponsors/add"><ListGroupItem className={selected == "addsponsor" ? "text-white bg-danger" : "text-white bg-dark"}> Subir Anuncio</ListGroupItem> </Link>
+        {/*  <Link to ="/profile/sponsors/add"><ListGroupItem className={selected == "addsponsor" ? "text-white bg-danger" : "text-white bg-dark"}> Subir Anuncio</ListGroupItem> </Link> */ }
 
                         </div>
                 }
@@ -31,7 +31,6 @@ class ProfileNav extends Component {
                     <div>
                         <Link to ="/manage/myevents"><ListGroupItem className={selected == "myevents" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Eventos</ListGroupItem> </Link>
                         <Link to ="/manage/addevent"><ListGroupItem className={selected == "addevent" ? "text-white bg-danger" : "text-white bg-dark"}>Añadir Evento</ListGroupItem> </Link>
-                        <Link to ="/manage/deleteevent"><ListGroupItem className={selected == "deleteevent" ? "text-white bg-danger" : "text-white bg-dark"}>Eliminar Eventos</ListGroupItem> </Link>
                     </div>
                 }
 
@@ -43,8 +42,7 @@ class ProfileNav extends Component {
                     <Link to ="/admin/validatecompany"><ListGroupItem className={selected == "validatecompany" ? "text-white bg-danger" : "text-white bg-dark"}>Validar Empresa</ListGroupItem></Link>
                 </div>    
                 }
-
-
+                
             </ListGroup>
         </div>
         )};

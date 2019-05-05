@@ -50,7 +50,10 @@ import {
   POST_EVENT_SUCCESS,
   POST_VALIDATE_SPONSOR,
   POST_VALIDATE_SPONSOR_SUCCESS,
-  
+  POST_VALIDATE_PLACE,
+  POST_VALIDATE_PLACE_SUCCESS,
+  POST_VALIDATE_PLACE_FAILURE,
+  POST_PLACE_FAILURE,
 } from "../actions/type";
 
 const ticket = (state = null, action ) => {
@@ -232,6 +235,8 @@ const error = (state = null, action) => {
       return action.payload.e;
     case FETCH_MY_EVENTS_FAILURE:
       return action.payload.e;
+    case POST_PLACE_FAILURE:
+      return action.payload.e;
     default:
       return state;
   }
@@ -264,6 +269,10 @@ const success = (state = successInitialState, action) => {
     case DELETE_SPONSOR_SUCCESS:
       redirect = action.payload.redirect;
       return {data: {redirect} , type: "deleteSponsor"}
+    case POST_VALIDATE_PLACE_SUCCESS:
+      redirect = action.payload.redirect;
+      return {data: {redirect}, type: "postplace"}
+      
     default:
       return state;
   }
@@ -291,6 +300,13 @@ const loading = (state = {status: false}, action) =>{
     case POST_VALIDATE_SPONSOR_SUCCESS:
       return {status: false};
     case POST_VALIDATE_SPONSOR_FAILURE:
+      return {status: false};
+
+    case POST_VALIDATE_PLACE:
+      return {status: true};
+    case POST_VALIDATE_PLACE_SUCCESS:
+      return {status: false};
+    case POST_VALIDATE_PLACE_FAILURE:
       return {status: false};
       
     case POST_EVENT:

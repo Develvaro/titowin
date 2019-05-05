@@ -233,8 +233,9 @@ export const postValidatePlace = (form) => ({
   payload: {form}
 });
 
-export const postValidatePlaceSuccess = () => ({
+export const postValidatePlaceSuccess = (redirect) => ({
   type: POST_VALIDATE_PLACE_SUCCESS,
+  payload: {redirect}
 });
 
 export const postValidatePlaceFailure = (e) => ({
