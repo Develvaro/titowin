@@ -104,15 +104,106 @@ import {
   SET_EVENT_PAID_FAILURE,
   SET_EVENT_PAID_SUCCESS,
   CLEAR_LOADING,
+  FETCH_EVENT_PRIZES,
+  FETCH_EVENT_PRIZES_SUCCESS,
+  FETCH_EVENT_PRIZES_FAILURE,
+  POST_EVENT_PRIZE,
+  POST_EVENT_PRIZE_SUCCESS,
+  POST_EVENT_PRIZE_FAILURE,
+  DELETE_EVENT_PRIZE,
+  DELETE_EVENT_PRIZE_SUCCESS,
+  DELETE_EVENT_PRIZE_FAILURE,
+  SET_EVENT_PRIZES,
+  SET_EVENT_PRIZES_SUCCESS,
+  SET_EVENT_PRIZES_FAILURE,
+  POST_EVENT_DRAW_WINNERS,
+  POST_EVENT_DRAW_WINNERS_SUCCESS,
+  POST_EVENT_DRAW_WINNERS_FAILURE,
 } from "./type";
+
+
+export const postEventDrawWinners = (eventID) =>({
+  type: POST_EVENT_DRAW_WINNERS,
+  payload: {eventID}
+})
+
+export const postEventDrawWinnersSuccess = () =>({
+  type: POST_EVENT_DRAW_WINNERS_SUCCESS,
+})
+
+export const postEventDrawWinnersFailure = (e) =>({
+  type: POST_EVENT_DRAW_WINNERS_FAILURE,
+  payload: {e}
+})
+
+export const postEventPrize = (data) => ({
+  type: POST_EVENT_PRIZE,
+  payload: {data},
+})
+
+export const postEventPrizeSuccess = () => ({
+  type: POST_EVENT_PRIZE_SUCCESS,
+})
+
+export const postEventPrizeFailure = (e) => ({
+  type: POST_EVENT_PRIZE_FAILURE,
+  payload: {e},
+})
+
+export const deleteEventPrize = (idEvent, idPrize) => ({
+  type: DELETE_EVENT_PRIZE,
+  payload: {idEvent, idPrize},
+})
+
+export const deleteEventPrizeSuccess = () => ({
+  type: DELETE_EVENT_PRIZE_SUCCESS,
+})
+
+export const deleteEventPrizeFailure = (e) => ({
+  type: DELETE_EVENT_PRIZE_FAILURE,
+  payload: {e},
+})
+
+export const setEventPrizes = (idEvent) => ({
+  type: SET_EVENT_PRIZES,
+  payload: {idEvent},
+})
+
+export const setEventPrizesSuccess = () => ({
+  type: SET_EVENT_PRIZES_SUCCESS,
+})
+
+export const setEventPrizesFailure = (e) => ({
+  type: SET_EVENT_PRIZES_FAILURE,
+  payload: {e}
+})
+
+
+
+
+export const fetchEventPrizes = (idEvent) => ({
+  type: FETCH_EVENT_PRIZES,
+  payload: {idEvent},
+});
+
+export const fetchEventPrizesSuccess = (eventPrizes) => ({
+  type: FETCH_EVENT_PRIZES_SUCCESS,
+  payload: {eventPrizes},
+});
+
+export const fetchEventPrizesFailure = (e) => ({
+  type: FETCH_EVENT_PRIZES_FAILURE,
+  payload: {e}
+})
 
 export const postEventSponsor = (ticket, idEvent, idSponsor) => ({
   type: POST_EVENT_SPONSOR,
   payload: {ticket, idEvent, idSponsor},
 });
 
-export const postEventSponsorSuccess = () => ({
+export const postEventSponsorSuccess = (redirect) => ({
   type: POST_EVENT_SPONSOR_SUCCESS,
+  payload: {redirect}
 });
 
 export const postEventSponsorFailure = (e) => ({

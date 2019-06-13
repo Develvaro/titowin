@@ -31,9 +31,17 @@ const Card = ( {titulo, categoria, fecha, place, pujaActual, id, urlPhoto} ) => 
             <Container>
                 <Imagen url={urlPhoto} />
                 <span> <strong>Evento: </strong> {titulo} </span>
+                <br/>
+
                 <span> <strong>Categoría: </strong> {categoria} </span>
+                <br/>
+
                 <span> <strong>Fecha: </strong> {moment.unix(fecha.seconds).locale('es').format('LLLL')} </span>
+                <br/>
+
                 <span> <strong>Lugar: </strong> {place.nombre} </span>
+                <br/>
+
             </Container>
             </Link>
         </span>

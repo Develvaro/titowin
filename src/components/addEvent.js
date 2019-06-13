@@ -110,12 +110,6 @@ class AddEvent extends Component {
           </FormGroup>
 
           <FormGroup row>
-                <Label for="place" sm={2}>Lugar</Label>
-                <Col sm={8}><Field name="place" id="place" value="" component={TextInput}></Field></Col>
-          </FormGroup>
-
-
-          <FormGroup row>
             <Label for="bidDate" sm={2} >Dia fin de puja</Label>
             <Col sm={3}><Field name="bidDate" id="bidDate" component={DatePicker} /></Col>
  
@@ -155,7 +149,6 @@ const mapStateToProps = (state) => ({
   category: filterSelector(state, "category"),
   eventTime: filterSelector(state, "eventTime"),
   imgupload: filterSelector(state, "imgupload"),
-  place: filterSelector(state, "place"),
   bidDate: filterSelector(state, "bidDate"),
   bidTime: filterSelector(state, "bidTime"),
   startBid: filterSelector(state, "startBid"),

@@ -3,14 +3,22 @@ import CardManage from '../../components/cardManage';
 import Spinner from 'react-spinner-material';
 import {Row, Col, Button} from 'reactstrap';
 import { connect } from "react-redux";
+import AddPrize from './AddPrize';
 import ProfileNav from '../../components/profileNav';
 import styled from "styled-components";
 import {Table} from "reactstrap";
 import {
     fetchEventDetail,
     fetchEventWinners,
+    fetchEventPrizes,
     setEventWinners,
     setEventPaid,
+    postEvent,
+    postEventPrize,
+    deleteEventPrize,
+
+    setEventPrizes,
+    postEventDrawWinners,
 } from '../../actions';
 
 var QRCode = require('qrcode.react');
@@ -55,13 +63,26 @@ class ManageEvent extends Component{
          this.props.setEventWinners(this.props.match.params.id);
     };
 
-    handleDraw = event =>{
-
+    handleDraw = () =>{
+        this.props.postEventDrawWinners(this.props.match.params.id);
     };
 
     handlePay = event => {
         this.props.setEventPaid(this.props.match.params.id)
     };
+
+    handleDeleteEventPrize = (idPrize) => {
+        this.props.deleteEventPrize(this.props.match.params.id, idPrize)
+    }
+
+    handlePostPrize = (values) =>{
+        this.props.postEventPrize(values)
+    }
+
+    handleSetPrizes = () => {
+        console.log("Entro");
+        this.props.setEventPrizes(this.props.match.params.id)
+    }
 
     createTable = () => {
         let table = []
@@ -85,10 +106,40 @@ class ManageEvent extends Component{
         }
         return table
       }
+    
+      createPrizeTable = () => {
+        let table = []
+        const {eventPrizes} = this.props;
+        console.log(eventPrizes[0])
+        console.log(eventPrizes.length)
+        // Outer loop to create parent
+        let header = [];
+        
+        header.push(<td>Premio</td>);
+        header.push(<td>Precio</td>);
+        header.push(<td>Descripción</td>)
+        header.push(<td>Lugar recogida</td>)
+        header.push(<td>Quitar Premio</td>)
+        table.push(<tr>{header}</tr>);
+        for (let i = 0; i < eventPrizes.length; i++) {
+          let children = []
+          //Inner loop to create children 
+            children.push(<td>{eventPrizes[i].prizeName}</td>);
+            children.push(<td>{eventPrizes[i].prizePrice}</td>);
+
+            children.push(<td>{eventPrizes[i].prizeDescription}</td>);
+            children.push(<td>{eventPrizes[i].prizePickPlace}</td>);
+            children.push(<td><Button onClick={() => this.handleDeleteEventPrize(eventPrizes[i].id)}>Eliminar</Button></td>)
+          //Create the parent and add the children
+          table.push(<tr>{children}</tr>)
+        }
+        return table
+      }
 
     componentDidMount(){
         const {id} = this.props.match.params
         this.props.fetchEventDetail(id);
+        this.props.fetchEventPrizes(id);
     }
 
     componentDidUpdate(prevProps){
@@ -114,13 +165,17 @@ class ManageEvent extends Component{
             const {estado} = eventDetail;
 
             let boton = "";
+            
 
             switch(estado){
                 case "abierto":
-                boton = (<Button onClick={this.handleEventWinners} disabled={this.state.disabled}>Finalizar Puja</Button>);
+                    boton = (<Button onClick={this.handleEventWinners} disabled={this.state.disabled}>Finalizar Puja</Button>);
                     break;
                 case "pendingpay":
-                boton = (<Button onClick={this.handlePay}>Pagos Realizados</Button>);
+                    boton = (<Button onClick={this.handlePay}>Pagos Realizados</Button>);
+                    break;
+                case "pendingprize":
+                    boton = (<Button onClick={this.handleSetPrizes}> Confirmar premios </Button>)
                     break;
                 case "pendingdraw":
                 boton = (<Button onClick={this.handleDraw}>Realizar Sorteo</Button>);
@@ -129,9 +184,7 @@ class ManageEvent extends Component{
                 boton = "";
                     break;
                 default:
-                boton = (<Button onClick={this.handleEventWinners} disabled={this.state.disabled}>Finalizar Puja</Button>);
-
-                    ;
+                boton = "";
             }
             return(
                 <div>   
@@ -153,28 +206,16 @@ class ManageEvent extends Component{
                     </FlexRow>
                     <BlankSpace/>
 
+
+                    <Row><Col md="12">{estado == "pendingprize" ?  <AddPrize onSubmit={this.handlePostPrize} /> : ""}</Col></Row>
+
                     <FlexItem flex="1">
-                            {eventWinners ? <Table> {this.createTable()}</Table>: <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p> }
+                            {eventWinners ? <div><h1>Ganadores</h1><Table> {this.createTable()}</Table></div>: <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p> }
+
+                            {(estado == "pendingprize" && this.props.eventPrizes )? <div> <h1>Premios</h1><Table>{this.createPrizeTable()}</Table> </div>: ""}
                             {boton}
 
                     </FlexItem>
-                    <FlexItem>
-                    </FlexItem>
-
-
-                    {/*
-                                        <Row>
-                        <Col md="3" > 
-                            <QRCode size="128" renderAs="canvas" value={eventDetail.id} />
-                        </Col>
-                        <Col md="3" >                        
-                        <CardManage {...eventDetail} key={eventDetail.id} />
-                        </Col>
-                        <Col md="3" >                        {eventWinners ? this.createTable(): <p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p> }
-                        </Col>
-                    </Row>
-                    */
-                    }
                     
                         <br/>
 
@@ -192,13 +233,19 @@ const mapStateToProps = state => ({
     eventDetail: state.eventDetail,
     eventWinners: state.eventWinners,
     loading: state.loading,
+    eventPrizes: state.eventPrizes,
   });
   
   const mapDispatchToProps = dispatch => ({
       fetchEventDetail: (id) => dispatch(fetchEventDetail(id)),
       fetchEventWinners: (id, ganadores) => (dispatch(fetchEventWinners(id,ganadores))),
+      fetchEventPrizes: (id) => (dispatch(fetchEventPrizes(id))),
       setEventWinners: (id) => (dispatch(setEventWinners(id))),
       setEventPaid: (id) => (dispatch(setEventPaid(id))),
+      postEventPrize: (data) => (dispatch(postEventPrize(data))),
+      deleteEventPrize: (eventID, idPrize) => (dispatch(deleteEventPrize(eventID, idPrize))),
+      setEventPrizes: (eventID) => (dispatch(setEventPrizes(eventID))),
+      postEventDrawWinners: (eventID) => (dispatch(postEventDrawWinners(eventID))),
   });
   export default connect(
     mapStateToProps,

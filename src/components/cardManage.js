@@ -31,8 +31,13 @@ const CardManage = ( {titulo, categoria, fecha, borderColor, id, urlPhoto} ) => 
             <Container borderColor={borderColor}>
                 <Imagen url={urlPhoto} />
                 <span> <strong>Evento: </strong> {titulo} </span>
+                <br/>
                 <span> <strong>Categoría: </strong> {categoria} </span>
+                <br/>
+
                 <span> <strong>Fecha: </strong> {moment.unix(fecha.seconds).locale('es').format('LLLL')} </span>
+                <br/>
+
             </Container>
             </Link>
         </span>

@@ -14,6 +14,11 @@ import {
     postEventSponsor,
 } from '../../actions';
 
+const Container = styled.div`
+ display: flex;
+    flex-direction: row;
+    justify-content: center;
+`;
 
 const FlexList = styled.div`
   display: flex; 
@@ -52,6 +57,7 @@ class WonEventDetail extends Component{
 
     handlePostEvent = (sponsorID) => {
         this.props.postEventSponsor(this.props.ticket.id,this.props.eventDetail.id, sponsorID);
+        this.close()
     }
 
     handleSelect = (idSponsor) => {
@@ -75,8 +81,10 @@ class WonEventDetail extends Component{
                 this.props.fetchValidatedSponsors();
             }
         }
+        if(prevProps.success != this.props.success && this.props.success.type == "postEventSponsor"){
+            window.location.reload();
+        }
     }
-    
 
 
     render(){
@@ -99,8 +107,14 @@ class WonEventDetail extends Component{
                     <Button color="secondary" onClick={this.close}>Cancelar</Button>
                 </ModalFooter>
                 </Modal>
+                
+                
+
+                <Container>
                     <CardCompany {...eventDetail} id={null}/>
-                {ticket.pagado ? "" :
+                </Container>
+
+                {ticket.pagado ? <div>Su pago ha sido procesado correctamente</div> :
                     <div>
                         Enhorabuena, has ganado este evento, para que los asistentes puedan ver tu Sponsor debes abonar {ticket.cantidad} €  en la cuenta " xxxxx " con el concepto {user.email}.
                         <br/>
@@ -148,6 +162,7 @@ const mapStateToProps = state => ({
     eventDetail: state.eventDetail,
     ticket: state.ticket,
     listSponsors: state.listSponsors,
+    success: state.success,
   });
   
   const mapDispatchToProps = dispatch => ({

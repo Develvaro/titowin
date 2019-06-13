@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Modal, ModalHeader, ModalBody } from "reactstrap";
 import { connect } from "react-redux";
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import { clearSuccess } from "../actions";
 
 const getSuccessMessage = (type, data) => {
@@ -23,6 +23,10 @@ const getSuccessMessage = (type, data) => {
         return <div>Anuncio validado correctamente</div>
     case "postplace":
         return <div>Lugar y usuario añadidos correctamente</div>
+    case "postEventSponsor":
+        return <div>Su anuncio ha sido asignado correctamente</div>
+    case "setEventPrizes":
+        return <div>Sus premios han sido correctamente establecidos</div>
     default:
       return null;
   }
@@ -71,10 +75,10 @@ const mapDispatchToProps = dispatch => ({
   clearSuccess: () => dispatch(clearSuccess())
 });
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps
-)(SuccessPopup);
+)(SuccessPopup));
 
 
 /*

@@ -31,6 +31,7 @@ class ProfileNav extends Component {
                     <div>
                         <Link to ="/manage/myevents"><ListGroupItem className={selected == "myevents" ? "text-white bg-danger" : "text-white bg-dark"}>Mis Eventos</ListGroupItem> </Link>
                         <Link to ="/manage/addevent"><ListGroupItem className={selected == "addevent" ? "text-white bg-danger" : "text-white bg-dark"}>Añadir Evento</ListGroupItem> </Link>
+
                     </div>
                 }
 

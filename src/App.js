@@ -34,6 +34,8 @@ import ValidateSponsors from "./pages/manage/ValidateSponsors";
 import MyEvents from "./pages/manage/MyEvents";
 import AddEventPage from './pages/manage/AddEventPage';
 import AddSponsorPage from './pages/manage/AddSponsorPage';
+
+
 import SponsorDetailPage from './pages/manage/SponsorDetailPage';
 import LoadingPopup from "./components/loadingPopup";
 

@@ -24,15 +24,16 @@ const FlexList = styled.div`
   padding:5px; 
 
 `;
-class EventDetail extends Component {
 
+
+class EventDetail extends Component {
 
     componentDidMount(){
       const idEvent = this.props.match.params.id;
       const { fetchEventBid, fetchEventDetail, fetchPlace } = this.props;
       fetchEventDetail(idEvent);
       //fetchEventBid(idEvent);
-      
+    
     }
 
 
@@ -50,13 +51,14 @@ class EventDetail extends Component {
       else{
     return (
 
+
         <FlexList>
-          
           <DetailBidEvent />
 
           <DetailTab />
 
           <DetailBid />
+
 
           {
 
@@ -95,8 +97,8 @@ class EventDetail extends Component {
           
             */
           }
-              </FlexList>
-            
+        
+        </FlexList>
 
       );
       }

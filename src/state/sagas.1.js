@@ -45,11 +45,6 @@ import {
   FETCH_VALIDATED_SPONSORS,
   POST_EVENT_SPONSOR,
   SET_EVENT_PAID,
-  FETCH_EVENT_PRIZES,
-  POST_EVENT_PRIZE,
-  DELETE_EVENT_PRIZE,
-  SET_EVENT_PRIZES,
-  POST_EVENT_DRAW_WINNERS,
 } from "../actions/type";
 import {
   postPlaceSuccess,
@@ -128,21 +123,11 @@ import {
   postEventSponsorSuccess,
   setEventPaidSuccess,
   setEventPaidFailure,
-  fetchEventPrizesFailure,
-  fetchEventPrizesSuccess,
-  deleteEventPrizeFailure,
-  postEventPrizeFailure,
-  setEventPrizesFailure,
-  setEventPrizesSuccess,
-  deleteEventPrizeSuccess,
-  postEventPrizeSuccess,
-  fetchEventPrizes,
-  postEventDrawWinnersFailure,
-  postEventDrawWinnersSuccess
 } from "../actions";
 import { databaseRef } from "../config/firebase";
 import firebase from "firebase";
 import { getCountryByLocale } from "../utils/countries";
+import { stat } from "fs";
 
 function getCityName(lat, lon) {
   const cadenaWeb = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon="+ lon +"&accept_language=es&zoom=18&addressdetails=1";
@@ -153,230 +138,6 @@ function getCityName(lat, lon) {
   });
 }
 
-
-//Fisher-Yates shuffle
-function shuffle(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i +1 ));
-      var temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-  }
-}
-
-
-function * postEventDrawWinnersProcess(action){
-  try{
-
-    const {eventID} = action.payload;
-
-    const eventRef = databaseRef.collection("Evento").doc(eventID);
-    const eventDoc = yield call([eventRef, "get"]);
-
-    const prizesRef = databaseRef.collection("Evento").doc(eventID).collection("Premios");
-
-    let prizes = yield call([prizesRef, "get"]);
-    var prizesDocs = prizes.docs.map(doc => {
-      return  doc.data();
-    });
-  
-    const participtansRef = databaseRef.collection("Evento").doc(eventID).collection("Draw");
-
-    let participants = yield call([participtansRef, "get"]);
-    var participantsDocs = participants.docs.map(doc => {
-      return  doc.data() ;
-    });
-
-
-    yield call(shuffle, participantsDocs);
-    yield call(shuffle, prizesDocs)
-    //shuffle(prizesDocs)
-    //shuffle(participantsD)
-
-    if(participantsDocs.length > prizesDocs.length){ //Lo normal, más participantes que premios.
-      const calls = yield all(
-        prizesDocs.map((prize, index) => {
-
-          const userRef = databaseRef.collection("Usuario")
-            .doc(participantsDocs[index].user)
-            .collection("WonDraws").doc(eventID)
-          
-          const prizeRef = databaseRef.collection("Evento").doc(eventID).collection("Premios").doc(prize.id)
-
-          const batch = databaseRef.batch();
-
-          batch.set(userRef,{
-            eventID: eventID,
-            prizeDescription: prize.prizeDescription,
-            prizeName: prize.prizeName,
-            prizePickPlace: prize.prizePickPlace,
-            prizePrize: prize.prizePrice,
-          })
-
-          batch.update(prizeRef,{
-            winnerID: participantsDocs[index].user,
-          })
-
-          return call([batch, "commit"]);
-        })
-
-      )
-      console.log(calls)
-
-    }else{
-       //Todos tienen premio..  
-      //yield call(shuffle, prizesDocs);
-      console.log(prizesDocs);
-      console.log(participantsDocs);
-      const calls = yield all(
-        participantsDocs.map((participant, index) => {
-
-        let prize = prizesDocs[index]
-        let userRef = databaseRef.collection("Usuario")
-        .doc(participant.user)
-        .collection("WonDraws").doc(eventID)
-        let prizeRef = databaseRef.collection("Evento").doc(eventID).collection("Premios").doc(prize.id)
-
-        var batch = databaseRef.batch();
-        batch.set(userRef,{
-          eventID: eventID,
-          prizeID: prize.id,
-          prizeDescription: prize.prizeDescription,
-          prizeName: prize.prizeName,
-          prizePickPlace: prize.prizePickPlace,
-          prizePrize: prize.prizePrice,
-        })
-
-        batch.update(prizeRef,{
-          winnerID: participant.user,
-        })
-
-        return call([batch, "commit"]);
-        /*batch.commit().then(function () {
-          console.log('Written to firestore')
-        })
-        .catch(
-            put(postEventDrawWinnersFailure())
-        )*/
-        })
-      
-
-      )   
-      console.log(calls)
-
-    }
-
-    yield put(postEventDrawWinnersSuccess())
-  }
-  catch(e){
-    console.log(e);
-    yield put(postEventDrawWinnersFailure())
-  }
-}
-
-function * setEventPrizesProcess(action){
-  try{
-    const {idEvent} = action.payload;
-
-    const ref = databaseRef.collection("Evento").doc(idEvent)
-    yield call([ref,"update"],{
-      estado: "pendingdraw"
-    });
-
-    yield(fetchEventDetailProcess({
-      payload:{
-        eventID: idEvent,
-      }
-    }))
-    yield put(setEventPrizesSuccess())
-  }
-  catch(e){
-    yield put(setEventPrizesFailure(e))
-  }
-}
-
-function * postEventPrizeProcess(action){
-  try{
-
-    const user = yield select(state => state.user);
-    const eventDetail = yield select(state => state.eventDetail);
-
-    const { data } = action.payload;
-
-    const {
-      prizeName,
-      prizePrice,
-      prizeDescription,
-      prizePickPlace,
-    } = data;
-  
-    const idPrize = uuid()
-    const eventRef = databaseRef.collection("Evento").doc(eventDetail.id).collection("Premios").doc(idPrize);
-     
-
-    yield call([eventRef, "set"],{
-      id: idPrize,
-      manager: user.uid,
-      eventID: eventDetail.id,
-      prizeName: prizeName,
-      prizePrice: prizePrice,
-      prizeDescription: prizeDescription,
-      prizePickPlace: prizePickPlace,
-    });
-
-    yield(fetchEventPrizesProcess({
-        payload:{
-          idEvent: eventDetail.id
-        }
-    }))
-    yield put(postEventPrizeSuccess())
-
-  }
-  catch(e){
-    console.log(e);
-    yield put(postEventPrizeFailure(e))
-  }
-}
-
-function * deleteEventPrizeProcess(action){
-  try{
-    const {idEvent, idPrize} = action.payload;
-
-    const prizeRef = databaseRef.collection("Evento").doc(idEvent).collection("Premios").doc(idPrize);
-    yield call([prizeRef, "delete"]);
-
-    
-    yield(fetchEventPrizesProcess({
-      payload:{
-        idEvent: idEvent,
-      }
-    }))
-    yield put(deleteEventPrizeSuccess());
-  }
-  catch(e){
-    yield put(deleteEventPrizeFailure(e))
-  }
-}
-
-function * fetchEventPrizesProcess(action){
-  try{
-    console.log(action)
-    const {idEvent} = action.payload;
-    const eventPrizesRef = databaseRef.collection("Evento").doc(idEvent).collection("Premios")
-   
-    const { docs } = yield call([eventPrizesRef, "get"]);
-    const eventPrizes = docs.map(doc => {
-      return  doc.data() ;
-    });
-
-    console.log(eventPrizes)
-    yield put(fetchEventPrizesSuccess(eventPrizes))
-  }
-  catch(e){
-    yield put(fetchEventPrizesFailure())
-  }
-}
-
 function * setEventPaidProcess(action){
   try{
     const {idEvent} = action.payload;
@@ -384,7 +145,7 @@ function * setEventPaidProcess(action){
     const eventRef = databaseRef.collection("Evento").doc(idEvent);
     
     yield call([eventRef,"update"],{
-      estado: "pendingprize"
+      estado: "pendingsponsor"
     })
 
     yield put(setEventPaidSuccess());
@@ -1455,7 +1216,6 @@ function* postEventProcess(action) {
     const countryDoc = yield call([countryRef, "get"]);
     const result = databaseRef.collection("Evento").doc(id);
     yield call([result, "set"], {
-      id: id,
       titulo: eventName,
       urlPhoto: url,
       categoria: category,
@@ -1818,27 +1578,6 @@ function * watchSetEventPaid(){
   yield takeEvery( SET_EVENT_PAID, setEventPaidProcess);
 }
 
-function * watchFetchEventPrizes(){
-  yield takeEvery(FETCH_EVENT_PRIZES, fetchEventPrizesProcess)
-}
-
-function * watchPostEventPrize(){
-  yield takeEvery(POST_EVENT_PRIZE, postEventPrizeProcess)
-}
-
-function * watchDeleteEventPrize (){
-  yield takeEvery(DELETE_EVENT_PRIZE, deleteEventPrizeProcess)
-
-}
-
-function * watchSetEventPrizes () {
-  yield takeEvery(SET_EVENT_PRIZES, setEventPrizesProcess)
-}
-
-function * watchPostEventDrawWinners (){
-  yield takeEvery(POST_EVENT_DRAW_WINNERS, postEventDrawWinnersProcess)
-}
-
 function* rootSaga() {
   yield all([
     fork(watchFetchEvents),
@@ -1877,14 +1616,6 @@ function* rootSaga() {
     fork(watchFetchValidatedSponsors),
     fork(watchPostEventSponsor),
     fork(watchSetEventPaid),
-    fork(watchFetchEventPrizes),
-    
-    fork(watchPostEventPrize),
-    fork(watchDeleteEventPrize),
-    fork(watchSetEventPrizes),
-
-    fork(watchPostEventDrawWinners),
-
   ]);
 }
 

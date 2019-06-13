@@ -63,7 +63,7 @@ class AddPlace extends Component {
                                 </FormGroup>
                                 <FormGroup row> 
                                     <Label for="placename" sm={2}>
-                                    Nombre
+                                    Nombre del Manager
                                     </Label>
                                     <Col sm={8}>
                                     <Field
@@ -71,7 +71,7 @@ class AddPlace extends Component {
                                         type="text"
                                         name="placename"
                                         id="placename"
-                                        placeholder="Santiago Bernabeu"
+                                        placeholder="Adolfo Bonilla"
                                     />
                                     </Col>
                                 </FormGroup>
@@ -109,7 +109,7 @@ class AddPlace extends Component {
 
                                 <FormGroup row> 
                                     <Label for="photo" sm={2}>
-                                    FotoURL
+                                    Foto del lugar
                                     </Label>
                                     <Col sm={8}>
                                     <Field

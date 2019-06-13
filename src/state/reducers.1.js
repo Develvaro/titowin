@@ -55,10 +55,6 @@ import {
   POST_VALIDATE_PLACE_FAILURE,
   POST_PLACE_FAILURE,
   POST_EVENT_SPONSOR_SUCCESS,
-  FETCH_EVENT_PRIZES_SUCCESS,
-  SET_EVENT_PRIZES,
-  SET_EVENT_PRIZES_SUCCESS,
-  SET_EVENT_PRIZES_FAILURE,
 } from "../actions/type";
 
 const ticket = (state = null, action ) => {
@@ -219,16 +215,6 @@ const listSponsors = (state = null, action) => {
   }
 };
 
-const eventPrizes = (state = null, action) => {
-  switch (action.type) {
-    case FETCH_EVENT_PRIZES_SUCCESS:
-      return action.payload.eventPrizes;
-    default:
-      return state;
-  }
-};
-
-
 const sponsorDetail = (state = null, action) => {
   switch (action.type) {
     case FETCH_SPONSOR_DETAIL_SUCCESS:
@@ -290,8 +276,6 @@ const success = (state = successInitialState, action) => {
     case POST_EVENT_SPONSOR_SUCCESS:
       redirect = action.payload.redirect;
       return {data: {redirect}, type: "postEventSponsor"}
-    case SET_EVENT_PRIZES_SUCCESS:
-      return {data: {}, type: "setEventPrizes"}
       
     default:
       return state;
@@ -336,18 +320,10 @@ const loading = (state = {status: false}, action) =>{
     case POST_EVENT_SUCCESS:
       return {status: false};
 
-    case SET_EVENT_PRIZES:
-      return {status: true};
-    case SET_EVENT_PRIZES_SUCCESS:
-      return {status: false};
-    case SET_EVENT_PRIZES_FAILURE:
-      return {status: false};
-
     default:
       return state;
   }
 }
-
 
 export default combineReducers({
   form: formReducer,
@@ -371,5 +347,4 @@ export default combineReducers({
   eventWinners,
   ticket,
   loading,
-  eventPrizes,
 });
