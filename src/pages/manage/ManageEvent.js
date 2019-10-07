@@ -94,7 +94,7 @@ class ManageEvent extends Component{
         header.push(<td>Cantidad</td>);
         header.push(<td>Puesto</td>);
         table.push(<tr>{header}</tr>);
-        for (let i = 0; i <= eventDetail.participaciones; i++) {
+        for (let i = 0; i < eventDetail.participaciones; i++) {
           let children = []
           //Inner loop to create children 
             children.push(<td>{eventWinners[i].email}</td>);

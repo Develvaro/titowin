@@ -27,6 +27,16 @@ const getSuccessMessage = (type, data) => {
         return <div>Su anuncio ha sido asignado correctamente</div>
     case "setEventPrizes":
         return <div>Sus premios han sido correctamente establecidos</div>
+    case "postEvent":
+        return <div>Evento añadido correctamente</div>
+    case "setEventWinners":
+        return <div>Ganadores seleccionados correctamente</div>
+    case "setEventPaidSuccess":
+        return <div>Confirmado pago de evento</div> 
+    case "setEventPrizesSuccess":
+        return <div>Premios añadidos al evento</div>
+    case "postEventDrawWinnersSuccess":
+        return <div>Sorteo realizado correctamente</div>
     default:
       return null;
   }

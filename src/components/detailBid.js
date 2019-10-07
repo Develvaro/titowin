@@ -31,7 +31,7 @@ import {
 
 require('moment-countdown');
 const Imagen = styled.div`
-  height: 200px;
+  height: 300px;
   background-image: url(${props => props.url});
   background-size: cover;
   background-repeat: no-repeat;
@@ -40,7 +40,7 @@ const Imagen = styled.div`
 const Container = styled.div`
     flex: 1;
     min-width: 25%;
-    width: 250px; 
+    width: 284px; 
     height: 400px;
 
     margin:5px; 
@@ -99,7 +99,7 @@ class DetailBid extends Component {
         <Row>
           <Col>
             {" "}
-            {<Countdown date = {moment.unix(eventDetail.bidDate.seconds).toDate()} /> }{" "}
+            {<Countdown date = {moment.unix(eventDetail.bidDate.seconds).toDate()} eventID={eventDetail.id}/> }{" "}
           </Col>
  
         </Row>

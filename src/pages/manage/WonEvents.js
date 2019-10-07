@@ -39,7 +39,7 @@ class WonEvents extends Component {
   render() {
     const {  fetchWonEvents, events } = this.props;
     console.log(events);
-    if (!events) {
+    if (events == null) {
       return         <Row>
       <Col md="4"><span></span></Col>
       <Col md="4"><p align="center"><Spinner size={40} spinnerColor={"#e91e63"} spinnerWidth={1} visible={true} /></p></Col>

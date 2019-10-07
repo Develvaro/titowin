@@ -167,11 +167,9 @@ function shuffle(array) {
 
 function * postEventDrawWinnersProcess(action){
   try{
-
     const {eventID} = action.payload;
 
     const eventRef = databaseRef.collection("Evento").doc(eventID);
-    const eventDoc = yield call([eventRef, "get"]);
 
     const prizesRef = databaseRef.collection("Evento").doc(eventID).collection("Premios");
 
@@ -190,12 +188,13 @@ function * postEventDrawWinnersProcess(action){
 
     yield call(shuffle, participantsDocs);
     yield call(shuffle, prizesDocs)
-    //shuffle(prizesDocs)
-    //shuffle(participantsD)
+  
 
     if(participantsDocs.length > prizesDocs.length){ //Lo normal, más participantes que premios.
-      const calls = yield all(
+      yield all(
         prizesDocs.map((prize, index) => {
+
+          console.log(participantsDocs[index].user);
 
           const userRef = databaseRef.collection("Usuario")
             .doc(participantsDocs[index].user)
@@ -221,14 +220,10 @@ function * postEventDrawWinnersProcess(action){
         })
 
       )
-      console.log(calls)
 
     }else{
-       //Todos tienen premio..  
-      //yield call(shuffle, prizesDocs);
-      console.log(prizesDocs);
-      console.log(participantsDocs);
-      const calls = yield all(
+
+      yield all(
         participantsDocs.map((participant, index) => {
 
         let prize = prizesDocs[index]
@@ -252,20 +247,20 @@ function * postEventDrawWinnersProcess(action){
         })
 
         return call([batch, "commit"]);
-        /*batch.commit().then(function () {
-          console.log('Written to firestore')
-        })
-        .catch(
-            put(postEventDrawWinnersFailure())
-        )*/
-        })
-      
 
+        })
       )   
-      console.log(calls)
-
     }
 
+    yield call([eventRef, "update"], {
+      estado: "finished",
+    })
+
+    yield(fetchEventDetailProcess({
+      payload:{
+        eventID: eventID,
+      }
+    }))
     yield put(postEventDrawWinnersSuccess())
   }
   catch(e){
@@ -384,9 +379,16 @@ function * setEventPaidProcess(action){
     const eventRef = databaseRef.collection("Evento").doc(idEvent);
     
     yield call([eventRef,"update"],{
-      estado: "pendingprize"
+      estado: "pendingprize",
+      pagado: true,
     })
 
+
+    yield(fetchEventDetailProcess({
+      payload:{
+        eventID: idEvent,
+      }
+    }))
     yield put(setEventPaidSuccess());
   }catch(e){
     if(e.message){
@@ -492,11 +494,11 @@ function * fetchWonEventDetailProcess(action){
 function* fetchEventWinnersProcess(action){
   try{
     const {id, ganadores} = action.payload;
+
+    console.log(ganadores)
     let pujasRef = databaseRef.collection("Evento").doc(id)
-      .collection("Puja");
-    
-    pujasRef.orderBy("cantidad","desc")
-    .limit(ganadores);
+      .collection("Puja").orderBy("cantidad","desc").limit(ganadores)
+
 
     
     const { docs } = yield call([pujasRef, "get"]);
@@ -505,8 +507,8 @@ function* fetchEventWinnersProcess(action){
       return { ...data, posicion: index +1 };
     });
 
+    console.log(winners);
 
-    
     yield put(fetchEventWinnersSuccess(winners))
   }catch(e){
     if(e.message){
@@ -537,27 +539,36 @@ function * fetchWonEventsProcess(action){
       })
     );
 
-    const places = yield all(
-      wonEvents.map(event => {
+    let wonEventsData = {}
 
-        const placeRef = databaseRef
-          .collection("Lugar")
-          .doc(event.data().lugar);
-        return call([placeRef, "get"]);
-      })
-    );
-
-    const wonEventsData = docs.map((doc, index) => ({
-      ticket: doc.id,
-      cantidad: doc.data().cantidad,
-      pagado: doc.data().pagado,
-      hasSponsor: doc.data().hasSponsor,
-      ...wonEvents[index].data(),
-      id: wonEvents[index].id,
-      place: places[index].data(),
-    }));
+    console.log(wonEvents.length);
+    if(wonEvents.length > 0)
+    {
+      const places = yield all(
+        wonEvents.map(event => {
+  
+          const placeRef = databaseRef
+            .collection("Lugar")
+            .doc(event.data().lugar);
+          return call([placeRef, "get"]);
+        })
+      );
+  
+      wonEventsData = docs.map((doc, index) => ({
+        ticket: doc.id,
+        cantidad: doc.data().cantidad,
+        pagado: doc.data().pagado,
+        hasSponsor: doc.data().hasSponsor,
+        ...wonEvents[index].data(),
+        id: wonEvents[index].id,
+        place: places[index].data(),
+      }));
+  
+    }
 
     console.log(wonEventsData);
+
+
     
     yield put(fetchWonEventsSuccess(wonEventsData))
   }catch(e){
@@ -666,7 +677,13 @@ function * setEventWinnersProcess(action){
 
     yield call([batch, "commit"]);
 
-    yield put(setEventWinnersSuccess())
+    const redirect = "/manage/event/" + id
+    yield(fetchEventDetailProcess({
+      payload:{
+        eventID: id,
+      }
+    }))
+    yield put(setEventWinnersSuccess(redirect))
   }
   catch(e){
     console.log(e);
@@ -1469,6 +1486,7 @@ function* postEventProcess(action) {
       increment,
       participaciones,
       lugar: user.manage,
+      pagado: false,
     });
 
     for (let i = 0; i < participaciones + 1; i++) {
@@ -1656,6 +1674,9 @@ function* postBidProcess(action) {
         .doc(eventDetail.id)
         .collection("Puja")
         .doc(id);
+
+        console.log("/Evento/" + eventDetail.id + "/Puja/" + id)
+        console.log("Cantidad: " + cantidad + " usuario: " + user.id + " email: " + user.email + " time : " + firebase.firestore.FieldValue.serverTimestamp())
       yield call([pujasRef, "set"], {
         cantidad,
         usuario: user.id,
@@ -1664,13 +1685,20 @@ function* postBidProcess(action) {
       });
 
     }
+
+    yield(fetchEventDetailProcess({
+      payload:{
+        eventID: eventDetail.id,
+      }
+    }))
+
     yield put(postBidSuccess(participaciones, cantidad));
   } catch (e) {
     yield put(
       postBidFailure(
         e === USER_NOT_LOGGED_IN_EXCEPTION
           ? "Debes estar logeado"
-          : "Ha habido un error pujando"
+          : e
       )
     );
   }

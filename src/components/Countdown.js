@@ -1,4 +1,10 @@
 import React, {Component } from 'react';
+
+import { connect } from "react-redux";
+import {
+  fetchEventDetail,
+
+} from '../actions';
 import moment from 'moment';
 import './Countdown.css';
 class Countdown extends Component {
@@ -19,6 +25,10 @@ class Countdown extends Component {
     this.interval = setInterval(() => {
       const date = this.calculateCountdown(this.props.date);
       date ? this.setState(date) : this.stop();
+      if(this.state.seconds % 7 == 0){
+        console.log("refetch")
+        this.props.fetchEventDetail(this.props.eventID);
+      }
     }, 1000);
   }
 
@@ -115,4 +125,9 @@ class Countdown extends Component {
 }
 
 
-export default Countdown;
+const mapDispatchToProps = (dispatch) => ({
+  fetchEventDetail: (idEvent) => dispatch(fetchEventDetail(idEvent)),
+
+});
+
+export default connect (null, mapDispatchToProps)(Countdown);

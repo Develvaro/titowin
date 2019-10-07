@@ -59,6 +59,13 @@ import {
   SET_EVENT_PRIZES,
   SET_EVENT_PRIZES_SUCCESS,
   SET_EVENT_PRIZES_FAILURE,
+  SET_EVENT_WINNERS,
+  SET_EVENT_WINNERS_SUCCESS,
+  SET_EVENT_PAID_SUCCESS,
+  POST_EVENT_DRAW_WINNERS_SUCCESS,
+  SET_EVENT_WINNERS_FAILURE,
+  POST_EVENT_DRAW_WINNERS,
+  POST_EVENT_DRAW_WINNERS_FAILURE,
 } from "../actions/type";
 
 const ticket = (state = null, action ) => {
@@ -252,6 +259,12 @@ const error = (state = null, action) => {
       return action.payload.e;
     case POST_PLACE_FAILURE:
       return action.payload.e;
+    case POST_EVENT_FAILURE:
+      return "Error añadiendo el anuncio";
+    case SET_EVENT_PRIZES_FAILURE:
+      return "Error añadiendo ganadores";
+    case SET_EVENT_WINNERS_FAILURE:
+      return "Error realizando el sorteo";
     default:
       return state;
   }
@@ -292,6 +305,21 @@ const success = (state = successInitialState, action) => {
       return {data: {redirect}, type: "postEventSponsor"}
     case SET_EVENT_PRIZES_SUCCESS:
       return {data: {}, type: "setEventPrizes"}
+    case SET_EVENT_WINNERS_SUCCESS:
+      redirect = action.payload.redirect;
+      return {data: {redirect}, type: "setEventWinners"}
+    case SET_EVENT_PAID_SUCCESS:
+      return {data: {}, type: "setEventPaidSuccess"}
+    case SET_EVENT_PRIZES_SUCCESS:
+      return {data: {}, type: "setEventPrizesSuccess"}
+    case POST_EVENT_DRAW_WINNERS_SUCCESS:
+      return {data: {}, type: "postEventDrawWinnersSuccess"}
+
+
+    case POST_EVENT_SUCCESS:
+      redirect = "/profile";
+      return {data: {redirect}, type: "postEvent"}
+  
       
     default:
       return state;
@@ -341,6 +369,13 @@ const loading = (state = {status: false}, action) =>{
     case SET_EVENT_PRIZES_SUCCESS:
       return {status: false};
     case SET_EVENT_PRIZES_FAILURE:
+      return {status: false};
+
+    case POST_EVENT_DRAW_WINNERS:
+      return {status: true};
+    case POST_EVENT_DRAW_WINNERS_SUCCESS:
+      return {status: false};
+    case POST_EVENT_DRAW_WINNERS_FAILURE:
       return {status: false};
 
     default:

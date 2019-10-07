@@ -114,7 +114,7 @@ class WonEventDetail extends Component{
                     <CardCompany {...eventDetail} id={null}/>
                 </Container>
 
-                {ticket.pagado ? <div>Su pago ha sido procesado correctamente</div> :
+                {eventDetail.pagado ? <div>Su pago ha sido procesado correctamente, próximamente su anuncio aparecerá en el evento. Muchas gracias.</div> :
                     <div>
                         Enhorabuena, has ganado este evento, para que los asistentes puedan ver tu Sponsor debes abonar {ticket.cantidad} €  en la cuenta " xxxxx " con el concepto {user.email}.
                         <br/>

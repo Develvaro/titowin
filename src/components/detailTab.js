@@ -28,20 +28,30 @@ class DetailTab extends Component{
         let table = []
         const {eventDetail} = this.props;
         // Outer loop to create parent
+        let title = [];
         let header = [];
+        title.push(<td></td>)
+        title.push(<td>Pujas</td>)
+        title.push(<td></td>)
         header.push(<td>Usuario</td>);
         header.push(<td>Cantidad</td>);
         header.push(<td>Puesto</td>);
+        table.push(<tr>{title}</tr>)
         table.push(<tr>{header}</tr>);
         for (let i = 0; i <= eventDetail.participaciones; i++) {
-          let children = []
-          //Inner loop to create children 
-            children.push(<td>{eventDetail.bids[i].email}</td>);
-            children.push(<td>{eventDetail.bids[i].cantidad}</td>);
-            children.push(<td>{i + 1}</td>);
 
-          //Create the parent and add the children
-          table.push(<tr>{children}</tr>)
+          if(eventDetail.bids[i].cantidad >= eventDetail.startBid)
+          {
+            let children = []
+            //Inner loop to create children 
+              children.push(<td>{eventDetail.bids[i].email}</td>);
+              children.push(<td>{eventDetail.bids[i].cantidad}</td>);
+              children.push(<td>{i + 1}</td>);
+  
+            //Create the parent and add the children
+            table.push(<tr>{children}</tr>)
+          }
+
         }
         return table
       }

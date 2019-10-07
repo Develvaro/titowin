@@ -7,7 +7,7 @@ moment.locale('es');
 const Container = styled.div`
     flex: 1;
     min-width: 25%;
-    width: 250px; 
+    width: 284px; 
     height: 400px;
     border: 1px solid black;
 
